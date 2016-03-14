@@ -7,7 +7,7 @@ galaxy_info:
   min_ansible_version: 2.0
 
   github_branch: master
-  issue_tracker_url:
+  issue_tracker_url: https://gitlab.cee.redhat.com/gtrellu/virt-env-ospd/issues
 
   platforms:
   - name: EL
