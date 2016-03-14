@@ -1,0 +1,20 @@
+---
+galaxy_info:
+  author: Gaetan Trellu (gtrellu@redhat.com)
+  description: Deploy on OSP-d virtual platform
+  company: Red Hat - RCIP
+  license: Apache
+  min_ansible_version: 2.0
+
+  github_branch: master
+  issue_tracker_url:
+
+  platforms:
+  - name: EL
+    versions:
+    - 7
+
+  galaxy_tags:
+  - cloud
+
+dependencies: []

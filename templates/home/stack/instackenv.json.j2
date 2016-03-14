@@ -1,0 +1,33 @@
+{
+    "ssh-user": "{{ pm_user }}",
+    "ssh_key": "{{ virt_env_ospd_ssh_prv }}",
+    "seed-ip": "",
+    "power_manager": "nova.virt.baremetal.virtual_power_driver.VirtualPowerManager",
+    "host-ip": "{{ pm_addr }}",
+    "arch": "{{ arch }}",
+    "nodes":[
+{% for item in undercloud_nodes %}
+{% if loop.first %}
+        {
+{% endif %}
+{% if not loop.first %}
+{
+{% endif %}
+            "pm_type":"{{ pm_type }}",
+            "mac":[
+                "{{ item.mac }}"
+            ],
+            "cpu":"{{ cpu }}",
+            "memory":"{{ memory }}",
+            "disk":"{{ disk }}",
+            "arch":"{{ arch }}",
+            "pm_user":"{{ pm_user }}",
+            "pm_password":"{{ pm_password }}",
+            "pm_addr":"{{ pm_addr }}"
+        }{% if not loop.last %}
+,
+        {% endif %}
+{% endfor %}
+
+    ]
+}

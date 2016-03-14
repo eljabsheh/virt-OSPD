@@ -1,0 +1,32 @@
+---
+# file: roles/virs-env-ospd/tasks/ironic.yml
+- name: Configuring Ironic nodes
+  shell:
+    source ~/stackrc ;
+    openstack baremetal configure boot
+  become: true
+  become_user: stack
+
+- name: Starting Ironic introspection
+  shell:
+    source ~/stackrc ;
+    openstack baremetal introspection bulk start
+  become: true
+  become_user: stack
+  when: virt_env_ospd_ironic_introspection is defined and
+        virt_env_ospd_ironic_introspection
+
+- name: Generating ironic-profiling script
+  template:
+    src=home/stack/ironic-profiling.sh.j2
+    dest=/home/stack/ironic-profiling.sh
+    owner=stack
+    group=stack
+    mode=0755
+
+- name: Tagging profile on Ironic nodes
+  shell:
+    source ~/stackrc ;
+    /home/stack/ironic-profiling.sh
+  become: true
+  become_user: stack

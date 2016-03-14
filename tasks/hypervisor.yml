@@ -1,0 +1,76 @@
+---
+# file: roles/virt-env-ospd/tasks/hypervisor.yml
+- name: Creating QCOW2 file for Ceph virtual machines
+  command:
+    qemu-img create \
+    -f {{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph_name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_vm_disk_size }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_ceph_count }}
+  when: virt_env_ospd_ceph_vm is defined and
+        virt_env_ospd_ceph_vm
+
+- name: Creating QCOW2 file for controller virtual machines
+  command:
+    qemu-img create \
+    -f {{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control_name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_vm_disk_size }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_control_count }}
+  when: virt_env_ospd_control_vm is defined and
+        virt_env_ospd_control_vm
+
+- name: Creating QCOW2 file for compute virtual machines
+  command:
+    qemu-img create \
+    -f {{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute_name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_vm_disk_size }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_compute_count }}
+  when: virt_env_ospd_compute_vm is defined and
+        virt_env_ospd_compute_vm
+
+- name: Creating Ceph virtual machines
+  virt:
+    name={{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph_name }}-{{ item }}
+    command=define
+    xml={{ lookup('template', 'etc/libvirt/qemu/ceph.xml.j2') }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_ceph_count }}
+  when: virt_env_ospd_ceph_vm is defined and
+        virt_env_ospd_ceph_vm
+
+- name: Creating controller virtual machines
+  virt:
+    name={{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control_name }}-{{ item }}
+    command=define
+    xml={{ lookup('template', 'etc/libvirt/qemu/control.xml.j2') }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_control_count }}
+  when: virt_env_ospd_control_vm is defined and
+        virt_env_ospd_control_vm
+
+- name: Creating compute virtual machines
+  virt:
+    name={{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute_name }}-{{ item }}
+    command=define
+    xml={{ lookup('template', 'etc/libvirt/qemu/compute.xml.j2') }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_compute_count }}
+
+- name: Creating extra QCOW2 file for Ceph virtual machines
+  shell:
+    for n in {1..{{ virt_env_ospd_ceph_disk_count }}}; do
+    qemu-img create \
+    -f {{ item.format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-extra-${n}-{{ item.name }}.{{ item.format }} {{ item.size }} ;
+    virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph_name }}-${n} --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-extra-${n}-{{ item.name }}.{{ item.format }} --target {{ item.name }} --persistent || true ; done
+  with_items: "{{ virt_env_ospd_ceph_extra_disk }}"
+  when: virt_env_ospd_ceph_extra_disk is defined and
+        virt_env_ospd_ceph_extra_disk != 0

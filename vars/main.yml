@@ -1,0 +1,15 @@
+---
+# file: roles/virt-env-ospd/vars/main.yml
+virt_env_ospd_dir: /var/lib/libvirt
+virt_env_ospd_format: qcow2
+
+# HYPERVISOR PACKAGES
+virt_env_ospd_packages:
+  - bridge-utils
+  - qemu-img-rhev
+
+# RHOS RELEASE PACKAGE
+virt_env_ospd_undercloud_rhos_pkg: http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
+
+virt_env_ospd_guest_name: rhel-guest-image-7.2-20160302.0.x86_64.qcow2 
+virt_env_ospd_guest_link: http://download.eng.bos.redhat.com/brewroot/packages/rhel-guest-image/7.2/20160302.0/images/{{ virt_env_ospd_guest_name }}

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+{% for item in undercloud_nodes %}
+ironicUuid=$(ironic port-list --detail | awk '$4 ~ /{{ item.mac }}/ { print $10 }')
+ironic node-update $ironicUuid replace properties/capabilities='profile:{{ item.profile }},boot_option:local'
+{% endfor %}

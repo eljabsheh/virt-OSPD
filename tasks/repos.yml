@@ -1,0 +1,14 @@
+---
+# file: roles/virt-env-ospd/tasks/repos-undercloud.yml
+- name: Disabling all repositories
+  command:
+    /usr/bin/subscription-manager repos --disable=*
+  when: virt_env_ospd_disable_repos is defined and
+        virt_env_ospd_disable_repos == true
+
+- name: Enabling RHEL repositories
+  command:
+    /usr/bin/subscription-manager repos --enable "{{ item }}"
+  with_items: "{{ rhn_repos }}"
+  when: rhn_repos is defined and
+        rhn_repos|length > 0

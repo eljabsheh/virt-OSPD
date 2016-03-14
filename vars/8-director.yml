@@ -1,0 +1,9 @@
+---
+# file: roles/virt-env-ospd/vars/8-director.yml
+virt_env_ospd_undercloud_packages:
+  - vim
+  - strace
+  - tcpdump
+  - screen
+  - git
+  - python-tripleoclient

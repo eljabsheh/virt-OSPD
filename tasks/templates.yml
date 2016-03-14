@@ -1,0 +1,7 @@
+---
+# file: roles/virt-env-ospd/tasks/templates.yml
+- name: Copying templates to stack's home directory
+  shell:
+    cp -rfp /usr/share/openstack-tripleo-heat-templates/* ~/{{ virt_env_ospd_undercloud_hostname }}/templates/
+  become: true
+  become_user: stack

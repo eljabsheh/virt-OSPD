@@ -1,0 +1,5 @@
+DEVICE={{ item }}
+TYPE=Bridge
+ONBOOT=yes
+BOOTPROTO=none
+NM_CONTROLLED=no

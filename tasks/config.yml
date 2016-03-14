@@ -1,0 +1,50 @@
+---
+# file: roles/virt-env-ospd/tasks/config-undecloud.yml
+- name: Set undercloud hostname
+  hostname:
+    name={{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
+
+- name: Configuring /etc/hosts file
+  lineinfile:
+    dest=/etc/hosts
+    regexp='^127\.0\.0\.1'
+    line='127.0.0.1  {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }} localhost localhost.localdomain localhost4 localhost4.localdomain4'
+
+- include: subscribtion.yml
+- include: repos.yml
+
+- name: Installing rhos-release package
+  package:
+    name={{ virt_env_ospd_undercloud_rhos_pkg }}
+    state=present
+  when: virt_env_ospd_rhos_release is defined and
+        virt_env_ospd_rhos_release
+
+- name: Set the OSP-director version
+  command:
+    rhos-release -P {{ virt_env_ospd_director_version }}
+  when: virt_env_ospd_rhos_release is defined and
+        virt_env_ospd_rhos_release
+
+- name: Updating system with latest packages
+  yum:
+    name=*
+    state=latest
+    update_cache=yes
+
+- name: Installing undercloud pre-packages
+  package:
+    name={{ item }}
+    state=present
+  with_items: "{{ virt_env_ospd_undercloud_packages }}"
+
+- name: Creating directories in stack's home
+  file:
+    path=/home/stack/{{ item }}
+    state=directory
+    mode=0755
+    owner=stack
+    group=stack
+  with_items:
+    - images
+    - "{{ virt_env_ospd_undercloud_hostname }}/templates"

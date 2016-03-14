@@ -1,0 +1,74 @@
+---
+# file: roles/virt-env-ospd/defaults/main.yml
+virt_env_ospd_hypervisor: true
+virt_env_ospd_rhn_unsubscribe: true
+virt_env_ospd_rhos_release: true
+virt_env_ospd_disable_repos: true
+virt_env_ospd_director_version: 8-director
+
+virt_env_ospd_vm_name: baremetal
+virt_env_ospd_vm_disk_size: 40g
+virt_env_ospd_vm_cpu: 4
+virt_env_ospd_vm_mem: 8192
+virt_env_ospd_vm_mac: 52:54:00:aa:d3:8
+
+virt_env_ospd_undercloud_name: undercloud
+virt_env_ospd_undercloud_hostname: manager.mydomain.lab
+virt_env_ospd_undercloud_disk_size: 40g
+virt_env_ospd_undercloud_cpu: 8
+virt_env_ospd_undercloud_mem: 16384
+
+virt_env_ospd_cloud_init_name: cloud-init.iso
+
+virt_env_ospd_bridges:
+  - director-pxe
+  - director-full
+
+virt_env_ospd_download_images: false
+virt_env_ospd_upload_images: false
+virt_env_ospd_images_link:
+  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/deploy-ramdisk-ironic.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/discovery-ramdisk.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/overcloud-full.tar
+
+virt_env_ospd_neutron_dns: 8.8.8.8
+virt_env_ospd_ironic_introspection: true
+
+# INSTACKENV.JSON
+pm_type: "pxe_ssh"
+pm_addr: "192.168.122.1"
+pm_user: root
+pm_password: "{{ virt_env_ospd_ssh_prv }}"
+cpu: "4"
+memory: "8192"
+disk: "80"
+arch: "x86_64"
+
+virt_env_ospd_ceph_vm: true
+virt_env_ospd_ceph_name: ceph
+virt_env_ospd_ceph_disk_size: 40g
+virt_env_ospd_ceph_cpu: 4
+virt_env_ospd_ceph_mem: 4096
+virt_env_ospd_ceph_mac: 52:54:00:aa:d3:8
+virt_env_ospd_ceph_count: 3
+virt_env_ospd_ceph_disk_count: 3
+virt_env_ospd_ceph_extra_disk:
+  - { name: vdb, size: 10g, format: qcow2 }
+  - { name: vdc, size: 10g, format: qcow2 }
+  - { name: vdd, size: 10g, format: qcow2 }
+
+virt_env_ospd_control_vm: true
+virt_env_ospd_control_name: control
+virt_env_ospd_control_disk_size: 40g
+virt_env_ospd_control_cpu: 4
+virt_env_ospd_control_mem: 8192
+virt_env_ospd_control_mac: 52:54:00:aa:d3:6
+virt_env_ospd_control_count: 3
+
+virt_env_ospd_compute_vm: true
+virt_env_ospd_compute_name: compute
+virt_env_ospd_compute_disk_size: 40g
+virt_env_ospd_compute_cpu: 4
+virt_env_ospd_compute_mem: 8192
+virt_env_ospd_compute_mac: 52:54:00:aa:d3:7
+virt_env_ospd_compute_count: 2
