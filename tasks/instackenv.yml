@@ -7,7 +7,7 @@
     owner=stack
     group=stack
 
-- name: Validating instackenv.json file
+- name: Validating instackenv.json file (OSP-d 8 only)
   shell:
     source ~/stackrc ;
     openstack baremetal instackenv validate
