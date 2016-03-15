@@ -18,7 +18,7 @@
   tags:
     [ virt-env-ospd, virt-env-ospd-hypervisor ]
 
-- include: undercloud.yml
+- include: undercloud-vm.yml
   when: "'hypervisor' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-undercloud ]
