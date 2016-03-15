@@ -1,5 +1,5 @@
 ---
-# file: roles/virt-env-ospd/tasks/undercloud.yml
+# file: roles/virt-env-ospd/tasks/undercloud-vm.yml
 - name: Downloading the RHEL guest image from internal repo
   get_url:
     url={{ virt_env_ospd_guest_link }}

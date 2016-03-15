@@ -1,5 +1,5 @@
 ---
-# file: roles/virt-env-ospd/tasks/subcription-undercloud.yml
+# file: roles/virt-env-ospd/tasks/subcription.yml
 - name: Unsubscribing and unregistering the server to RHN
   shell:
     /usr/bin/subscription-manager unsubscribe --all;
@@ -17,8 +17,3 @@
 - name: Subscribing the server to a pool
   shell:
     /usr/bin/subscription-manager subscribe --pool {{ rhn_pool_id }}
-
-- name: Installing rhos-release package
-  package:
-    name={{ virt_env_ospd_undercloud_rhos_pkg }}
-    state=present
