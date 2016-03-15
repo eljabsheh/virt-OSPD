@@ -1,5 +1,5 @@
 ---
-# file: roles/virt-env-ospd/tasks/config-undecloud.yml
+# file: roles/virt-env-ospd/tasks/config.yml
 - name: Set undercloud hostname
   hostname:
     name={{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
@@ -11,12 +11,18 @@
     line='127.0.0.1  {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }} localhost localhost.localdomain localhost4 localhost4.localdomain4'
 
 - include: subscribtion.yml
-- include: repos.yml
+  when: virt_env_ospd_rhos_release is defined and
+        not virt_env_ospd_rhos_release
 
+- include: repos.yml
+  when: virt_env_ospd_rhos_release is defined and
+        not virt_env_ospd_rhos_release
+
+# We cannont use YUM because where no subcription is perfomed
+# yum complains about missing repo... rpm module doesn't exist
 - name: Installing rhos-release package
-  package:
-    name={{ virt_env_ospd_undercloud_rhos_pkg }}
-    state=present
+  command:
+    rpm -Uh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
   when: virt_env_ospd_rhos_release is defined and
         virt_env_ospd_rhos_release
 
