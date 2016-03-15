@@ -8,7 +8,7 @@
     owner=stack
     group=stack
 
-- name: Run openstack undercloud install (grab a coffee)
+- name: Running openstack undercloud install (grab a coffee)
   command:
     openstack undercloud install
   become: true
@@ -111,6 +111,6 @@
 - name: Updating the DNS for ctlplane network
   shell:
     source ~/stackrc ;
-    neutron subnet-update $(neutron subnet-list -F id --quote none -f value) --dns-nameserver {{ virt_env_ospd_neutron_dns }}
+    neutron subnet-update $(neutron subnet-list -F id --quote none -f csv | grep -v id) --dns-nameserver {{ virt_env_ospd_neutron_dns }}
   become: true
   become_user: stack
