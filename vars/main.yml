@@ -6,7 +6,8 @@ virt_env_ospd_format: qcow2
 # HYPERVISOR PACKAGES
 virt_env_ospd_packages:
   - bridge-utils
-  - qemu-img-rhev
+  - qemu-img
+  - qemu-kvm
 
 # RHEL GUEST IMAGE
 virt_env_ospd_guest_name: rhel-guest-image-7.2-20160302.0.x86_64.qcow2 
