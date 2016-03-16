@@ -73,3 +73,7 @@ virt_env_ospd_compute:
   mem: 4096
   mac: 52:54:00:aa:d3:7
   vm_count: 3
+
+# To get machine types available execute this command:
+# /usr/libexec/qemu-kvm -machine help
+virt_env_ospd_machine_type: pc-i440fx-rhel7.0.0

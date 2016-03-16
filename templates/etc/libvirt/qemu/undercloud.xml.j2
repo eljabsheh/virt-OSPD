@@ -4,7 +4,7 @@
   <currentMemory unit='KiB'>{{ (virt_env_ospd_undercloud.mem * 1024) | int }}</currentMemory>
   <vcpu placement='static'>{{ virt_env_ospd_undercloud.cpu }}</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-rhel7.2.0'>hvm</type>
+    <type arch='x86_64' machine='{{ virt_env_ospd_machine_type }}'>hvm</type>
     <boot dev='hd'/>
   </os>
   <features>
