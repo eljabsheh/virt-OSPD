@@ -52,38 +52,38 @@ Example Playbook
           cloud_init_iso: cloud-init-gtrellu.iso
     
           # CEPH VM
-          virt_env_ospd_ceph:
-            name: ceph
-            disk_size: 40g
-            cpu: 4
-            mem: 4096
-            mac: 52:54:00:aa:e3:8
-            vm_count: 3
-            extra_disk_count: 3
-          
-          # CEPH EXTRA DISKS
-          virt_env_ospd_ceph_extra_disk:
-            - { name: vdb, size: 10g, format: qcow2 }
-            - { name: vdc, size: 10g, format: qcow2 }
-            - { name: vdd, size: 10g, format: qcow2 }
-          
-          # CONTROL VM
-          virt_env_ospd_control:
-            name: control
-            disk_size: 40g
-            cpu: 4
-            mem: 4096
-            mac: 52:54:00:aa:e3:6
-            vm_count: 3
-          
-          # COMPUTE VM
-          virt_env_ospd_compute:
-            name: compute
-            disk_size: 40g
-            cpu: 4
-            mem: 4096
-            mac: 52:54:00:aa:e3:7
-            vm_count: 3
+        virt_env_ospd_ceph:
+          name: ceph
+          disk_size: 40g
+          cpu: 4
+          mem: 4096
+          mac: 52:54:00:aa:e3:8
+          vm_count: 3
+          extra_disk_count: 3
+        
+        # CEPH EXTRA DISKS
+        virt_env_ospd_ceph_extra_disk:
+          - { name: vdb, size: 10g, format: qcow2 }
+          - { name: vdc, size: 10g, format: qcow2 }
+          - { name: vdd, size: 10g, format: qcow2 }
+        
+        # CONTROL VM
+        virt_env_ospd_control:
+          name: control
+          disk_size: 40g
+          cpu: 4
+          mem: 4096
+          mac: 52:54:00:aa:e3:6
+          vm_count: 3
+        
+        # COMPUTE VM
+        virt_env_ospd_compute:
+          name: compute
+          disk_size: 40g
+          cpu: 4
+          mem: 4096
+          mac: 52:54:00:aa:e3:7
+          vm_count: 3
     
     # UNDERCLOUD #
     - hosts: undercloud
