@@ -22,7 +22,7 @@
 # yum complains about missing repo... rpm module doesn't exist
 - name: Installing rhos-release package
   command:
-    rpm -Uh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
+    rpm -Uh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm --force
   when: virt_env_ospd_rhos_release is defined and
         virt_env_ospd_rhos_release
 
