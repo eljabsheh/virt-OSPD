@@ -1,4 +1,4 @@
-virt-env-ospd
+Ansible role virt-env-ospd
 =========
 
 This role allows you to deploy an OSP-director virtual platform.
