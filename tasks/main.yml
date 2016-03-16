@@ -52,3 +52,10 @@
   when: "'undercloud' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-template ]
+
+- include: tools.yml
+  when: "'undercloud' in group_names and
+        virt_env_ospd_rcip_tools is defined and
+        virt_env_ospd_rcip_tools"
+  tags:
+    [ virt-env-ospd, virt-env-ospd-tool ]

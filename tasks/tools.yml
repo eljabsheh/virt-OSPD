@@ -1,0 +1,11 @@
+---
+# file: roles/virt-env-ospd/tasks/tools.yml
+- name: Cloning rcip-tools repository
+  git:
+    repo=https://gitlab.cee.redhat.com/RCIP/rcip-tools.git
+    dest=/home/stack/rcip-tools
+    force=yes
+  environment:
+    GIT_SSL_NO_VERIFY: true
+  become: true
+  become_user: stack
