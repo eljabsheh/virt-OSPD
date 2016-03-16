@@ -1,10 +1,10 @@
 {
-    "ssh-user": "{{ pm_user }}",
+    "ssh-user": "{{ instackenv_pm_user }}",
     "ssh_key": "{{ virt_env_ospd_ssh_prv }}",
     "seed-ip": "",
     "power_manager": "nova.virt.baremetal.virtual_power_driver.VirtualPowerManager",
-    "host-ip": "{{ pm_addr }}",
-    "arch": "{{ arch }}",
+    "host-ip": "{{ instackenv_pm_addr }}",
+    "arch": "{{ instackenv_arch }}",
     "nodes":[
 {% for item in undercloud_nodes %}
 {% if loop.first %}
@@ -13,17 +13,17 @@
 {% if not loop.first %}
 {
 {% endif %}
-            "pm_type":"{{ pm_type }}",
+            "pm_type":"{{ instackenv_pm_type }}",
             "mac":[
                 "{{ item.mac }}"
             ],
-            "cpu":"{{ cpu }}",
-            "memory":"{{ memory }}",
-            "disk":"{{ disk }}",
-            "arch":"{{ arch }}",
-            "pm_user":"{{ pm_user }}",
-            "pm_password":"{{ pm_password }}",
-            "pm_addr":"{{ pm_addr }}"
+            "cpu":"{{ instackenv_cpu }}",
+            "memory":"{{ instackenv_memory }}",
+            "disk":"{{ instackenv_disk }}",
+            "arch":"{{ instackenv_arch }}",
+            "pm_user":"{{ instackenv_pm_user }}",
+            "pm_password":"{{ instackenv_pm_password }}",
+            "pm_addr":"{{ instackenv_pm_addr }}"
         }{% if not loop.last %}
 ,
         {% endif %}

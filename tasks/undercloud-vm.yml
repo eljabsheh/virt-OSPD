@@ -7,21 +7,20 @@
 
 - name: Copying cloud-init ISO to working directory
   copy:
-    src=files/{{ virt_env_ospd_cloud_init_name }}
-    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_cloud_init_name }}
-    owner=qemu
-    group=qemu
+    src=files/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}
 
 - name: Creating QCOW2 baking file for the undercloud
   command:
     qemu-img create \
     -b {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
     -f {{ virt_env_ospd_format }} \
-    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud_name }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud_disk_size }}
-    creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud_name }}.{{ virt_env_ospd_format }}
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
+    creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }}
 
-- virt:
-    name={{ virt_env_ospd_undercloud_name }}
+- name: Checking if VM exists (ignore the error)
+  virt:
+    name={{ virt_env_ospd_undercloud.name }}
     command=status
   register: vm
   ignore_errors: true
@@ -35,7 +34,7 @@
 
 - name: Creating undercloud virtual machine
   virt:
-    name={{ virt_env_ospd_undercloud_name }}
+    name={{ virt_env_ospd_undercloud.name }}
     command=define
     xml={{ lookup('template', 'etc/libvirt/qemu/undercloud.xml.j2') }}
   when: vm.failed is defined and
@@ -43,7 +42,7 @@
 
 - name: Starting undercloud virtual machine
   virt:
-    name={{ virt_env_ospd_undercloud_name }}
+    name={{ virt_env_ospd_undercloud.name }}
     state=running
 
 - name: Getting the DHCP undercloud's address
@@ -60,7 +59,7 @@
   when: undercloud_dhcp_ip.changed
 
 - shell:
-    mac=$(virsh domiflist {{ virt_env_ospd_undercloud_name }} | awk '$3 ~ /virbr0/ { print $NF }');
+    mac=$(virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /virbr0/ { print $NF }');
     virsh net-dhcp-leases default | awk '$3 ~ /'$mac'/ { print $5 }'
   register: undercloud_dhcp_ip
   when: vm.failed is not defined
@@ -71,7 +70,7 @@
 
 - name: Adding undercloud to the inventoy (in memory)
   add_host:
-    hostname={{ virt_env_ospd_undercloud_name }}
+    hostname={{ virt_env_ospd_undercloud.name }}
     ansible_host={{ ip.stdout.split('/')[0] }}
     group=undercloud
 

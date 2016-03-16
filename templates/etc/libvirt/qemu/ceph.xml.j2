@@ -1,8 +1,8 @@
 <domain type='kvm'>
-  <name>{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph_name }}-{{ item }}</name>
-  <memory unit='KiB'>{{ (virt_env_ospd_ceph_mem * 1024) | int }}</memory>
-  <currentMemory unit='KiB'>{{ (virt_env_ospd_ceph_mem * 1024) | int }}</currentMemory>
-  <vcpu placement='static'>{{ virt_env_ospd_ceph_cpu | int }}</vcpu>
+  <name>{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}</name>
+  <memory unit='KiB'>{{ (virt_env_ospd_ceph.mem * 1024) | int }}</memory>
+  <currentMemory unit='KiB'>{{ (virt_env_ospd_ceph.mem * 1024) | int }}</currentMemory>
+  <vcpu placement='static'>{{ virt_env_ospd_ceph.cpu | int }}</vcpu>
   <os>
     <type arch='x86_64' machine='pc-i440fx-rhel7.2.0'>hvm</type>
     <boot dev='hd'/>
@@ -31,7 +31,7 @@
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='unsafe'/>
-      <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph_name }}-os-{{ item }}.{{ virt_env_ospd_format }}'/>
+      <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-os-{{ item }}.{{ virt_env_ospd_format }}'/>
       <target dev='sda' bus='sata'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
@@ -55,7 +55,7 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
     </controller>
     <interface type='bridge'>
-      <mac address='{{ virt_env_ospd_ceph_mac }}{{ item }}'/>
+      <mac address='{{ virt_env_ospd_ceph.mac }}{{ item }}'/>
       <source bridge='{{ virt_env_ospd_bridges[0] }}'/>
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>

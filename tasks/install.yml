@@ -8,7 +8,7 @@
     owner=stack
     group=stack
 
-- name: Running openstack undercloud install (grab a coffee)
+- name: openstack undercloud install (grab a coffee)
   command:
     openstack undercloud install
   become: true
