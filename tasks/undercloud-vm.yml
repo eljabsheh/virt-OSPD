@@ -78,4 +78,3 @@
   wait_for:
     port: 22
     host: "{{ ip.stdout.split('/')[0] }}"
-  delegate_to: 127.0.0.1
