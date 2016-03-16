@@ -70,7 +70,7 @@
 
 - name: Adding undercloud to the inventoy (in memory)
   add_host:
-    hostname={{ virt_env_ospd_undercloud.name }}
+    hostname={{ ip.stdout.split('/')[0] }}
     ansible_host={{ ip.stdout.split('/')[0] }}
     group=undercloud
 
