@@ -6,6 +6,7 @@
     dest=/home/stack/instackenv.json
     owner=stack
     group=stack
+    mode=0640
 
 - name: Validating instackenv.json file (OSP-d 8 only)
   shell:
