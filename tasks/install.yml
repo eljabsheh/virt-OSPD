@@ -22,7 +22,7 @@
         virt_env_ospd_upload_images is defined and
         not virt_env_ospd_upload_images
 
-- name: Downloading OSP-d images from mburns repo (OSP-d 7 only)
+- name: Downloading images from mburns repo (OSP-d 7 only)
   get_url:
     url={{ item }}
     dest=~/images/
@@ -33,7 +33,7 @@
         virt_env_ospd_upload_images is defined and
         not virt_env_ospd_upload_images
 
-- name: Uploading OSP-d images from playbook (OSP-d 7 only)
+- name: Uploading images from playbook (OSP-d 7 only)
   copy:
     src=ospd7/{{ item }}
     dest=~/images/
@@ -47,7 +47,7 @@
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
-- name: Uploading OSP-d images from playbook (OSP-d 8 only)
+- name: Uploading images from playbook (OSP-d 8 only)
   copy:
     src=ospd8/{{ item }}
     dest=~/images/
