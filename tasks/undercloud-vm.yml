@@ -47,7 +47,7 @@
 
 - name: Getting the DHCP undercloud's address
   shell:
-    virsh net-dhcp-leases default | awk '$3 ~ /{{ mac.stdout }}/ { print $5 }'
+    virsh net-dhcp-leases {{ virt_env_ospd_libvirt_net_name }} | awk '$3 ~ /{{ mac.stdout }}/ { print $5 }'
   until: undercloud_dhcp_ip.stdout_lines | length > 0
   retries: 20
   register: undercloud_dhcp_ip
@@ -59,8 +59,8 @@
   when: undercloud_dhcp_ip.changed
 
 - shell:
-    mac=$(virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /virbr0/ { print $NF }');
-    virsh net-dhcp-leases default | awk '$3 ~ /'$mac'/ { print $5 }'
+    mac=$(virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /{{ virt_env_ospd_libvirt_bridge }}/ { print $NF }');
+    virsh net-dhcp-leases {{ virt_env_ospd_libvirt_net_name }} | awk '$3 ~ /'$mac'/ { print $5 }'
   register: undercloud_dhcp_ip
   when: vm.failed is not defined
 
