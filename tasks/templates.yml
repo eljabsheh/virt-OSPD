@@ -5,3 +5,11 @@
     cp -rfp /usr/share/openstack-tripleo-heat-templates/* ~/{{ virt_env_ospd_undercloud_hostname }}/templates/
   become: true
   become_user: stack
+
+- name: Adding deploy.sh script to templates directory
+  template:
+    src=home/stack/deploy.sh.j2
+    dest=/home/stack/{{ virt_env_ospd_undercloud_hostname }}/deploy.sh
+    mode=0755
+    owner=stack
+    group=stack
