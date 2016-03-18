@@ -72,6 +72,7 @@
     virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-${n} \
       --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-extra-${n}-{{ item.name }}.{{ item.format }} \
       --target {{ item.name }} \
+      --targetbus {{ item.bus }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_ceph_extra_disk }}"
   when: virt_env_ospd_ceph.extra_disk_count != 0 | int

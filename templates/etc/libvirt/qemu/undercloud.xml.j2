@@ -32,8 +32,13 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='{{ virt_env_ospd_format }}' cache='unsafe'/>
       <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }}'/>
+{% if virt_env_ospd_disk_os_bus == 'sata' %}
       <target dev='sda' bus='sata'/>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+{% elif virt_env_ospd_disk_os_bus == 'ide' %}
+      <target dev='hda' bus='ide'/>
+{% elif virt_env_ospd_disk_os_bus == 'virtio' %}
+      <target dev='vda' bus='virtio'/>
+{% endif %}
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>

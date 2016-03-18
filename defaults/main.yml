@@ -52,9 +52,9 @@ virt_env_ospd_ceph:
 
 # CEPH EXTRA DISKS
 virt_env_ospd_ceph_extra_disk:
-  - { name: vdb, size: 10g, format: qcow2 }
-  - { name: vdc, size: 10g, format: qcow2 }
-  - { name: vdd, size: 10g, format: qcow2 }
+  - { name: vdb, size: 10g, format: qcow2, bus: virtio }
+  - { name: vdc, size: 10g, format: qcow2, bus: virtio }
+  - { name: vdd, size: 10g, format: qcow2, bus: virtio }
 
 # CONTROL VM
 virt_env_ospd_control:
@@ -83,3 +83,4 @@ virt_env_ospd_swift:
 virt_env_ospd_machine_type: pc-i440fx-rhel7.0.0
 virt_env_ospd_libvirt_bridge: virbr0
 virt_env_ospd_libvirt_net_name: default
+virt_env_ospd_disk_os_bus: virtio
