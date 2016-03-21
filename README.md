@@ -11,8 +11,6 @@ Supported OSP-d versions:
  - **7-director** *(stable or puddle)*
  - **8-director** *(puddle only at this time)*
 
-
-
 Requirements
 ------------
 
@@ -20,7 +18,7 @@ Ansible 2.x and a Red Hat 7.x hypervisor with a RHN subscription and few reposit
 
 Red Hat VPN access is needed on the hypervisor if you choose to install a puddle or with you want to clone the ``rcip-tools`` Gitlab repository.
 
-A cloud-init ISO is mandatory to provision the undercloud virtual machine. If you don't know how to generate a cloud-init, please have a look at the end of the document.
+A ``cloud-init`` ISO is mandatory to provision the ``undercloud`` virtual machine. If you don't know how to generate a ``cloud-init``, please have a look at the end of the document.
 
 Role Variables
 --------------
@@ -301,6 +299,24 @@ EOF
 
 # genisoimage -output /root/ansible/playbooks/virt-env-ospd/files/cloud-init-gtrellu.iso -volid cidata -joliet -rock user-data meta-data
 ```
+
+Register to RHN
+---------
+If you don't want to use ``rho-release``, you will have to register the server to the RHN. As usual to perform this action you will need your Red Hat credentials ans declare them to the playbook and then enable repositories.
+
+**With RHN subscription, you will not be able to deploy puddle versions.**
+
+```
+rhn_username: gtrellu@redhat.com
+rhn_password: xxxxxxxxxx
+rhn_pool_id: 8a85f98144844aff014488d058bf15be
+rhn_repos:
+  - rhel-7-server-rpms
+  - rhel-7-server-optional-rpms
+  - rhel-7-server-extras-rpms
+  - rhel-7-server-openstack-7.0-rpms
+  - rhel-7-server-openstack-7.0-director-rpms
+``` 
 
 License
 -------
