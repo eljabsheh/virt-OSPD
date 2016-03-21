@@ -174,11 +174,11 @@ Example Playbook
       - gtrellu-full
 
     # VM #
-    virt_env_ospd_vm_name: vlab
+    virt_env_ospd_vm_name: gtrellu
 
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud:
-      name: vlab_ospd8
+      name: gtrellu_ospd8
       disk_size: 40g
       cpu: 8
       mem: 16384
