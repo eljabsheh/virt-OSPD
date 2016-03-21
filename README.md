@@ -39,7 +39,6 @@ virt_env_ospd_bridges:
   - director-full
 
 # IMAGES
-virt_env_ospd_download_images: false
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:
   - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/deploy-ramdisk-ironic.tar
@@ -227,7 +226,6 @@ Example Playbook
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud_hostname: ospd8.gtrellu.lab
     virt_env_ospd_director_version: 8-director
-    virt_env_ospd_download_images: true
     virt_env_ospd_upload_images: false
 
     # BAREMETAL NODES #
