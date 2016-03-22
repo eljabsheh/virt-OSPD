@@ -4,7 +4,7 @@ time openstack overcloud deploy \
 -t 120 \
 --control-scale {{ virt_env_ospd_control.vm_count }} \
 --compute-scale {{ virt_env_ospd_compute.vm_count }} \
---ceph-storage-scale {{ virt_env_ospd_ceph.vm_count }} \
+--ceph-storage-scale {{ virt_env_ospd_ceph.vm_count | default(0) }} \
 --block-storage-scale {{ virt_env_ospd_block.vm_count | default(0) }} \
 --swift-storage-scale {{ virt_env_ospd_swift.vm_count | default(0) }} \
 --control-flavor control \
@@ -14,6 +14,8 @@ time openstack overcloud deploy \
 --swift-storage-flavor storage \
 --neutron-network-type vxlan \
 --neutron-tunnel-types vxlan \
+--neutron-vni-ranges 1:10000 \
+--neutron-bridge-mappings datacentre:br-bond \
 --ntp-server 0.north-america.pool.ntp.org \
 --validation-errors-fatal \
 --validation-warnings-fatal \
