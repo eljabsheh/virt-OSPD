@@ -16,9 +16,21 @@ Requirements
 
 Ansible 2.x and a Red Hat 7.x hypervisor with a RHN subscription and few repositories.
 
-Red Hat VPN access is needed on the hypervisor if you choose to install a puddle or with you want to clone the ``rcip-tools`` Gitlab repository.
+```
+# yum install ansible -y
+# ansible --version
+```
+Or:
+```
+# yum install python-pip
+# pip install --upgrade pip
+# pip install ansible
+# ansible --version
+```
 
-A ``cloud-init`` ISO is mandatory to provision the ``undercloud`` virtual machine. If you don't know how to generate a ``cloud-init``, please have a look at the end of the document.
+Red Hat VPN access is needed on the hypervisor if you choose to install a puddle or if you want to clone the ``rcip-tools`` Gitlab repository.
+
+A ``cloud-init`` ISO is mandatory to provision the ``undercloud`` virtual machine. If you don't know how to generate a ``cloud-init``, please have a look at the end of this document.
 
 Role Variables
 --------------
@@ -95,7 +107,6 @@ virt_env_ospd_swift_extra_disk:
   - { name: vdb, size: 10g, format: qcow2, bus: virtio }
   - { name: vdc, size: 10g, format: qcow2, bus: virtio }
   - { name: vdd, size: 10g, format: qcow2, bus: virtio }
-
 
 # CONTROL VM
 virt_env_ospd_control:
@@ -318,6 +329,7 @@ write_files:
   - path: /etc/sysconfig/network-scripts/ifcfg-eth0
     content: |
       DEVICE=eth0
+      TYPE=Ethernet
       BOOTPROTO=dhcp
       ONBOOT=yes
   - path: /etc/sysconfig/network-scripts/ifcfg-eth2
