@@ -3,7 +3,7 @@
 - name: Deleting useless flavors created by default
   shell:
     source ~/stackrc ;
-    openstack flavor delete {{ item }} || true
+    nova flavor-delete {{ item }} || true
   with_items:
     - swift-storage
     - block-storage
