@@ -39,6 +39,7 @@ virt_env_ospd_bridges:
   - director-full
 
 # IMAGES
+virt_env_ospd_download_images: false
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:
   - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/deploy-ramdisk-ironic.tar
@@ -79,12 +80,29 @@ virt_env_ospd_ceph_extra_disk:
   - { name: vdc, size: 10g, format: qcow2, bus: virtio }
   - { name: vdd, size: 10g, format: qcow2, bus: virtio }
 
+# SWIFT VM
+virt_env_ospd_swift:
+  name: swift
+  disk_size: 40g
+  cpu: 4
+  mem: 4096
+  mac: 52:54:00:aa:d3:5
+  vm_count: 3
+  extra_disk_count: 3
+
+# SWIFT EXTRA DISKS
+virt_env_ospd_swift_extra_disk:
+  - { name: vdb, size: 10g, format: qcow2, bus: virtio }
+  - { name: vdc, size: 10g, format: qcow2, bus: virtio }
+  - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+
+
 # CONTROL VM
 virt_env_ospd_control:
   name: control
   disk_size: 40g
   cpu: 4
-  mem: 4096
+  mem: 8192
   mac: 52:54:00:aa:d3:6
   vm_count: 3
 
@@ -117,6 +135,7 @@ virt_env_ospd_undercloud_packages:
   - screen
   - git
   - python-rdomanager-oscplugin
+  - libguestfs-tools
 
 # file: roles/virt-env-ospd/vars/8-director.yml
 virt_env_ospd_undercloud_packages:
@@ -126,6 +145,7 @@ virt_env_ospd_undercloud_packages:
   - screen
   - git
   - python-tripleoclient
+  - libguestfs-tools
 
 # file: roles/virt-env-ospd/vars/main.yml
 virt_env_ospd_dir: /var/lib/libvirt
@@ -197,12 +217,28 @@ Example Playbook
       - { name: vdc, size: 10g, format: qcow2, bus: virtio }
       - { name: vdd, size: 10g, format: qcow2, bus: virtio }
     
+    # SWIFT VM
+    virt_env_ospd_swift:
+      name: swift
+      disk_size: 40g
+      cpu: 4
+      mem: 4096
+      mac: 52:54:00:aa:e3:5
+      vm_count: 3
+      extra_disk_count: 3
+    
+    # SWIFT EXTRA DISKS
+    virt_env_ospd_swift_extra_disk:
+      - { name: vdb, size: 10g, format: qcow2, bus: virtio }
+      - { name: vdc, size: 10g, format: qcow2, bus: virtio }
+      - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+
     # CONTROL VM
     virt_env_ospd_control:
       name: control
       disk_size: 40g
       cpu: 4
-      mem: 4096
+      mem: 8192
       mac: 52:54:00:aa:e3:6
       vm_count: 3
     
@@ -226,10 +262,11 @@ Example Playbook
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud_hostname: ospd8.gtrellu.lab
     virt_env_ospd_director_version: 8-director
+    virt_env_ospd_download_images: true
     virt_env_ospd_upload_images: false
 
     # BAREMETAL NODES #
-    virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\n....\n-----END RSA PRIVATE KEY-----
+    virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nPrivate key from the hypervisor\n-----END RSA PRIVATE KEY-----
     undercloud_nodes:
       - { mac: "52:54:00:aa:e3:61", profile: "control" }
       - { mac: "52:54:00:aa:e3:62", profile: "control" }
@@ -240,11 +277,15 @@ Example Playbook
       - { mac: "52:54:00:aa:e3:71", profile: "compute" }
       - { mac: "52:54:00:aa:e3:72", profile: "compute" }
       - { mac: "52:54:00:aa:e3:73", profile: "compute" }
+      - { mac: "52:54:00:aa:e3:51", profile: "swift" }
+      - { mac: "52:54:00:aa:e3:52", profile: "swift" }
+      - { mac: "52:54:00:aa:e3:53", profile: "swift" }
 
     virt_env_ospd_flavors:
-      - { name: "control", ram: "8192", disk: "20", cpu: "4" }
-      - { name: "compute", ram: "8192", disk: "20", cpu: "4" }
-      - { name: "storage", ram: "8192", disk: "20", cpu: "4" }
+      - { name: "control", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "compute", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "storage", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "swift", ram: "4096", disk: "20", cpu: "2" }
 ```
 
 How to generate a cloud-init
@@ -282,6 +323,13 @@ write_files:
   - path: /etc/sysconfig/network-scripts/ifcfg-eth2
     content: |
       DEVICE=eth2
+      TYPE=Ethernet
+      BOOTPROTO=none
+      ONBOOT=yes
+  - path: /etc/sysconfig/network-scripts/ifcfg-eth2.10
+    content: |
+      DEVICE=eth2.10
+      TYPE=vlan
       BOOTPROTO=none
       ONBOOT=yes
       IPADDR=10.0.0.1
@@ -300,7 +348,7 @@ EOF
 
 Register to RHN
 ---------
-If you don't want to use ``rho-release``, you will have to register the server to the RHN. As usual to perform this action you will need your Red Hat credentials ans declare them to the playbook and then enable repositories.
+If you don't want to use ``rho-release``, you will have to register the server to the RHN. As usual to perform this action you will need your Red Hat credentials and declare them to the playbook and then enable repositories.
 
 **With RHN subscription, you will not be able to deploy puddle versions.**
 
@@ -325,4 +373,3 @@ Author Information
 ------------------
 
 2016 - Gaëtan Trellu
-
