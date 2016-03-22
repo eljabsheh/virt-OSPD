@@ -11,6 +11,17 @@
     end={{ virt_env_ospd_ceph.vm_count }}
   when: virt_env_ospd_ceph is defined
 
+- name: Creating QCOW2 file for Swift
+  command:
+    qemu-img create \
+    -f {{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_swift.disk_size }}
+    creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-os-{{ item }}.{{ virt_env_ospd_format }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_swift.vm_count }}
+  when: virt_env_ospd_swift is defined
+
 - name: Creating QCOW2 file for controller
   command:
     qemu-img create \
@@ -42,6 +53,16 @@
     start=1
     end={{ virt_env_ospd_ceph.vm_count }}
   when: virt_env_ospd_ceph is defined
+
+- name: Creating Swift virtual machines
+  virt:
+    name={{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
+    command=define
+    xml={{ lookup('template', 'etc/libvirt/qemu/swift.xml.j2') }}
+  with_sequence:
+    start=1
+    end={{ virt_env_ospd_swift.vm_count }}
+  when: virt_env_ospd_swift is defined
 
 - name: Creating controller virtual machines
   virt:
@@ -76,3 +97,17 @@
       --persistent || true; done
   with_items: "{{ virt_env_ospd_ceph_extra_disk }}"
   when: virt_env_ospd_ceph.extra_disk_count != 0 | int
+
+- name: Creating extra QCOW2 file(s) for Swift
+  shell:
+    for n in {1..{{ virt_env_ospd_swift.extra_disk_count }}}; do
+    qemu-img create \
+    -f {{ item.format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-extra-${n}-{{ item.name }}.{{ item.format }} {{ item.size }} ;
+    virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-${n} \
+      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-extra-${n}-{{ item.name }}.{{ item.format }} \
+      --target {{ item.name }} \
+      --targetbus {{ item.bus }} \
+      --persistent || true; done
+  with_items: "{{ virt_env_ospd_swift_extra_disk }}"
+  when: virt_env_ospd_swift.extra_disk_count != 0 | int

@@ -55,6 +55,22 @@ virt_env_ospd_ceph_extra_disk:
   - { name: vdc, size: 10g, format: qcow2, bus: virtio }
   - { name: vdd, size: 10g, format: qcow2, bus: virtio }
 
+# SWIFT VM
+virt_env_ospd_swift:
+  name: swift
+  disk_size: 40g
+  cpu: 4
+  mem: 4096
+  mac: 52:54:00:aa:d3:5
+  vm_count: 3
+  extra_disk_count: 3
+
+# SWIFT EXTRA DISKS
+virt_env_ospd_swift_extra_disk:
+  - { name: vdb, size: 10g, format: qcow2, bus: virtio }
+  - { name: vdc, size: 10g, format: qcow2, bus: virtio }
+  - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+
 # CONTROL VM
 virt_env_ospd_control:
   name: control
@@ -74,7 +90,6 @@ virt_env_ospd_compute:
   vm_count: 3
 
 virt_env_ospd_block:
-virt_env_ospd_swift:
 
 # LIBVIRT
 # To get machine types available execute this command:
