@@ -7,3 +7,4 @@ virt_env_ospd_undercloud_packages:
   - screen
   - git
   - python-tripleoclient
+  - libguestfs-tools
