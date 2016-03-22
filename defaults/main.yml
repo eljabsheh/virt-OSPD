@@ -76,7 +76,7 @@ virt_env_ospd_control:
   name: control
   disk_size: 40g
   cpu: 4
-  mem: 4096
+  mem: 8192
   mac: 52:54:00:aa:d3:6
   vm_count: 3
 
