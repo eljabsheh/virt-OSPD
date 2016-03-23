@@ -32,6 +32,26 @@ Red Hat VPN access is needed on the hypervisor if you choose to install a puddle
 
 A ``cloud-init`` ISO is mandatory to provision the ``undercloud`` virtual machine. If you don't know how to generate a ``cloud-init``, please have a look at the end of this document.
 
+Images
+-----------
+
+If you choose to upload the images *(pretty good idea)*, you will have to download them before and define the variable ``virt_env_ospd_upload_images`` to ``true`` in your playbook.
+
+Depending if you are using ``rhos-release`` your images will be downloaded from different sources.
+
+```
+# mkdir -p ~/toto/{roles,inventories/virt-env-ospd,playbooks/virt-env-ospd/files/{ospd7,ospd8}}
+# cd ~/ansible/playbooks/virt-env-ospd/files/ospd8
+# wget http://rhos-release.virt.bos.redhat.com/mburns/latest-8.0-images/ironic-python-agent.tar
+# wget http://rhos-release.virt.bos.redhat.com/mburns/latest-8.0-images/overcloud-full.tar
+# cd ../ospd7
+# wget http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/deploy-ramdisk-ironic.tar
+# wget http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/discovery-ramdisk.tar
+# wget http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/overcloud-full.tar
+```
+
+When ``virt_env_ospd_upload_images`` is not define, the images will be automatically downloaded on the ``undercloud`` during the playbook execution.
+
 Role Variables
 --------------
 
