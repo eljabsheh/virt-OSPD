@@ -9,3 +9,4 @@ virt_env_ospd_undercloud_packages:
   - python-tripleoclient
   - libguestfs-tools
   - sysstat
+  - sos

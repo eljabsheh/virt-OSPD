@@ -9,3 +9,4 @@ virt_env_ospd_undercloud_packages:
   - python-rdomanager-oscplugin
   - libguestfs-tools
   - sysstat
+  - sos
