@@ -25,3 +25,13 @@
 - name: Reloading module (if no KVM are running)
   shell:
     if ! grep -q Y /sys/module/kvm_intel/parameters/nested; then rmmod kvm_intel; modprobe kvm_intel; fi
+
+- name: Starting tuned service
+  service:
+    name=tuned
+    state=started
+    enabled=yes
+
+- name: Activating virtual-host tuned profile
+  shell:
+    if [ $(tuned-adm active | awk '{ print $NF }') != 'virtual-host' ]; then tuned-adm profile virtual-host; fi
