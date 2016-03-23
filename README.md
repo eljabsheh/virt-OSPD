@@ -167,6 +167,8 @@ virt_env_ospd_packages:
   - bridge-utils
   - qemu-img
   - qemu-kvm
+  - genisoimage
+  - tuned
 
 # RHEL GUEST IMAGE
 virt_env_ospd_guest_name: rhel-guest-image-7.2-20160302.0.x86_64.qcow2 
@@ -179,6 +181,8 @@ virt_env_ospd_net_driver_pxe: e1000
 # Some issues during overcloud deployment due to virtio
 # network driver (resource create failed)
 virt_env_ospd_net_driver: e1000
+
+virt_env_ospd_cache_mode: none
 ```
 
 Dependencies
