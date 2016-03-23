@@ -17,3 +17,7 @@ virt_env_ospd_guest_link: http://download.eng.bos.redhat.com/brewroot/packages/r
 # Because virtio driver doesn't work well with Ironic
 # depending of the qemu-kvm version (rhev or not)
 virt_env_ospd_net_driver_pxe: e1000
+
+# Some issues during overcloud deployment due to virtio
+# network driver (resource create failed)
+virt_env_ospd_net_driver: e1000
