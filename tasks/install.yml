@@ -8,6 +8,15 @@
     owner=stack
     group=stack
 
+- name: Configuring undercloud.conf
+  ini_file:
+    dest=/home/stack/undercloud.conf
+    section="{{ item.section }}"
+    option="{{ item.option }}"
+    value="{{ item.value }}"
+  with_items: "{{ virt_env_ospd_undercloud_conf }}"
+  when: virt_env_ospd_undercloud_conf is defined
+
 - name: openstack undercloud install (grab a coffee)
   command:
     openstack undercloud install

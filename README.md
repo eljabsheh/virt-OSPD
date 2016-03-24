@@ -308,6 +308,10 @@ Example Playbook
     virt_env_ospd_director_version: 8-director
     virt_env_ospd_upload_images: false
 
+    virt_env_ospd_undercloud_conf:
+      - { section: 'DEFAULT', option: 'enable_tempest', value: 'true' }
+      - { section: 'DEFAULT', option: 'inspection_extras', value: 'true' }
+
     # BAREMETAL NODES #
     virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nPrivate key from the hypervisor\n-----END RSA PRIVATE KEY-----
     undercloud_nodes:
