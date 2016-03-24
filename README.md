@@ -169,6 +169,7 @@ virt_env_ospd_undercloud_packages:
   - libguestfs-tools
   - sysstat
   - sos
+  - bash-completion
 
 # file: roles/virt-env-ospd/vars/8-director.yml
 virt_env_ospd_undercloud_packages:
@@ -181,6 +182,7 @@ virt_env_ospd_undercloud_packages:
   - libguestfs-tools
   - sysstat
   - sos
+  - bash-completion
 
 # file: roles/virt-env-ospd/vars/main.yml
 virt_env_ospd_dir: /var/lib/libvirt
@@ -304,7 +306,6 @@ Example Playbook
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud_hostname: ospd8.gtrellu.lab
     virt_env_ospd_director_version: 8-director
-    virt_env_ospd_download_images: true
     virt_env_ospd_upload_images: false
 
     # BAREMETAL NODES #
@@ -336,7 +337,7 @@ How to generate a cloud-init
 The ``cloud-init-gtrellu.iso`` will be generated in ``/root/ansible/playbooks/virt-env-ospd/files/`` directory.
 
 ```
-# mkdir ~/cloud-init
+# mkdir ~/cloud-init ; cd ~/cloud-init
 # cat << EOF > meta-data
 instance-id: 2016031801
 local-hostname: ospd8.gtrellu.lab
