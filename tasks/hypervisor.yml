@@ -94,7 +94,7 @@
       --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-extra-${n}-{{ item.name }}.{{ item.format }} \
       --target {{ item.name }} \
       --targetbus {{ item.bus }} \
-      --cache none \
+      --cache {{ virt_env_ospd_cache_mode }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_ceph_extra_disk }}"
   when: virt_env_ospd_ceph.extra_disk_count != 0 | int
@@ -109,7 +109,7 @@
       --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-extra-${n}-{{ item.name }}.{{ item.format }} \
       --target {{ item.name }} \
       --targetbus {{ item.bus }} \
-      --cache none \
+      --cache {{ virt_env_ospd_cache_mode }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_swift_extra_disk }}"
   when: virt_env_ospd_swift.extra_disk_count != 0 | int
