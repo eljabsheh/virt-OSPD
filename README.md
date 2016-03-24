@@ -40,7 +40,7 @@ If you choose to upload the images *(pretty good idea)*, you will have to downlo
 Depending if you are using ``rhos-release`` your images will be downloaded from different sources.
 
 ```
-# mkdir -p ~/toto/{roles,inventories/virt-env-ospd,playbooks/virt-env-ospd/files/{ospd7,ospd8}}
+# mkdir -p ~/ansible/{roles,inventories/virt-env-ospd,playbooks/virt-env-ospd/files/{ospd7,ospd8}}
 # cd ~/ansible/playbooks/virt-env-ospd/files/ospd8
 # wget http://rhos-release.virt.bos.redhat.com/mburns/latest-8.0-images/ironic-python-agent.tar
 # wget http://rhos-release.virt.bos.redhat.com/mburns/latest-8.0-images/overcloud-full.tar
@@ -167,6 +167,8 @@ virt_env_ospd_undercloud_packages:
   - git
   - python-rdomanager-oscplugin
   - libguestfs-tools
+  - sysstat
+  - sos
 
 # file: roles/virt-env-ospd/vars/8-director.yml
 virt_env_ospd_undercloud_packages:
@@ -177,6 +179,8 @@ virt_env_ospd_undercloud_packages:
   - git
   - python-tripleoclient
   - libguestfs-tools
+  - sysstat
+  - sos
 
 # file: roles/virt-env-ospd/vars/main.yml
 virt_env_ospd_dir: /var/lib/libvirt
