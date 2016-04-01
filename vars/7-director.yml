@@ -10,3 +10,4 @@ virt_env_ospd_undercloud_packages:
   - libguestfs-tools
   - sysstat
   - sos
+  - bash-completion
