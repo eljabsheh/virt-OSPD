@@ -46,7 +46,6 @@ roles_path = ./roles
 EOF
 # touch playbooks/virt-env-ospd/env1.yml
 # cd ~/ansible
-# ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
 ```
 
 ``env1.yml`` will be your playbook, so just copy the example in the [Example Playbook](#ExamplePlaybook) section below in the page and change some values to make it fit with your needs.
@@ -56,6 +55,12 @@ If you are running the playbook on the hypervisor it self, make sure that you ha
 Red Hat VPN access is needed on the hypervisor if you choose to install a puddle or if you want to clone the ``rcip-tools`` Gitlab repository.
 
 A ``cloud-init`` ISO is mandatory to provision the ``undercloud`` virtual machine. If you don't know how to generate a ``cloud-init``, please have a look at the end of this document.
+
+When everything seems good for you, just run the playbook !
+```
+# ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
+```
+The playbook takes around 20 minutes to be completed.
 
 Images
 -----------
@@ -97,12 +102,11 @@ virt_env_ospd_bridges:
   - director-full
 
 # IMAGES
-virt_env_ospd_download_images: false
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:
-  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/deploy-ramdisk-ironic.tar
-  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/discovery-ramdisk.tar
-  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/overcloud-full.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/deploy-ramdisk-ironic.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/discovery-ramdisk.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/overcloud-full.tar
 
 # INSTACKENV.JSON
 instackenv_pm_type: pxe_ssh
@@ -376,12 +380,12 @@ users:
   - name: stack
     gecos: RedHat Openstack User
     ssh-authorized-keys:
-      - ssh-pub-key
+      - ADD---YOUR---SSH---PUBLIC---KEY
     sudo:
       - ALL=(root) NOPASSWD:ALL
   - name: root
     ssh-authorized-keys:
-      - ssh-pub-key
+      - ADD---YOUR---SSH---PUBLIC---KEY
 
 write_files:
   - path: /etc/sysconfig/network-scripts/ifcfg-eth0
