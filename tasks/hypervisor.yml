@@ -95,6 +95,7 @@
       --target {{ item.name }} \
       --targetbus {{ item.bus }} \
       --cache {{ virt_env_ospd_cache_mode }} \
+      --subdriver {{ item.format }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_ceph_extra_disk }}"
   when: virt_env_ospd_ceph.extra_disk_count != 0 | int
@@ -110,6 +111,7 @@
       --target {{ item.name }} \
       --targetbus {{ item.bus }} \
       --cache {{ virt_env_ospd_cache_mode }} \
+      --subdriver {{ item.format }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_swift_extra_disk }}"
   when: virt_env_ospd_swift.extra_disk_count != 0 | int
