@@ -283,9 +283,9 @@ Example Playbook
     
     # CEPH EXTRA DISKS
     virt_env_ospd_ceph_extra_disk:
-      - { name: vdb, size: 10g, format: qcow2, bus: virtio }
-      - { name: vdc, size: 10g, format: qcow2, bus: virtio }
-      - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+      - { name: sdb, size: 10g, format: qcow2, bus: sata }
+      - { name: sdc, size: 10g, format: qcow2, bus: sata }
+      - { name: sdd, size: 10g, format: qcow2, bus: sata }
     
     # SWIFT VM
     virt_env_ospd_swift:
@@ -299,9 +299,9 @@ Example Playbook
     
     # SWIFT EXTRA DISKS
     virt_env_ospd_swift_extra_disk:
-      - { name: vdb, size: 10g, format: qcow2, bus: virtio }
-      - { name: vdc, size: 10g, format: qcow2, bus: virtio }
-      - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+      - { name: sdb, size: 10g, format: qcow2, bus: sata }
+      - { name: sdc, size: 10g, format: qcow2, bus: sata }
+      - { name: sdd, size: 10g, format: qcow2, bus: sata }
 
     # CONTROL VM
     virt_env_ospd_control:
