@@ -32,6 +32,9 @@
     state=started
     enabled=yes
 
+- pause:
+    seconds: 5
+
 - name: Activating virtual-host tuned profile
   shell:
     if [ $(tuned-adm active | awk '{ print $NF }') != 'virtual-host' ]; then tuned-adm profile virtual-host; fi
