@@ -14,19 +14,44 @@ Supported OSP-d versions:
 Requirements
 ------------
 
-Ansible 2.x and a Red Hat 7.x hypervisor with a RHN subscription and few repositories.
+Ansible 2.x and a Red Hat 7.x hypervisor with a RHN subscription and few repositories for ``libvirt-daemon-kvm``, ``qemu-kvm``, etc...
 
 ```
+#### If your distribution has an Ansible 2.x RPM ####
 # yum install ansible -y
 # ansible --version
 ```
 Or:
 ```
+# yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
 # yum install python-pip
 # pip install --upgrade pip
 # pip install ansible
 # ansible --version
 ```
+
+Then prepare the working directory.
+```
+# mkdir -p ~/ansible/{roles,inventories/virt-env-ospd,playbooks/virt-env-ospd/files/{ospd7,ospd8}} ; cd ~/ansible
+# cat << EOF > inventories/virt-env-ospd/hosts
+[hypervisor]
+my-great-hypervisor-hostname ansible_host=10.10.10.10
+
+[undercloud]
+EOF
+# cat << EOF > ansible.cfg
+[defaults]
+host_key_checking = False
+roles_path = ./roles
+EOF
+# touch playbooks/virt-env-ospd/env1.yml
+# cd ~/ansible
+# ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
+```
+
+``env1.yml`` will be your playbook, so just copy the example in the [Example Playbook](#ExamplePlaybook) section below in the page and change some values to make it fit with your needs.
+
+If you are running the playbook on the hypervisor it self, make sure that you have added the SSH ``root`` public key to the ``/root/.ssh/authorized_keys`` file. 
 
 Red Hat VPN access is needed on the hypervisor if you choose to install a puddle or if you want to clone the ``rcip-tools`` Gitlab repository.
 
@@ -37,10 +62,9 @@ Images
 
 If you choose to upload the images *(pretty good idea)*, you will have to download them before and define the variable ``virt_env_ospd_upload_images`` to ``true`` in your playbook.
 
-Depending if you are using ``rhos-release`` your images will be downloaded from different sources.
+Depending if you are using ``rhos-release`` your images will be downloaded from different sources *(below, images are used with ``rhos-release``)*.
 
 ```
-# mkdir -p ~/ansible/{roles,inventories/virt-env-ospd,playbooks/virt-env-ospd/files/{ospd7,ospd8}}
 # cd ~/ansible/playbooks/virt-env-ospd/files/ospd8
 # wget http://rhos-release.virt.bos.redhat.com/mburns/latest-8.0-images/ironic-python-agent.tar
 # wget http://rhos-release.virt.bos.redhat.com/mburns/latest-8.0-images/overcloud-full.tar
@@ -50,7 +74,9 @@ Depending if you are using ``rhos-release`` your images will be downloaded from 
 # wget http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/overcloud-full.tar
 ```
 
-When ``virt_env_ospd_upload_images`` is not define, the images will be automatically downloaded on the ``undercloud`` during the playbook execution.
+When ``virt_env_ospd_upload_images`` is not define, the ``overcloud`` images will be automatically downloaded on the ``undercloud`` during the playbook execution.
+
+The ``rhel-guest-image-7.xxxxxxx.qcow2`` image will be downloaded if the file doesn't exists in ``/var/lib/libvirt/images``.
 
 Role Variables
 --------------
@@ -108,9 +134,9 @@ virt_env_ospd_ceph:
 
 # CEPH EXTRA DISKS
 virt_env_ospd_ceph_extra_disk:
-  - { name: vdb, size: 10g, format: qcow2, bus: virtio }
-  - { name: vdc, size: 10g, format: qcow2, bus: virtio }
-  - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+  - { name: sdb, size: 10g, format: qcow2, bus: sata }
+  - { name: sdc, size: 10g, format: qcow2, bus: sata }
+  - { name: sdd, size: 10g, format: qcow2, bus: sata }
 
 # SWIFT VM
 virt_env_ospd_swift:
@@ -124,9 +150,9 @@ virt_env_ospd_swift:
 
 # SWIFT EXTRA DISKS
 virt_env_ospd_swift_extra_disk:
-  - { name: vdb, size: 10g, format: qcow2, bus: virtio }
-  - { name: vdc, size: 10g, format: qcow2, bus: virtio }
-  - { name: vdd, size: 10g, format: qcow2, bus: virtio }
+  - { name: sdb, size: 10g, format: qcow2, bus: sata }
+  - { name: sdc, size: 10g, format: qcow2, bus: sata }
+  - { name: sdd, size: 10g, format: qcow2, bus: sata }
 
 # CONTROL VM
 virt_env_ospd_control:
@@ -195,6 +221,7 @@ virt_env_ospd_packages:
   - qemu-kvm
   - genisoimage
   - tuned
+  - libvirt-daemon-kvm
 
 # RHEL GUEST IMAGE
 virt_env_ospd_guest_name: rhel-guest-image-7.2-20160302.0.x86_64.qcow2 
@@ -210,11 +237,6 @@ virt_env_ospd_net_driver: e1000
 
 virt_env_ospd_cache_mode: none
 ```
-
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
 Example Playbook
 ----------------
@@ -257,9 +279,9 @@ Example Playbook
     
     # CEPH EXTRA DISKS
     virt_env_ospd_ceph_extra_disk:
-      - { name: sdb, size: 10g, format: qcow2, bus: sata }
-      - { name: sdc, size: 10g, format: qcow2, bus: sata }
-      - { name: sdd, size: 10g, format: qcow2, bus: sata }
+      - { name: vdb, size: 10g, format: qcow2, bus: virtio }
+      - { name: vdc, size: 10g, format: qcow2, bus: virtio }
+      - { name: vdd, size: 10g, format: qcow2, bus: virtio }
     
     # SWIFT VM
     virt_env_ospd_swift:
@@ -273,9 +295,9 @@ Example Playbook
     
     # SWIFT EXTRA DISKS
     virt_env_ospd_swift_extra_disk:
-      - { name: sdb, size: 10g, format: qcow2, bus: sata }
-      - { name: sdc, size: 10g, format: qcow2, bus: sata }
-      - { name: sdd, size: 10g, format: qcow2, bus: sata }
+      - { name: vdb, size: 10g, format: qcow2, bus: virtio }
+      - { name: vdc, size: 10g, format: qcow2, bus: virtio }
+      - { name: vdd, size: 10g, format: qcow2, bus: virtio }
 
     # CONTROL VM
     virt_env_ospd_control:
