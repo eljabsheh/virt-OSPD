@@ -48,7 +48,7 @@ EOF
 # cd ~/ansible
 ```
 
-``env1.yml`` will be your playbook, so just copy the example in the [Example Playbook](#ExamplePlaybook) section below in the page and change some values to make it fit with your needs.
+``env1.yml`` will be your playbook, so just copy the example in the [Example Playbook](#example-playbook) section below in the page and change some values to make it fit with your needs.
 
 If you are running the playbook on the hypervisor it self, make sure that you have added the SSH ``root`` public key to the ``/root/.ssh/authorized_keys`` file. 
 
@@ -56,7 +56,7 @@ Red Hat VPN access is needed on the hypervisor if you choose to install a puddle
 
 A ``cloud-init`` ISO is mandatory to provision the ``undercloud`` virtual machine. If you don't know how to generate a ``cloud-init``, please have a look at the end of this document.
 
-When everything seems good for you, just run the playbook !
+When everything seems good to you, just run the playbook !
 ```
 # ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
 ```
