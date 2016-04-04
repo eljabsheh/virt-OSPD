@@ -183,7 +183,7 @@ virt_env_ospd_compute:
 virt_env_ospd_machine_type: pc-i440fx-rhel7.0.0
 virt_env_ospd_libvirt_bridge: virbr0
 virt_env_ospd_libvirt_net_name: default
-virt_env_ospd_disk_os_bus: virtio
+virt_env_ospd_disk_os_bus: sata
 ```
 
 Variables in ``vars`` directory.
