@@ -46,6 +46,7 @@ roles_path = ./roles
 EOF
 # touch playbooks/virt-env-ospd/env1.yml
 # cd ~/ansible
+# export GIT_SSL_NO_VERIFY=false ; git clone https://gitlab.cee.redhat.com/gtrellu/virt-env-ospd.git/ roles/virt-env-ospd
 ```
 
 ``env1.yml`` will be your playbook, so just copy the example in the [Example Playbook](#example-playbook) section below in the page and change some values to make it fit with your needs.
