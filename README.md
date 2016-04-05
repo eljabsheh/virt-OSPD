@@ -442,10 +442,13 @@ rhn_password: xxxxxxxxxx
 rhn_pool_id: 8a85f98144844aff014488d058bf15be
 rhn_repos:
   - rhel-7-server-rpms
-  - rhel-7-server-optional-rpms
   - rhel-7-server-extras-rpms
+  - rhel-7-server-rh-common-rpms
+  - rhel-ha-for-rhel-7-server-rpms
   - rhel-7-server-openstack-7.0-rpms
   - rhel-7-server-openstack-7.0-director-rpms
+  - rhel-7-server-rhceph-1.3-osd-rpms
+  - rhel-7-server-rhceph-1.3-mon-rpms
 ``` 
 
 Known issues
