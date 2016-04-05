@@ -133,6 +133,7 @@ virt_env_ospd_ceph:
   disk_size: 40g
   cpu: 4
   mem: 4096
+  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:8
   vm_count: 3
   extra_disk_count: 3
@@ -149,6 +150,7 @@ virt_env_ospd_swift:
   disk_size: 40g
   cpu: 4
   mem: 4096
+  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:5
   vm_count: 3
   extra_disk_count: 3
@@ -165,6 +167,7 @@ virt_env_ospd_control:
   disk_size: 40g
   cpu: 4
   mem: 8192
+  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:6
   vm_count: 3
 
@@ -174,6 +177,7 @@ virt_env_ospd_compute:
   disk_size: 40g
   cpu: 4
   mem: 4096
+  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:7
   vm_count: 3
 
@@ -278,6 +282,7 @@ Example Playbook
       disk_size: 40g
       cpu: 4
       mem: 4096
+      # The last digit is not missing !!
       mac: 52:54:00:aa:e3:8
       vm_count: 3
       extra_disk_count: 3
@@ -294,6 +299,7 @@ Example Playbook
       disk_size: 40g
       cpu: 4
       mem: 4096
+      # The last digit is not missing !!
       mac: 52:54:00:aa:e3:5
       vm_count: 3
       extra_disk_count: 3
@@ -310,6 +316,7 @@ Example Playbook
       disk_size: 40g
       cpu: 4
       mem: 8192
+      # The last digit is not missing !!
       mac: 52:54:00:aa:e3:6
       vm_count: 3
     
@@ -319,6 +326,7 @@ Example Playbook
       disk_size: 40g
       cpu: 4
       mem: 4096
+      # The last digit is not missing !!
       mac: 52:54:00:aa:e3:7
       vm_count: 3
 
@@ -428,6 +436,7 @@ If you don't want to use ``rho-release``, you will have to register the server t
 **With RHN subscription, you will not be able to deploy puddle versions.**
 
 ```
+virt_env_ospd_rhos_release: false
 rhn_username: gtrellu@redhat.com
 rhn_password: xxxxxxxxxx
 rhn_pool_id: 8a85f98144844aff014488d058bf15be
@@ -438,6 +447,21 @@ rhn_repos:
   - rhel-7-server-openstack-7.0-rpms
   - rhel-7-server-openstack-7.0-director-rpms
 ``` 
+
+Known issues
+-------
+
+OS disk with VirtIO driver and extra disks with SATA driver can trouble the introspection process and make the overcloud deployment failed due to "**No valid host found**" error. Extra disks attached to virtual machine are used as system disk because ``/dev/sdX`` is before ``/dev/vdX``. To fix, make sure that your are not using the same bus driver for all disks.
+
+VirtIO driver for PXE interface make the introspection fail depending of the driver version (``qemu-kvm`` vs ``qemu-kvm-rhev``). To fix, make sure your PXE interface use ``e1000`` driver instead of VirtIO.
+
+VirtIO driver for other interfaces make the deployment fail during the Neutron ports creation *(TenantPort)*.  Should be retest with the last 8 puddle version.
+
+Limitation
+-------
+
+Only 9 virtual machines max per profile can be created *(9 controller, 9 Ceph, 9 compute, 9 Swift)*.
+It means that your virtual platform will never be larger than 36 nodes *(virtual machines)*.
 
 License
 -------
