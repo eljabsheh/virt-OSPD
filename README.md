@@ -449,6 +449,7 @@ rhn_repos:
   - rhel-7-server-openstack-7.0-director-rpms
   - rhel-7-server-rhceph-1.3-osd-rpms
   - rhel-7-server-rhceph-1.3-mon-rpms
+  - rhel-7-server-rhceph-1.3-tools-rpms
 ``` 
 
 Known issues
@@ -456,7 +457,14 @@ Known issues
 
 OS disk with VirtIO driver and extra disks with SATA driver can trouble the introspection process and make the overcloud deployment failed due to "**No valid host found**" error. Extra disks attached to virtual machine are used as system disk because ``/dev/sdX`` is before ``/dev/vdX``. To fix, make sure that your are not using the same bus driver for all disks.
 
-VirtIO driver for PXE interface make the introspection fail depending of the driver version (``qemu-kvm`` vs ``qemu-kvm-rhev``). To fix, make sure your PXE interface use ``e1000`` driver instead of VirtIO.
+VirtIO driver for PXE interface make the introspection fail depending of the driver version (``qemu-kvm`` vs ``qemu-kvm-rhev``). To "fix", make sure your PXE interface use ``e1000`` driver instead of VirtIO.
+
+```
+WARNING ironic_inspector.plugins.standard [-] The following interfaces were invalid or not eligible in introspection data for node with BMC  and were excluded: {u'ens5': {u'ip': None, u'mac': u'52:54:00:75:36:fd'}, u'ens6': {u'ip': None, u'mac': u'52:54:00:b9:0a:a3'}, u'ens3': {u'ip': u'192.0.2.100', u'mac': u'52:54:00:aa:e3:61'}}
+ERROR: ironic_inspector.utils [-] Could not find a node for attributes {'bmc_address': u'', 'mac': [u'52:54:00:3b:f1:b2']}
+```
+
+In some case, we had the opposite situation, ``e1000`` returned this issue and VirtIO solved the problem....
 
 VirtIO driver for other interfaces make the deployment fail during the Neutron ports creation *(TenantPort)*.  Should be retest with the last 8 puddle version.
 
