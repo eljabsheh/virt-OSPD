@@ -468,6 +468,12 @@ In some case, we had the opposite situation, ``e1000`` returned this issue and V
 
 VirtIO driver for other interfaces make the deployment fail during the Neutron ports creation *(TenantPort)*.  Should be retest with the last 8 puddle version.
 
+The first time than you run the playbook, this one can fail due to a ``tuned`` error related to DBUS. Just rerun the playbook.
+```
+DBus call to Tuned daemon failed
+Trying to (re)start tuned...
+```
+
 Limitation
 -------
 

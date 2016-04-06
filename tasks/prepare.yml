@@ -29,11 +29,8 @@
 - name: Starting tuned service
   service:
     name=tuned
-    state=started
+    state=restarted
     enabled=yes
-
-- pause:
-    seconds: 5
 
 - name: Activating virtual-host tuned profile
   shell:
