@@ -13,3 +13,10 @@
     mode=0755
     owner=stack
     group=stack
+
+- name:  Adding custom.yaml to the templates directory
+  copy:
+    src=home/stack/custom.yaml
+    dest=/home/stack/{{ virt_env_ospd_undercloud_hostname }}/custom.yaml
+    owner=stack
+    group=stack
