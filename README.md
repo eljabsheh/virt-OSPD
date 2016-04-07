@@ -109,9 +109,9 @@ virt_env_ospd_bridges:
 # IMAGES
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:
-  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/deploy-ramdisk-ironic.tar
-  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/discovery-ramdisk.tar
-  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/overcloud-full.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/deploy-ramdisk-ironic.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/discovery-ramdisk.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/overcloud-full.tar
 
 # INSTACKENV.JSON
 instackenv_pm_type: pxe_ssh
@@ -193,10 +193,12 @@ virt_env_ospd_disk_os_bus: sata
 
 # Because virtio driver doesn't work well with Ironic
 # depending of the qemu-kvm version (rhev or not)
+# Change it if needed :)
 virt_env_ospd_net_driver_pxe: e1000
 
 # Some issues during overcloud deployment due to virtio
 # network driver (resource create failed)
+# Change it if needed :)
 virt_env_ospd_net_driver: e1000
 
 virt_env_ospd_cache_mode: none
