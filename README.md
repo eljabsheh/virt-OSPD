@@ -61,6 +61,9 @@ When everything seems good to you, just run the playbook !
 ```
 # ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
 ```
+
+Make sure that you have enough space in ``/var/lib/libvirt/images`` for the virtual machines creation.
+
 The playbook takes around 20 minutes to be completed.
 
 Images
@@ -89,6 +92,7 @@ Role Variables
 
 ```
 virt_env_ospd_hypervisor: true
+virt_env_ospd_tuned: true
 virt_env_ospd_rcip_tools: true
 virt_env_ospd_rhn_unsubscribe: true
 virt_env_ospd_rhos_release: true
@@ -105,9 +109,9 @@ virt_env_ospd_bridges:
 # IMAGES
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:
-  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/deploy-ramdisk-ironic.tar
-  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/discovery-ramdisk.tar
-  - http://rhos-release.virt.bos.redhat.com/mburns/latest-7.0-images/overcloud-full.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/deploy-ramdisk-ironic.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/discovery-ramdisk.tar
+  - http://rhos-release.virt.bos.redhat.com/mburns/7.3-GA/images/overcloud-full.tar
 
 # INSTACKENV.JSON
 instackenv_pm_type: pxe_ssh
@@ -133,7 +137,6 @@ virt_env_ospd_ceph:
   disk_size: 40g
   cpu: 4
   mem: 4096
-  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:8
   vm_count: 3
   extra_disk_count: 3
@@ -150,7 +153,6 @@ virt_env_ospd_swift:
   disk_size: 40g
   cpu: 4
   mem: 4096
-  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:5
   vm_count: 3
   extra_disk_count: 3
@@ -167,7 +169,6 @@ virt_env_ospd_control:
   disk_size: 40g
   cpu: 4
   mem: 8192
-  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:6
   vm_count: 3
 
@@ -177,9 +178,10 @@ virt_env_ospd_compute:
   disk_size: 40g
   cpu: 4
   mem: 4096
-  # The last digit is not missing !!
   mac: 52:54:00:aa:d3:7
   vm_count: 3
+
+virt_env_ospd_block:
 
 # LIBVIRT
 # To get machine types available execute this command:
@@ -188,6 +190,16 @@ virt_env_ospd_machine_type: pc-i440fx-rhel7.0.0
 virt_env_ospd_libvirt_bridge: virbr0
 virt_env_ospd_libvirt_net_name: default
 virt_env_ospd_disk_os_bus: sata
+
+# Because virtio driver doesn't work well with Ironic
+# depending of the qemu-kvm version (rhev or not)
+virt_env_ospd_net_driver_pxe: e1000
+
+# Some issues during overcloud deployment due to virtio
+# network driver (resource create failed)
+virt_env_ospd_net_driver: e1000
+
+virt_env_ospd_cache_mode: none
 ```
 
 Variables in ``vars`` directory.
@@ -235,16 +247,6 @@ virt_env_ospd_packages:
 # RHEL GUEST IMAGE
 virt_env_ospd_guest_name: rhel-guest-image-7.2-20160302.0.x86_64.qcow2 
 virt_env_ospd_guest_link: http://download.eng.bos.redhat.com/brewroot/packages/rhel-guest-image/7.2/20160302.0/images/{{ virt_env_ospd_guest_name }}
-
-# Because virtio driver doesn't work well with Ironic
-# depending of the qemu-kvm version (rhev or not)
-virt_env_ospd_net_driver_pxe: e1000
-
-# Some issues during overcloud deployment due to virtio
-# network driver (resource create failed)
-virt_env_ospd_net_driver: e1000
-
-virt_env_ospd_cache_mode: none
 ```
 
 Example Playbook
@@ -464,21 +466,36 @@ WARNING ironic_inspector.plugins.standard [-] The following interfaces were inva
 ERROR: ironic_inspector.utils [-] Could not find a node for attributes {'bmc_address': u'', 'mac': [u'52:54:00:3b:f1:b2']}
 ```
 
-In some case, we had the opposite situation, ``e1000`` returned this issue and VirtIO solved the problem....
+In some case, we had the opposite situation, ``e1000`` returned this issue and VirtIO solved the problem.... Just tweak the ``virt_env_ospd_net_driver_pxe`` via the playbook if needed.
 
 VirtIO driver for other interfaces make the deployment fail during the Neutron ports creation *(TenantPort)*.  Should be retest with the last 8 puddle version.
 
-The first time than you run the playbook, this one can fail due to a ``tuned`` error related to DBUS. Just rerun the playbook.
+The first time than you run the playbook, this one can fail due to a ``tuned`` error related to DBUS.
 ```
 DBus call to Tuned daemon failed
 Trying to (re)start tuned...
 ```
+Just rerun the playbook.
 
 Limitation
 -------
 
 Only 9 virtual machines max per profile can be created *(9 controller, 9 Ceph, 9 compute, 9 Swift)*.
+
 It means that your virtual platform will never be larger than 36 nodes *(virtual machines)*.
+
+Removing and restart
+--------
+
+If you want to re-run the playbook to deploy a new virtual environment, follow the next actions:
+```
+# for i in $(virsh list --all | awk '$2 ~ /gtrellu3/ { print $2 }'); do virsh destroy $i; done
+# for i in $(virsh list --all | awk '$2 ~ /gtrellu3/ { print $2 }'); do virsh undefine $i; done
+# rm -f /var/lib/libvirt/images/gtrellu3*
+# cd ~/ansible
+# ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
+```
+It's very important to delete the QCOW2 files related to the virtual machines !
 
 License
 -------
