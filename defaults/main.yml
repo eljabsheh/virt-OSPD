@@ -99,3 +99,13 @@ virt_env_ospd_machine_type: pc-i440fx-rhel7.0.0
 virt_env_ospd_libvirt_bridge: virbr0
 virt_env_ospd_libvirt_net_name: default
 virt_env_ospd_disk_os_bus: sata
+
+# Because virtio driver doesn't work well with Ironic
+# depending of the qemu-kvm version (rhev or not)
+virt_env_ospd_net_driver_pxe: e1000
+
+# Some issues during overcloud deployment due to virtio
+# network driver (resource create failed)
+virt_env_ospd_net_driver: e1000
+
+virt_env_ospd_cache_mode: none
