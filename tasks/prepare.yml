@@ -35,3 +35,5 @@
 - name: Activating virtual-host tuned profile
   shell:
     if [ $(tuned-adm active | awk '{ print $NF }') != 'virtual-host' ]; then tuned-adm profile virtual-host; fi
+  when: virt_env_ospd_tuned is defined and
+        virt_env_ospd_tuned
