@@ -428,6 +428,7 @@ write_files:
 runcmd:
   - /usr/bin/systemctl restart network
   - /usr/sbin/iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
+  - /usr/sbin/service iptables save
 EOF
 
 # genisoimage -output /root/ansible/playbooks/virt-env-ospd/files/cloud-init-gtrellu.iso -volid cidata -joliet -rock user-data meta-data
