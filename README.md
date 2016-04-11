@@ -139,7 +139,6 @@ virt_env_ospd_ceph:
   mem: 4096
   mac: 52:54:00:aa:d3:8
   vm_count: 3
-  extra_disk_count: 3
 
 # CEPH EXTRA DISKS
 virt_env_ospd_ceph_extra_disk:
@@ -155,7 +154,6 @@ virt_env_ospd_swift:
   mem: 4096
   mac: 52:54:00:aa:d3:5
   vm_count: 3
-  extra_disk_count: 3
 
 # SWIFT EXTRA DISKS
 virt_env_ospd_swift_extra_disk:
@@ -289,7 +287,6 @@ Example Playbook
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:8
       vm_count: 3
-      extra_disk_count: 3
     
     # CEPH EXTRA DISKS
     virt_env_ospd_ceph_extra_disk:
@@ -306,7 +303,6 @@ Example Playbook
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:5
       vm_count: 3
-      extra_disk_count: 3
     
     # SWIFT EXTRA DISKS
     virt_env_ospd_swift_extra_disk:
