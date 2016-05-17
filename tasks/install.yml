@@ -25,8 +25,11 @@
 
 - name: Installing OSP-d images via Yum (OSP-d 8 only)
   package:
-    name=rhosp-director-images
+    name="{{ item }}"
     state=latest
+  with_items:
+    - rhosp-director-images
+    - rhosp-director-images-ipa
   when: virt_env_ospd_director_version == '8-director' and
         virt_env_ospd_upload_images is defined and
         not virt_env_ospd_upload_images
