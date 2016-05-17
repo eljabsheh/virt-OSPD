@@ -7,8 +7,7 @@
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_ceph.disk_size }}
     creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-os-{{ item }}.{{ virt_env_ospd_format }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_ceph.vm_count }}
+    count={{ virt_env_ospd_ceph.vm_count | int }}
   when: virt_env_ospd_ceph is defined
 
 - name: Creating QCOW2 file for Swift
@@ -18,8 +17,7 @@
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_swift.disk_size }}
     creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-os-{{ item }}.{{ virt_env_ospd_format }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_swift.vm_count }}
+    count={{ virt_env_ospd_swift.vm_count | int }}
   when: virt_env_ospd_swift is defined
 
 - name: Creating QCOW2 file for controller
@@ -29,8 +27,7 @@
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_control.disk_size }}
     creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-os-{{ item }}.{{ virt_env_ospd_format }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_control.vm_count }}
+    count={{ virt_env_ospd_control.vm_count | int }}
   when: virt_env_ospd_control is defined
 
 - name: Creating QCOW2 file for compute
@@ -40,8 +37,7 @@
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-os-{{ item }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_compute.disk_size }}
     creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-os-{{ item }}.{{ virt_env_ospd_format }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_compute.vm_count }}
+    count={{ virt_env_ospd_compute.vm_count | int }}
   when: virt_env_ospd_compute is defined
 
 - name: Creating Ceph virtual machines
@@ -50,8 +46,7 @@
     command=define
     xml={{ lookup('template', 'etc/libvirt/qemu/ceph.xml.j2') }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_ceph.vm_count }}
+    count={{ virt_env_ospd_ceph.vm_count | int }}
   when: virt_env_ospd_ceph is defined
 
 - name: Creating Swift virtual machines
@@ -60,8 +55,7 @@
     command=define
     xml={{ lookup('template', 'etc/libvirt/qemu/swift.xml.j2') }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_swift.vm_count }}
+    count={{ virt_env_ospd_swift.vm_count | int }}
   when: virt_env_ospd_swift is defined
 
 - name: Creating controller virtual machines
@@ -70,8 +64,7 @@
     command=define
     xml={{ lookup('template', 'etc/libvirt/qemu/control.xml.j2') }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_control.vm_count }}
+    count={{ virt_env_ospd_control.vm_count | int }}
   when: virt_env_ospd_control is defined
 
 - name: Creating compute virtual machines
@@ -80,8 +73,7 @@
     command=define
     xml={{ lookup('template', 'etc/libvirt/qemu/compute.xml.j2') }}
   with_sequence:
-    start=1
-    end={{ virt_env_ospd_compute.vm_count }}
+    count={{ virt_env_ospd_compute.vm_count | int }}
   when: virt_env_ospd_compute is defined
 
 - name: Creating extra QCOW2 file(s) for Ceph
@@ -98,7 +90,8 @@
       --subdriver {{ item.format }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_ceph_extra_disk }}"
-  when: virt_env_ospd_ceph.extra_disk_count != 0 | int
+  when: virt_env_ospd_ceph.extra_disk_count != 0 | int and
+        virt_env_ospd_ceph.vm_count > 0 | int
 
 - name: Creating extra QCOW2 file(s) for Swift
   shell:
@@ -114,4 +107,5 @@
       --subdriver {{ item.format }} \
       --persistent || true; done
   with_items: "{{ virt_env_ospd_swift_extra_disk }}"
-  when: virt_env_ospd_swift.extra_disk_count != 0 | int
+  when: virt_env_ospd_swift.extra_disk_count != 0 | int and
+        virt_env_ospd_swift.vm_count > 0 | int
