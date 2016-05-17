@@ -13,7 +13,8 @@
 #
 time openstack overcloud deploy \
 --templates templates \
--t 120 \
+--stack {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_director_version }} \
+--timeout 120 \
 --control-scale {{ virt_env_ospd_control.vm_count }} \
 --compute-scale {{ virt_env_ospd_compute.vm_count }} \
 --ceph-storage-scale {{ virt_env_ospd_ceph.vm_count | default(0) }} \
