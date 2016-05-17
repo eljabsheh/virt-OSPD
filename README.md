@@ -9,7 +9,7 @@ This role allows you to deploy an OSP-director virtual platform. Two methods are
 Supported OSP-d versions:
 
  - **7-director** *(stable or puddle)*
- - **8-director** *(puddle only at this time)*
+ - **8-director** *(stable or puddle)*
 
 Requirements
 ------------
@@ -24,7 +24,7 @@ Ansible 2.x and a Red Hat 7.x hypervisor with a RHN subscription and few reposit
 Or:
 ```
 # yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
-# yum install python-pip
+# yum install python-pip libffi-devel openssl-devel gcc -y
 # pip install --upgrade pip
 # pip install ansible
 # ansible --version
@@ -352,7 +352,12 @@ Example Playbook
       - { section: 'DEFAULT', option: 'inspection_extras', value: 'true' }
 
     # BAREMETAL NODES #
+    # You can use this command to get the SSH key on one line:
+    # sed ':a;N;$!ba;s/\n/\\n/g' ~/.ssh/id_rsa
     virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nPrivate key from the hypervisor\n-----END RSA PRIVATE KEY-----
+
+    # The line number should be equal to the number
+    # of virtual machines
     undercloud_nodes:
       - { mac: "52:54:00:aa:e3:61", profile: "control" }
       - { mac: "52:54:00:aa:e3:62", profile: "control" }
@@ -455,7 +460,17 @@ rhn_repos:
   - rhel-7-server-rhceph-1.3-osd-rpms
   - rhel-7-server-rhceph-1.3-mon-rpms
   - rhel-7-server-rhceph-1.3-tools-rpms
-``` 
+```
+
+If you plan to use OSP-d 8 via the CDN, you will have to replace these repositories:
+
+* ``rhel-7-server-openstack-7.0-rpms``
+* ``rhel-7-server-openstack-7.0-director-rpms``
+
+By these ones:
+
+* ``rhel-7-server-openstack-8-rpms``
+* ``rhel-7-server-openstack-8-director-rpms``
 
 Known issues
 -------
@@ -492,9 +507,9 @@ Removing and restart
 
 If you want to re-run the playbook to deploy a new virtual environment, follow the next actions:
 ```
-# for i in $(virsh list --all | awk '$2 ~ /gtrellu3/ { print $2 }'); do virsh destroy $i; done
-# for i in $(virsh list --all | awk '$2 ~ /gtrellu3/ { print $2 }'); do virsh undefine $i; done
-# rm -f /var/lib/libvirt/images/gtrellu3*
+# for i in $(virsh list --all | awk '$2 ~ /gtrellu/ { print $2 }'); do virsh destroy $i; done
+# for i in $(virsh list --all | awk '$2 ~ /gtrellu/ { print $2 }'); do virsh undefine $i; done
+# rm -f /var/lib/libvirt/images/gtrellu*
 # cd ~/ansible
 # ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/env1.yml
 ```
