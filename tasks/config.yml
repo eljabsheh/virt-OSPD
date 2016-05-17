@@ -32,6 +32,7 @@
   when: virt_env_ospd_rhos_release is defined and
         virt_env_ospd_rhos_release
 
+# The package module doesn't support yet the global update
 - name: Updating system with latest packages
   yum:
     name=*
