@@ -5,6 +5,7 @@ virt_env_ospd_undercloud_packages:
   - strace
   - tcpdump
   - screen
+  - tmux
   - git
   - python-tripleoclient
   - libguestfs-tools

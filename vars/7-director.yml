@@ -5,6 +5,7 @@ virt_env_ospd_undercloud_packages:
   - strace
   - tcpdump
   - screen
+  - tmux
   - git
   - python-rdomanager-oscplugin
   - libguestfs-tools
