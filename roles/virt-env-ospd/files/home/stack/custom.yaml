@@ -1,0 +1,14 @@
+parameter_defaults:
+  ControllerHostnameFormat: 'ctrl-%index%'
+  ComputeHostnameFormat: 'cmpt-%index%'
+  CephStorageHostnameFormat: 'ceph-%index%'
+  ObjectStorageHostnameFormat: 'swift-%index%'
+
+  BondInterfaceOvsOptions: "bond_mod=active-backup lacp=active other-config:lacp-fallback-ab=true"
+  NeutronExternalNetworkBridge: "''"
+  ControlPlaneSubnetCidr: '24'
+  ControlPlaneDefaultRoute: '10.20.0.1'
+  EC2MetadataIp: '10.20.0.1'
+  DnsServers: ['8.8.8.8','8.8.4.4']
+
+  ControllerEnableSwiftStorage: false

@@ -1,0 +1,100 @@
+---
+# file: roles/virt-env-ospd/tasks/undercloud-vm.yml
+- name: Downloading the RHEL guest image
+  get_url:
+    url={{ virt_env_ospd_guest_link }}
+    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
+  when: virt_env_ospd_guest_download is defined and
+        virt_env_ospd_guest_download == 'true'
+
+- name: set some more facts
+  set_fact:
+    ssh_priv_key: '/root/.ssh/id_rsa'
+    ssh_pub_key: '/root/.ssh/id_rsa.pub'
+    ssh_auth_list: '/root/.ssh/authorized_keys'
+    ssh_build_dir: '/root/.tempkey'
+
+- name: Inject our ssh-key into the undercloud image
+  shell: |
+    virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
+    	--upload {{ ssh_priv_key }}:{{ ssh_priv_key }} \
+    	--upload {{ ssh_pub_key }}:{{ ssh_pub_key }}
+    mkdir -p {{ ssh_build_dir }}
+    virt-copy-out -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
+    	{{ ssh_auth_list }} {{ ssh_build_dir }}
+    cat {{ ssh_build_dir }}/autorized_keys {{ ssh_auth_list }} |sort -u > {{ ssh_build_dir }}/fullkey
+    virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
+        --upload {{ ssh_build_dir }}/fullkey:{{ ssh_auth_list }}
+
+- name: Copying cloud-init ISO to working directory
+  copy:
+    src=files/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+
+- name: Creating QCOW2 baking file for the undercloud
+  command:
+    qemu-img create \
+    -b {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
+    -f {{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
+    creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }}
+
+- name: Loop checking if VM exists (ignore the error)
+  virt:
+    name={{ virt_env_ospd_undercloud.name }}
+    command=status
+  register: vm
+  ignore_errors: true
+
+- name: Generating random MAC address
+  shell:
+    od -An -N6 -tx1 /dev/urandom | sed -e 's/^  *//' -e 's/  */:/g' -e 's/:$//' -e 's/^\(.\)[13579bdf]/\10/'
+  register: mac
+  when: vm.failed is defined and
+        vm.failed
+
+- name: Creating undercloud virtual machine
+  virt:
+    name={{ virt_env_ospd_undercloud.name }}
+    command=define
+    xml={{ lookup('template', 'etc/libvirt/qemu/undercloud.xml.j2') }}
+  when: vm.failed is defined and
+        vm.failed
+
+- name: Starting undercloud virtual machine
+  virt:
+    name={{ virt_env_ospd_undercloud.name }}
+    state=running
+
+- name: Getting the undercloud's MAC address
+  shell:
+    virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /{{ virt_env_ospd_libvirt_bridge }}/ { print $NF }'
+  register: mac
+
+- name: Getting the undercloud's DHCP address
+  shell:
+    virsh net-dhcp-leases {{ virt_env_ospd_libvirt_net_name }} | awk '$3 ~ /{{ mac.stdout }}/ { print $5 }'
+  until: undercloud_dhcp_ip.stdout_lines | length > 0
+  retries: 60
+  register: undercloud_dhcp_ip
+
+- set_fact:
+    ip={{ undercloud_dhcp_ip }}
+  when: undercloud_dhcp_ip.changed
+
+- shell:
+    mac=$(virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /{{ virt_env_ospd_libvirt_bridge }}/ { print $NF }');
+    virsh net-dhcp-leases {{ virt_env_ospd_libvirt_net_name }} | awk '$3 ~ /'$mac'/ { print $5 }'
+  register: undercloud_dhcp_ip
+  when: vm.failed is not defined
+
+- name: Adding undercloud to the inventory (in memory)
+  add_host:
+    ansible_host={{ ip.stdout.split('/')[0] }}
+    hostname={{ ip.stdout.split('/')[0] }}
+    group=undercloud
+
+- name: Waiting for undercloud booting
+  wait_for:
+    port: 22
+    host: "{{ ip.stdout.split('/')[0] }}"

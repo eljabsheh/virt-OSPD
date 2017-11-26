@@ -1,0 +1,46 @@
+#cloud-config
+users:
+  - default
+  - name: stack
+    plain_text_passwd: 'redhatnfv'
+    gecos: RedHat Openstack User
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9pNx2u5B+Nk5hu5iVaF6WPw4MXMfTHC+KZ/fx69g3aor1eCwd3ODcs8cu1Y+tQdt7cR9oqZrAwxpqLujQF+rawJ0NuYGvfOkmJEQh3qz8gl1OoPKTtD3amIwlaeNq9JRtD/EIkrLgclRx2dUnxxkY1g2f2kJNgUMwgQF+WV1s3En4avwZDtITA5MqYI7Mms6T+GtgwcF3ChMyTapDXUBQfut1uLtH8ngpnO1XlmC1SVc04vlkP5wAaGVts4R2o8jnEc63/w5zdBqrJ6KiBcH2bzAp0tCWYuGeWxt+Xe8ozpbw3THmxL06sxILS11a+1r6dGnbrJwiqhCqD7es5Nxl
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBMH0K+k5tsN3zHZKNqYV3IANDViC+qXmwBAHRf3yLoh7vW/uaq6DePkKAEj10gH/ZkXfDMtJIPNiWRsOV7fG5ymahKNHDydO7kWyM7xoH3KbCR6Me7nzvagYXhUCOsnWVbc6X4UnaOs2HTpyUeD8tkP6UelhTUGgYFkZ3CdhydMd4PaUTiCryM/LuWs+puqtwkSt2fOS9lVypWT+t62oy6xN0mdrLwhiqqgKeFEXPm9hqMdNQIp4r4Gxdqbj7bBJF+sgl2aRh6P6qNXxhWTNt76vziHG8LkAVFCzWCL021/p1+fSvvOdTLoncbeb5sfE1VqDQW+lB9c491NlLgnQ3PcQJrAtM12i/NAxt9/JVIXi4jf6a4Y4al3JEsdebiLODtcID8wqxzZzqZIhxSreqhlPc1UWobcTgztZCAaJiWU01YVNXGbnnwETOX2ap1s2eZBokAdlZu+Y6T2IUQR4MbultBfGNIS5zfhZighqBpxo19rgOzo63UA5MLft2l1QxAql5pcu8GAHQIbJMs+2b8qlK+B9yg83/vHuGY0fLgA3mu6kCI19LNeJqpQTLITJGt3DIjCIdwvu9b8Hptgc1tL3AiH1R7mdOvV0tzch4Yg90+vuk4O19SshU/3nlIFyUa7Bi/9hAsYpG5SWxCgpB6zagn+XIGeB2UExxsMRbgw==
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDYvHbgbvLG0hiWsfYVvLovseeSUFPEfDsTV+DgfzIFcXowxULyULzpMjSCitI47BIZBDn5aRQOJTSyMWTBaYGhG1oCYF4SYdyTdedOEFtS62v1f+aKb79ma3PYTeJbRJ5nN3UN0LZfRE6wH0SokqIeK8fkrtdyRhn+yL4SOJ93l6aUMtg9OgbUUVQ8EPmra87DFwaT878GKtYQc4QTYulkP6/6YsI2oT4Uorg05LWvEc/YB6oKhx4P9z3wWwWtNGvZvhSnJUo9rpXJOhyQw0Uk4UjDReEYiwu9o3rzEnChLUwm+cLl3RE7zTGx4vXLsJk163lxseideDLMz30y3Qmd root@eno-eh15-b1
+    sudo:
+      - ALL=(root) NOPASSWD:ALL
+  - name: root
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDYvHbgbvLG0hiWsfYVvLovseeSUFPEfDsTV+DgfzIFcXowxULyULzpMjSCitI47BIZBDn5aRQOJTSyMWTBaYGhG1oCYF4SYdyTdedOEFtS62v1f+aKb79ma3PYTeJbRJ5nN3UN0LZfRE6wH0SokqIeK8fkrtdyRhn+yL4SOJ93l6aUMtg9OgbUUVQ8EPmra87DFwaT878GKtYQc4QTYulkP6/6YsI2oT4Uorg05LWvEc/YB6oKhx4P9z3wWwWtNGvZvhSnJUo9rpXJOhyQw0Uk4UjDReEYiwu9o3rzEnChLUwm+cLl3RE7zTGx4vXLsJk163lxseideDLMz30y3Qmd root@eno-eh15-b1
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9pNx2u5B+Nk5hu5iVaF6WPw4MXMfTHC+KZ/fx69g3aor1eCwd3ODcs8cu1Y+tQdt7cR9oqZrAwxpqLujQF+rawJ0NuYGvfOkmJEQh3qz8gl1OoPKTtD3amIwlaeNq9JRtD/EIkrLgclRx2dUnxxkY1g2f2kJNgUMwgQF+WV1s3En4avwZDtITA5MqYI7Mms6T+GtgwcF3ChMyTapDXUBQfut1uLtH8ngpnO1XlmC1SVc04vlkP5wAaGVts4R2o8jnEc63/w5zdBqrJ6KiBcH2bzAp0tCWYuGeWxt+Xe8ozpbw3THmxL06sxILS11a+1r6dGnbrJwiqhCqD7es5Nxl
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDBMH0K+k5tsN3zHZKNqYV3IANDViC+qXmwBAHRf3yLoh7vW/uaq6DePkKAEj10gH/ZkXfDMtJIPNiWRsOV7fG5ymahKNHDydO7kWyM7xoH3KbCR6Me7nzvagYXhUCOsnWVbc6X4UnaOs2HTpyUeD8tkP6UelhTUGgYFkZ3CdhydMd4PaUTiCryM/LuWs+puqtwkSt2fOS9lVypWT+t62oy6xN0mdrLwhiqqgKeFEXPm9hqMdNQIp4r4Gxdqbj7bBJF+sgl2aRh6P6qNXxhWTNt76vziHG8LkAVFCzWCL021/p1+fSvvOdTLoncbeb5sfE1VqDQW+lB9c491NlLgnQ3PcQJrAtM12i/NAxt9/JVIXi4jf6a4Y4al3JEsdebiLODtcID8wqxzZzqZIhxSreqhlPc1UWobcTgztZCAaJiWU01YVNXGbnnwETOX2ap1s2eZBokAdlZu+Y6T2IUQR4MbultBfGNIS5zfhZighqBpxo19rgOzo63UA5MLft2l1QxAql5pcu8GAHQIbJMs+2b8qlK+B9yg83/vHuGY0fLgA3mu6kCI19LNeJqpQTLITJGt3DIjCIdwvu9b8Hptgc1tL3AiH1R7mdOvV0tzch4Yg90+vuk4O19SshU/3nlIFyUa7Bi/9hAsYpG5SWxCgpB6zagn+XIGeB2UExxsMRbgw==
+write_files:
+  - path: /etc/sysconfig/network-scripts/ifcfg-eth0
+    content: |
+      DEVICE=eth0
+      TYPE=Ethernet
+      BOOTPROTO=dhcp
+      ONBOOT=yes
+  - path: /etc/sysconfig/network-scripts/ifcfg-eth2
+    content: |
+      DEVICE=eth2
+      TYPE=Ethernet
+      BOOTPROTO=none
+      ONBOOT=yes
+  - path: /etc/sysconfig/network-scripts/ifcfg-eth2.10
+    content: |
+      DEVICE=eth2.10
+      TYPE=vlan
+      BOOTPROTO=none
+      ONBOOT=yes
+      IPADDR=10.0.0.1
+      NETMASK=255.255.255.0
+  - path: /etc/sysctl.conf
+    content: |
+      net.ipv4.ip_forward = 1
+
+runcmd:
+  - /usr/bin/systemctl restart network
+  - /usr/sbin/iptables -t nat -A POSTROUTING -s 10.0.0.0/24 -o eth0 -j MASQUERADE
+  - /usr/sbin/service iptables save

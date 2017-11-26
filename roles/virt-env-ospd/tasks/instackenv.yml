@@ -1,0 +1,31 @@
+---
+# file: roles/virt-env-ospd/tasks/instackenv.yml
+- name: Generating the instackenv.json file
+  template:
+    src=home/stack/instackenv.json.j2
+    dest=/home/stack/instackenv.json
+    owner=stack
+    group=stack
+    mode=0640
+
+- name: Validating instackenv.json file (OSP-d 8 only)
+  shell:
+    source ~/stackrc ;
+    openstack baremetal instackenv validate
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version is defined and
+        virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_conf_undercloud_for_me is defined
+        and virt_env_ospd_conf_undercloud_for_me
+
+- name: Importing instackenv.json file
+  shell:
+    source ~/stackrc ;
+    openstack baremetal import --json ~/instackenv.json
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version is defined and
+        virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_conf_undercloud_for_me is defined
+        and virt_env_ospd_conf_undercloud_for_me

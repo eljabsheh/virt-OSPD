@@ -1,0 +1,123 @@
+# HYPERVISOR #
+- hosts: hypervisor
+  remote_user: root
+
+  roles:
+    - virt-env-ospd
+
+  vars:
+    # NETWORK #
+    virt_env_ospd_bridges:
+      - net-pxe
+      - net-full
+
+    # VM #
+    virt_env_ospd_vm_name: overcloud
+    virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
+    virt_env_ospd_guest_download: false
+
+    # UNDERCLOUD NODE #
+    virt_env_ospd_undercloud:
+      name: instack
+      disk_size: 80g
+      cpu: 4
+      mem: 8192
+      cloud_init_iso: cloud-init.iso
+
+      # CEPH VM
+    virt_env_ospd_ceph:
+      name: ceph
+      disk_size: 21g
+      cpu: 4
+      mem: 4096
+      # The last digit is not missing !!
+      mac: 52:54:00:aa:e3:8
+      vm_count: 3
+      extra_disk_count: 3
+
+    # CEPH EXTRA DISKS
+    virt_env_ospd_ceph_extra_disk:
+      - { name: sdb, size: 10g, format: qcow2, bus: sata }
+      - { name: sdc, size: 10g, format: qcow2, bus: sata }
+      - { name: sdd, size: 10g, format: qcow2, bus: sata }
+
+    # SWIFT VM
+    virt_env_ospd_swift:
+      name: swift
+      disk_size: 40g
+      cpu: 4
+      mem: 4096
+      # The last digit is not missing !!
+      mac: 52:54:00:aa:e3:5
+      vm_count: 3
+      extra_disk_count: 0
+
+    # SWIFT EXTRA DISKS
+#    virt_env_ospd_swift_extra_disk:
+
+    # CONTROL VM
+    virt_env_ospd_control:
+      name: control
+      disk_size: 40g
+      cpu: 4
+      mem: 8192
+      # The last digit is not missing !!
+      mac: 52:54:00:aa:e3:6
+      vm_count: 3
+
+    # COMPUTE VM
+    virt_env_ospd_compute:
+      name: compute
+      disk_size: 40g
+      cpu: 4
+      mem: 4096
+      # The last digit is not missing !!
+      mac: 52:54:00:aa:e3:7
+      vm_count: 3
+
+# UNDERCLOUD #
+- hosts: undercloud
+  remote_user: root
+
+  roles:
+    - virt-env-ospd
+
+  vars:
+    # UNDERCLOUD NODE #
+    virt_env_ospd_ironic_introspection: false
+    virt_env_ospd_rhos_release: false
+    virt_env_ospd_undercloud_hostname: instack.training.lab
+    virt_env_ospd_director_version: 10-director
+    virt_env_ospd_upload_images: false
+    virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
+    virt_env_ospd_conf_undercloud_for_me: false
+
+    virt_env_ospd_undercloud_conf:
+      - { section: 'DEFAULT', option: 'enable_tempest', value: 'false' }
+      - { section: 'DEFAULT', option: 'inspection_extras', value: 'true' }
+
+    # BAREMETAL NODES #
+    # You can use this command to get the SSH key on one line:
+    # sed ':a;N;$!ba;s/\n/\\n/g' ~/.ssh/id_rsa
+    virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAx/UpBl9AScb6pYxUIYyORAnESbMFFf8qRuRtib4ZcM0J+Reg\nG2RVb9KKTB+UQqVItsByTyttCuuxCjw+b/oxSzZdDAx8YGAMmJ49AbuC9hxorBzA\nNRQw2mjxLW4mrxgC2UR/DOJj4upyXEqVDE/QGuw1cFKgmkHocH2uN+7R0WoZsplR\n1A4MhmmPLXgJTP4hgmoCFpgVOH0Jr25dmHhPJQVRS5avMqW9zXsluVzOs1kegq1Z\nur6SszNCIjjhGDPuxMwkKVjEOAS15X0M4giADwiloUOyKWNiJHg5xJbtb0eQJXAc\n23XWcjWxX+SDM2L+K9ATZNkPKXE0+9F6o58newIDAQABAoIBAQCi9E+PqtZ4iZlA\niuERSjuyhQcbTLJrX7xzc7s1EuAmxmJHRpKrYBQkgj9ElEO+IHbmwGUn0esWiEeK\nYNg9Z3b+pXok1JQT8pKxWdu76rVqnnJLOU8GssKxa+6IqIkMDpRbve+Qb3sZtRin\nz/wxwWWGW1OdiyjpLacg7buqR41kjBFGVybknT5NsMxTGhqtT4ggYSCIRMN0TG7C\nYwXKBzpiUL6JyDduTTq3pA6tptxso6H3Am9rDcwSab9F94jMFTDUghmgOmbcYgJI\nviUiLf9lw29FWMBMtEEV6lWzKnZ3VrS/I9BTxcYPocSFQH41UkoRGahMdL97n9g8\ntcxyTwxJAoGBAPst+zw7qG741HY+LUoK7qkLvBPIzRZmMWAE9tPBnVq2lDJcKPyn\nXGzX9RFaWHH7utnXCSuVBcwqjueJExs6lsZe5GEWvDu4GmYDXPYh6/iaeacfMny7\nd9XfmYqsV8iIkWFGPamp8Y7wdzpfgUJURfkxikXTINOo93jRYYnNiIHNAoGBAMvL\nh+Z6sVzegC9B1C3EoE346NDVWRdULDHzqP+lc6KqmchB32pCmWG7Ka8wJ/hyJ6ha\nAGsl5yO43gSBEAlxKbuxzRoBYTjC0v1sGumtrRlNzm1dwjV5ocz+3jJoJMr7U42S\nZJgc1WU7d4jLNQQYO0WyxhnFXbyzZZvqGk87qKZnAoGAK2iQ6KHuw+7g2OZ58Tfe\ncvyCLnEfcGWM1ulEtufZB9pR1jozIybRREY2Jh+U9W3ppsgQ36VLcTNRqxX3ZVdE\nw1eW5GiHc1KnzUV7hVXrb/VSXN15XjEPzrhr0pliOlfPuB3pfi7OfkN0d3QV5J6n\n0R8MpHCOVcX3rruQvb31f2kCgYB2SwDqdsNm7bwoMiTQIDcQq2+wcHaTRQeWQyIQ\nqmARxscW562gR2IyyWorx18cJl8AqKVfjJO7N36fzK6bXHVl/pHYC378bJH+Cfch\nNu+oJXKyJt8pHR4fGL2vMqZQsEvSfGwpo2r2pOsAmzt90fbtwRSeNuLvOo67TsrQ\nvQdq9wKBgDLYYhLc6rNAskanLmz4zoeSx3jWA8XcmV2sDWde0a78uKUkYfhgCv3Y\nmRQLrAGD2fRuxWk1jFqMrYRmeHn94s3K4AEp+GR3mlYYOp1PUWNq/b0kbJerBnW3\n7iLOKepjqB952zwc8l0tMXsSfFvrmu+Vqbz6OzX0tPdXYeh25YA4\n-----END RSA PRIVATE KEY-----
+
+    # The line number should be equal to the number
+    # of virtual machines
+    undercloud_nodes:
+      - { mac: "52:54:00:aa:e3:61", profile: "control" }
+      - { mac: "52:54:00:aa:e3:62", profile: "control" }
+      - { mac: "52:54:00:aa:e3:63", profile: "control" }
+      - { mac: "52:54:00:aa:e3:81", profile: "storage" }
+      - { mac: "52:54:00:aa:e3:82", profile: "storage" }
+      - { mac: "52:54:00:aa:e3:83", profile: "storage" }
+      - { mac: "52:54:00:aa:e3:71", profile: "compute" }
+      - { mac: "52:54:00:aa:e3:72", profile: "compute" }
+      - { mac: "52:54:00:aa:e3:73", profile: "compute" }
+      - { mac: "52:54:00:aa:e3:51", profile: "other" }
+      - { mac: "52:54:00:aa:e3:52", profile: "other" }
+      - { mac: "52:54:00:aa:e3:53", profile: "other" }
+
+    virt_env_ospd_flavors:
+      - { name: "control", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "compute", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "storage", ram: "4096", disk: "20", cpu: "2" }

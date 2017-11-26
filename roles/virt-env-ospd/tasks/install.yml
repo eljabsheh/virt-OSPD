@@ -1,0 +1,145 @@
+---
+# file: roles/virt-env-ospd/tasks/install.yml
+# src=/usr/share/instack-undercloud/undercloud.conf.sample
+#remote_src=yes
+- name: Copying undercloud.conf to stack's home
+  copy:
+    src=home/stack/undercloud.conf
+    dest=/home/stack/undercloud.conf
+    owner=stack
+    group=stack
+
+#- name: Copying undercloud.conf to stack's home
+#  copy:
+#    src=/usr/share/instack-undercloud/undercloud.conf.sample
+#    dest=/home/stack/undercloud.conf
+#    remote_src=yes
+#    owner=stack
+#    group=stack
+
+- name: Configuring undercloud.conf
+  ini_file:
+    dest=/home/stack/undercloud.conf
+    section="{{ item.section }}"
+    option="{{ item.option }}"
+    value="{{ item.value }}"
+  with_items: "{{ virt_env_ospd_undercloud_conf }}"
+  when: virt_env_ospd_undercloud_conf is defined
+
+- name: openstack undercloud install (grab a coffee)
+  command:
+    openstack undercloud install
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
+
+- name: Installing OSP-d images via Yum (OSP-d 8 only)
+  package:
+    name="{{ item }}"
+    state=latest
+  with_items:
+    - rhosp-director-images
+    - rhosp-director-images-ipa
+  when: virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_upload_images is defined and
+        not virt_env_ospd_upload_images
+
+- name: Downloading images from mburns repo (OSP-d 7 only)
+  get_url:
+    url={{ item }}
+    dest=~/images/
+  with_items: "{{ virt_env_ospd_images_link }}"
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '7-director' and
+        virt_env_ospd_upload_images is defined and
+        not virt_env_ospd_upload_images
+
+- name: Uploading images from playbook (OSP-d 7 only)
+  copy:
+    src=ospd7/{{ item }}
+    dest=~/images/
+  with_items:
+    - deploy-ramdisk-ironic.tar
+    - discovery-ramdisk.tar
+    - overcloud-full.tar
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '7-director' and
+        virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
+
+- name: Uploading images from playbook (OSP-d 8 only)
+  copy:
+    src=ospd8/{{ item }}
+    dest=~/images/
+  with_items:
+    - ironic-python-agent.tar
+    - overcloud-full.tar
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
+
+- name: Extracting OSP-d images (OSP-d 8 only)
+  unarchive:
+    src=/usr/share/rhosp-director-images/{{ item }}
+    dest=~/images/
+    copy=no
+  with_items:
+    - ironic-python-agent.tar
+    - overcloud-full.tar
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_upload_images is defined and
+        not virt_env_ospd_upload_images
+
+- name: Extracting OSP-d images (OSP-d 7 only)
+  unarchive:
+    src=~/images/{{ item }}
+    dest=~/images/
+    copy=no
+  with_items:
+    - deploy-ramdisk-ironic.tar
+    - discovery-ramdisk.tar
+    - overcloud-full.tar
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '7-director'
+
+- name: Extracting OSP-d images (OSP-d 8 only)
+  unarchive:
+    src=~/images/{{ item }}
+    dest=~/images/
+    copy=no
+  with_items:
+    - ironic-python-agent.tar
+    - overcloud-full.tar
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
+
+- name: Uploading overcloud images in Glance
+  shell:
+    source ~/stackrc ; cd ~/images ;
+    openstack overcloud image upload
+  become: true
+  become_user: stack
+  when: virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
+
+- name: Updating the DNS for ctlplane network
+  shell:
+    source ~/stackrc ;
+    neutron subnet-update $(neutron subnet-list -F id --quote none -f csv | grep -v id) --dns-nameserver {{ virt_env_ospd_neutron_dns }}
+  become: true
+  become_user: stack
+  when: virt_env_ospd_director_version == '8-director' and
+        virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
