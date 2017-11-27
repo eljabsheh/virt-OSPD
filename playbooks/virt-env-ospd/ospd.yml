@@ -7,9 +7,11 @@
 
   vars:
     # NETWORK #
+    virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_bridges:
       - net-pxe
       - net-full
+      - net-other
 
     # VM #
     virt_env_ospd_vm_name: overcloud
