@@ -2,12 +2,20 @@
 # file: roles/virt-env-ospd/tasks/install.yml
 # src=/usr/share/instack-undercloud/undercloud.conf.sample
 #remote_src=yes
+- name: Creating stack's SSH key
+  shell: |
+    ssh-keygen -q -t rsa -N "" -f /home/stack/.ssh/ironic_id_rsa
+    chown stack:stack /home/stack/.ssh/ironic_id_rsa /home/stack/.ssh/ironic_id_rsa.pub
+  args:
+    creates: /home/stack/.ssh/ironic_id_rsa
+
 - name: Copying undercloud.conf to stack's home
-  copy:
-    src=home/stack/undercloud.conf
+  template:
+    src=home/stack/undercloud.conf.j2
     dest=/home/stack/undercloud.conf
     owner=stack
     group=stack
+    mode=0644
 
 #- name: Copying undercloud.conf to stack's home
 #  copy:

@@ -1,6 +1,6 @@
 ---
 # file: roles/virt-env-ospd/tasks/subcription.yml
-- name: Unsubscribing and unregistering the server to RHN
+- name: Unsubscribing and unregistering the server to RHSM
   shell:
     /usr/bin/subscription-manager unsubscribe --all;
     /usr/bin/subscription-manager unregister;
@@ -8,7 +8,7 @@
   when: virt_env_ospd_rhn_unsubscribe is defined and
         virt_env_ospd_rhn_unsubscribe
 
-- name: Registering the server to RHN
+- name: Registering the server to RHSM
   redhat_subscription:
     username={{ rhn_username }}
     password={{ rhn_password }}

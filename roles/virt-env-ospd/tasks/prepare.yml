@@ -28,6 +28,19 @@
     dest=/etc/sysconfig/network-scripts/ifcfg-{{ item }}
   with_items: "{{ virt_env_ospd_bridges }}"
 
+- name: Creating network gateway for PXE network
+  lineinfile:
+    dest: /etc/sysconfig/network-scripts/ifcfg-{{ virt_env_ospd_bridges[0] }}
+    regexp: "{{ item.property }}"
+    line: "{{ item.property }}={{ item.value }}"
+  with_items:
+    - { property: 'IPADDR', value: '10.20.0.1' }
+    - { property: 'NETWORK', value: '10.20.0.0' }
+    - { property: 'NETMASK', value: '255.255.255.0' }
+    - { property: 'BROADCAST', value: '10.20.0.255' }
+    - { property: 'ZONE', value: 'trusted' }
+    - { property: 'IPV6INIT', value: 'no' }
+
 - name: Creating Overcloud Linux bridge(s)
   shell:
     if ! brctl show | grep -q {{ item }}; then brctl addbr {{ item }}; ip l set {{ item }} up; fi

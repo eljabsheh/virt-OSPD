@@ -2,10 +2,10 @@
 image_path = /home/stack/images/
 local_ip = 10.20.0.2/24
 network_gateway = 10.20.0.1
-#undercloud_public_vip = 10.0.128.42
-undercloud_public_vip = 10.20.0.3
+#undercloud_public_vip = 10.20.0.3
+undercloud_public_vip = {{ undercloud_dhcp_ip }}
 undercloud_admin_vip = 10.20.0.4
-generate_service_certificate = false
+generate_service_certificate = true
 certificate_generation_ca = local
 undercloud_service_certificate = /etc/pki/instack-certs/undercloud.pem
 local_interface = bond0

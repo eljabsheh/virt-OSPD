@@ -94,6 +94,12 @@
     hostname={{ ip.stdout.split('/')[0] }}
     group=undercloud
 
+- name: Configuring /etc/hosts file
+  lineinfile:
+    dest=/etc/hosts
+    regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    line='{{ ip.stdout.split('/')[0] }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+
 - name: Waiting for undercloud booting
   wait_for:
     port: 22

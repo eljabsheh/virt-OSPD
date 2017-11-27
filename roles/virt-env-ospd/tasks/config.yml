@@ -39,7 +39,7 @@
     state=latest
     update_cache=yes
 
-- name: Installing undercloud pre-packages
+- name: Installing undercloud pre-requisites
   package:
     name={{ item }}
     state=present
