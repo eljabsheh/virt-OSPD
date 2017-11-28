@@ -1,20 +1,5 @@
 ---
 # file: roles/virt-env-ospd/tasks/instackenv.yml
-- name: set some more facts
-  set_fact:
-    ironic_ssh_priv_key: '/home/stack/.ssh/ironic_id_rsa'
-    ironic_ssh_pub_key: '/home/stack/.ssh/ironic_id_rsa.pub'
-    ironic_ssh_auth_list: '/home/stack/.ssh/authorized_keys'
-
-- name: Load ironic's private SSH key
-  shell:
-    sed ':a;N;$!ba;s/\n/\\n/g' {{ ironic_ssh_priv_key }}
-  register: ironic_key
-
-- name: Set another fact
-  set_fact:
-    virt_env_ospd_ssh_prv: "{{ ironic_key.stdout }}"
-
 - name: Generating the instackenv.json file
   template:
     src=home/stack/instackenv.json.j2

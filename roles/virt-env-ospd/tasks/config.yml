@@ -4,11 +4,16 @@
   hostname:
     name={{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
 
-- name: Configuring /etc/hosts file
+- name: Find my own IP on 192.168.122.x/24
+  shell: |
+    hostname -I|xargs -n1|grep '192\.168\.122\.'
+  register: undercloud_dhcp_ip
+
+- name: Configuring Undercloud's /etc/hosts file
   lineinfile:
     dest=/etc/hosts
-    regexp='^127\.0\.0\.1'
-    line='127.0.0.1  {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }} localhost localhost.localdomain localhost4 localhost4.localdomain4'
+    regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 
 - include: subscribtion.yml
   when: virt_env_ospd_rhos_release is defined and
@@ -53,4 +58,5 @@
     group=stack
   with_items:
     - images
+    - templates
     - "{{ virt_env_ospd_undercloud_hostname }}/templates"

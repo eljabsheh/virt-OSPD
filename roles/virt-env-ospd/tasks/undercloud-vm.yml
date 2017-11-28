@@ -25,11 +25,15 @@
     cat {{ ssh_build_dir }}/autorized_keys {{ ssh_auth_list }} |sort -u > {{ ssh_build_dir }}/fullkey
     virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
         --upload {{ ssh_build_dir }}/fullkey:{{ ssh_auth_list }}
+  when: vm.failed is defined and
+        vm.failed
 
 - name: Copying cloud-init ISO to working directory
   copy:
     src=files/{{ virt_env_ospd_undercloud.cloud_init_iso }}
     dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+  when: vm.failed is defined and
+        vm.failed
 
 - name: Creating QCOW2 baking file for the undercloud
   command:
@@ -38,6 +42,8 @@
     -f {{ virt_env_ospd_format }} \
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
     creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}.{{ virt_env_ospd_format }}
+  when: vm.failed is defined and
+        vm.failed
 
 - name: Loop checking if VM exists (ignore the error)
   virt:
@@ -78,11 +84,13 @@
   retries: 60
   register: undercloud_dhcp_ip
 
-- set_fact:
+- name: Set fact 'ip'
+  set_fact:
     ip={{ undercloud_dhcp_ip }}
   when: undercloud_dhcp_ip.changed
 
-- shell:
+- name: Register 'undercloud_dhcp_ip'
+  shell:
     mac=$(virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /{{ virt_env_ospd_libvirt_bridge }}/ { print $NF }');
     virsh net-dhcp-leases {{ virt_env_ospd_libvirt_net_name }} | awk '$3 ~ /'$mac'/ { print $5 }'
   register: undercloud_dhcp_ip
@@ -94,13 +102,13 @@
     hostname={{ ip.stdout.split('/')[0] }}
     group=undercloud
 
-- name: Configuring /etc/hosts file
+- name: Configuring hypervisor's /etc/hosts file
   lineinfile:
     dest=/etc/hosts
     regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
     line='{{ ip.stdout.split('/')[0] }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 
-- name: Waiting for undercloud booting
+- name: Waiting for undercloud to finish booting
   wait_for:
     port: 22
     host: "{{ ip.stdout.split('/')[0] }}"
