@@ -25,6 +25,11 @@
     cat {{ ironic_ssh_pub_key }}
   register: ironic_pub_key
 
+- name: Clean undercloud's DHCP ip a bit...
+  shell: |
+    echo {{ undercloud_dhcp_ip.stdout }}|xargs|awk '{ print $1}'
+  register: undercloud_public_ip
+
 - name: Set some other SSH key facts (contents)
   set_fact:
     virt_env_ospd_ssh_prv: "{{ ironic_prv_key.stdout }}"

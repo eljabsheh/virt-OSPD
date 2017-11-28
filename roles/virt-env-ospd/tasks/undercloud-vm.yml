@@ -17,11 +17,11 @@
 - name: Inject our ssh-key into the undercloud image
   shell: |
     virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
-    	--upload {{ ssh_priv_key }}:{{ ssh_priv_key }} \
-    	--upload {{ ssh_pub_key }}:{{ ssh_pub_key }}
+      --upload {{ ssh_priv_key }}:{{ ssh_priv_key }} \
+      --upload {{ ssh_pub_key }}:{{ ssh_pub_key }}
     mkdir -p {{ ssh_build_dir }}
     virt-copy-out -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
-    	{{ ssh_auth_list }} {{ ssh_build_dir }}
+      {{ ssh_auth_list }} {{ ssh_build_dir }}
     cat {{ ssh_build_dir }}/autorized_keys {{ ssh_auth_list }} |sort -u > {{ ssh_build_dir }}/fullkey
     virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
         --upload {{ ssh_build_dir }}/fullkey:{{ ssh_auth_list }}
