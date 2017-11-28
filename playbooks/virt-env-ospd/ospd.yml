@@ -29,7 +29,7 @@
       # CEPH VM
     virt_env_ospd_ceph:
       name: ceph
-      disk_size: 21g
+      disk_size: 41g
       cpu: 4
       mem: 4096
       # The last digit is not missing !!
@@ -39,14 +39,14 @@
 
     # CEPH EXTRA DISKS
     virt_env_ospd_ceph_extra_disk:
-      - { name: sdb, size: 10g, format: qcow2, bus: sata }
-      - { name: sdc, size: 10g, format: qcow2, bus: sata }
-      - { name: sdd, size: 10g, format: qcow2, bus: sata }
+      - { name: sdb, size: 512g, format: qcow2, bus: sata }
+      - { name: sdc, size: 512g, format: qcow2, bus: sata }
+      - { name: sdd, size: 512g, format: qcow2, bus: sata }
 
     # SWIFT VM
     virt_env_ospd_swift:
       name: swift
-      disk_size: 40g
+      disk_size: 41g
       cpu: 4
       mem: 4096
       # The last digit is not missing !!
@@ -60,7 +60,7 @@
     # CONTROL VM
     virt_env_ospd_control:
       name: control
-      disk_size: 40g
+      disk_size: 41g
       cpu: 4
       mem: 8192
       # The last digit is not missing !!
@@ -70,7 +70,7 @@
     # COMPUTE VM
     virt_env_ospd_compute:
       name: compute
-      disk_size: 40g
+      disk_size: 41g
       cpu: 4
       mem: 4096
       # The last digit is not missing !!
