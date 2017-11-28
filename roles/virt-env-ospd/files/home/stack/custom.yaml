@@ -12,3 +12,15 @@ parameter_defaults:
   DnsServers: ['8.8.8.8','8.8.4.4']
 
   ControllerEnableSwiftStorage: false
+  #
+  CinderEnableIscsiBackend: false
+  NovaEnableRbdBackend: true
+  CinderEnableRbdBackend: true
+  CinderBackupBackend: ceph
+  GlanceBackend: rbd
+  GnocchiBackend: rbd
+  # GlanceBackend: swift
+  NovaRbdPoolName: vms
+  CinderRbdPoolName: volumes
+  GlanceRbdPoolName: images
+

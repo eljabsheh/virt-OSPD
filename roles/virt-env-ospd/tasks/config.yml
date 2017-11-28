@@ -58,5 +58,4 @@
     group=stack
   with_items:
     - images
-    - templates
-    - "{{ virt_env_ospd_undercloud_hostname }}/templates"
+    - "{{ virt_env_ospd_undercloud_hostname }}/samples"

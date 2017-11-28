@@ -8,31 +8,31 @@
     ironic_ssh_pub_key: '/home/stack/.ssh/ironic_id_rsa.pub'
     ironic_ssh_auth_list: '/home/stack/.ssh/authorized_keys'
 
-- name: Load ironic's private SSH key
-  shell:
-    sed ':a;N;$!ba;s/\n/\\n/g' {{ ironic_ssh_prv_key }}
-  register: ironic_prv_key
-
-- name: Load ironic's public SSH key
-  shell:
-    cat {{ ironic_ssh_pub_key }}
-  register: ironic_pub_key
-
-- name: Set another fact
-  set_fact:
-    virt_env_ospd_ssh_prv: "{{ ironic_prv_key.stdout }}"
-    virt_env_ospd_ssh_pub: "{{ ironic_pub_key.stdout }}"
-
-- name: Creating stack's ironic SSH key
+- name: Creating stack's ironic SSH key (ironic_id_rsa)
   shell: |
     ssh-keygen -q -t rsa -N "" -f {{ ironic_ssh_prv_key }}
     chown stack:stack {{ ironic_ssh_pub_key }} {{ ironic_ssh_prv_key }}
   args:
     creates: "{{ ironic_ssh_prv_key }}"
 
-- name: Push out stack's ironic SSH back to the hypervisor
+- name: Load ironic's private SSH key
   shell: |
-    ssh-copy-id -i {{ ironic_ssh_prv_key }} 192.168.122.1
+    sed ':a;N;$!ba;s/\n/\\n/g' {{ ironic_ssh_prv_key }}
+  register: ironic_prv_key
+
+- name: Load ironic's public SSH key
+  shell: |
+    cat {{ ironic_ssh_pub_key }}
+  register: ironic_pub_key
+
+- name: Set some other SSH key facts (contents)
+  set_fact:
+    virt_env_ospd_ssh_prv: "{{ ironic_prv_key.stdout }}"
+    virt_env_ospd_ssh_pub: "{{ ironic_pub_key.stdout }}"
+
+- name: Push out stack's ironic SSH back to the hypervisor ({{ instackenv_pm_addr }})
+  shell: |
+    ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}
 
 - name: Copying undercloud.conf to stack's home
   template:

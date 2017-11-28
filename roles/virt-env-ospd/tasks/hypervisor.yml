@@ -84,10 +84,11 @@
   when: virt_env_ospd_compute is defined
 
 - name: Creating extra QCOW2 file(s) for Ceph
-  shell:
-    qemu-img create \
-    -f {{ item.0.format }} \
-    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-os-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }} ;
+  shell: |
+    if [ -f {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-os-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} ]; then
+      echo "Disk already OK"
+    else
+    qemu-img create -f {{ item.0.format }} {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-os-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }}
     virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{item.1}} \
       --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-os-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
       --target {{ item.0.name }} \
@@ -95,17 +96,19 @@
       --cache {{ virt_env_ospd_cache_mode }} \
       --subdriver {{ item.0.format }} \
       --persistent
+    fi
   with_nested:
   - "{{ virt_env_ospd_ceph_extra_disk }}"
   - "{{lookup('sequence', 'count={{ virt_env_ospd_ceph.vm_count }}', wantlist=True)}}"
-  when: "virt_env_ospd_ceph_extra_disk is defined and {{virt_env_ospd_ceph_extra_disk | length | int != 0}} and vm.failed is defined and vm.failed"
+  when: "virt_env_ospd_ceph_extra_disk is defined and {{virt_env_ospd_ceph_extra_disk | length | int != 0}}"
   ignore_errors: True
 
 - name: Creating extra QCOW2 file(s) for Swift
-  shell:
-    qemu-img create \
-    -f {{ item.0.format }} \
-    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-os-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }} ;
+  shell: |
+    if [ -f {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-os-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} ]; then
+      echo "Disk already OK"
+    else
+    qemu-img create -f {{ item.0.format }} {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-os-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }}
     virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{item.1}} \
       --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-os-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
       --target {{ item.0.name }} \
@@ -113,8 +116,9 @@
       --cache {{ virt_env_ospd_cache_mode }} \
       --subdriver {{ item.0.format }} \
       --persistent
+    fi
   with_nested:
   - "{{ virt_env_ospd_swift_extra_disk }}"
   - "{{lookup('sequence', 'count={{ virt_env_ospd_swift.vm_count }}', wantlist=True)}}"
-  when: "virt_env_ospd_swift_extra_disk is defined and {{virt_env_ospd_swift_extra_disk | length | int != 0}} and vm.failed is defined and vm.failed"
+  when: "virt_env_ospd_swift_extra_disk is defined and {{virt_env_ospd_swift_extra_disk | length | int != 0}}"
   ignore_errors: True

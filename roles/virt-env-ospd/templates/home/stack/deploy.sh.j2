@@ -3,7 +3,6 @@
 #  - Controller nodes
 #  - Compute nodes
 #  - Ceph storage
-#  - Swift storage
 #  - Network isolation with bond and vlans
 #  - Tenant isolation done with VXLAN
 #  - Using and external NTP server
@@ -18,13 +17,9 @@ time openstack overcloud deploy \
 --control-scale {{ virt_env_ospd_control.vm_count }} \
 --compute-scale {{ virt_env_ospd_compute.vm_count }} \
 --ceph-storage-scale {{ virt_env_ospd_ceph.vm_count | default(0) }} \
---block-storage-scale {{ virt_env_ospd_block.vm_count | default(0) }} \
---swift-storage-scale {{ virt_env_ospd_swift.vm_count | default(0) }} \
 --control-flavor control \
 --compute-flavor compute \
---ceph-storage-flavor storage \
---block-storage-flavor storage \
---swift-storage-flavor swift \
+--ceph-storage-flavor ceph-storage \
 --neutron-network-type vxlan \
 --neutron-tunnel-types vxlan \
 --neutron-vni-ranges 1:10000 \
