@@ -57,7 +57,7 @@
   when: virt_env_ospd_undercloud_conf is defined
 
 - name: Copying cleanIronic.sh to stack's home
-  file:
+  copy:
     src=home/stack/cleanIronic.sh
     dest=/home/stack/cleanIronic.sh
     owner=stack
