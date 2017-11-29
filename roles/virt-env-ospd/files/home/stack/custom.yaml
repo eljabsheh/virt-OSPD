@@ -8,7 +8,7 @@ parameter_defaults:
   NeutronExternalNetworkBridge: "''"
   ControlPlaneSubnetCidr: '24'
   ControlPlaneDefaultRoute: '10.20.0.1'
-  EC2MetadataIp: '10.20.0.1'
+  EC2MetadataIp: '10.20.0.2'
   DnsServers: ['8.8.8.8','8.8.4.4']
 
   ControllerEnableSwiftStorage: false
