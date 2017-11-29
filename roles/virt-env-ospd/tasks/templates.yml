@@ -15,6 +15,7 @@
     state=link
     owner=stack
     group=stack
+  ignore_errors: true
 
 - name: Adding deploy.sh script to templates directory
   template:
