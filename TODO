@@ -1,0 +1,5 @@
+INSTACK: /usr/sbin/iptables -t nat -A POSTROUTING -o bond3 -j MASQUERADE
+HYPERVISOR: /usr/sbin/iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+
+mydev=$(/sbin/ip -o r g 8.8.8.8|awk '{ if ( $4 ~ dev) print $5}')
+/usr/sbin/iptables -t nat -A POSTROUTING -o ${mydev} -j MASQUERADE

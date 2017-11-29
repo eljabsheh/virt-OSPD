@@ -25,9 +25,16 @@
     owner=stack
     group=stack
 
-- name:  Adding custom.yaml to the templates directory
+- name: Adding custom.yaml to the templates directory
   copy:
     src=home/stack/custom.yaml
     dest=/home/stack/{{ virt_env_ospd_undercloud_hostname }}/custom.yaml
+    owner=stack
+    group=stack
+
+- name: Adding disable_telemetry.yaml to the templates directory
+  copy:
+    src=home/stack/disable_telemetry.yaml
+    dest=/home/stack/{{ virt_env_ospd_undercloud_hostname }}/disable_telemetry.yaml
     owner=stack
     group=stack

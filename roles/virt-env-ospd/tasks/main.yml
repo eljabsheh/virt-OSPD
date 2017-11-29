@@ -21,6 +21,10 @@
   tags:
     [ virt-env-ospd, virt-env-ospd-hypervisor ]
 
+- include: masquerade.yml
+  tags:
+    [ virt-env-ospd, virt-env-ospd-masquerade ]
+
 - include: undercloud-vm.yml
   when: "'hypervisor' in group_names"
   tags:

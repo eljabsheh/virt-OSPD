@@ -1,0 +1,11 @@
+---
+- name: Add NAT Masquerading rule for private networks
+  shell: |
+    mydev=$(/sbin/ip -o r g 8.8.8.8|awk '{ if ( $4 ~ dev) print $5}')
+    /usr/sbin/iptables -L -nv -t nat|grep "MASQUERADE.*all.*${mydev}"
+    if [ $? -ne 0 ]; then
+      /usr/sbin/iptables -t nat -A POSTROUTING -o ${mydev} -j MASQUERADE
+      /usr/sbin/iptables-save > /etc/sysconfig/iptables
+    fi
+  become: true
+  become_user: root
