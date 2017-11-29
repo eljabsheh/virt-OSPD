@@ -56,6 +56,14 @@
   with_items: "{{ virt_env_ospd_undercloud_conf }}"
   when: virt_env_ospd_undercloud_conf is defined
 
+- name: Copying cleanIronic.sh to stack's home
+  file:
+    src=home/stack/cleanIronic.sh
+    dest=/home/stack/cleanIronic.sh
+    owner=stack
+    group=stack
+    mode=0755
+
 - name: openstack undercloud install (grab a coffee)
   command:
     openstack undercloud install
