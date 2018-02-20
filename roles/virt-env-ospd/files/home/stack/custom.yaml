@@ -23,4 +23,7 @@ parameter_defaults:
   NovaRbdPoolName: vms
   CinderRbdPoolName: volumes
   GlanceRbdPoolName: images
-
+  #
+  #ExtraConfig:
+  #  nova::cpu_allocation_ratio: 4
+  #  nova::ram_allocation_ratio: 1.5
