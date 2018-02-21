@@ -103,7 +103,7 @@
     # UNDERCLOUD NODE #
     virt_env_ospd_ironic_introspection: false
     virt_env_ospd_rhos_release: false
-    virt_env_ospd_undercloud_hostname: instack.lasthome.solace.krynn
+    virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_director_version: 10-director
     virt_env_ospd_upload_images: false
     virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
