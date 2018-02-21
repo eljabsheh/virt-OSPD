@@ -16,7 +16,7 @@ virt_env_ospd_conf_undercloud_for_me: true
 virt_env_ospd_bridges:
   - director-pxe
   - director-full
-virt_env_ospd_guest_name: rhel-guest-image-7.3-35.x86_64.qcow2
+virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
 # IMAGES
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:
@@ -99,6 +99,7 @@ virt_env_ospd_block:
 # /usr/libexec/qemu-kvm -machine help
 virt_env_ospd_machine_type: pc-i440fx-rhel7.0.0
 virt_env_ospd_libvirt_bridge: virbr0
+virt_env_ospd_external_bridge: bond0
 virt_env_ospd_libvirt_net_name: default
 virt_env_ospd_disk_os_bus: sata
 
