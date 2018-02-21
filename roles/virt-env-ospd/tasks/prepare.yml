@@ -34,10 +34,10 @@
     regexp: "{{ item.property }}"
     line: "{{ item.property }}={{ item.value }}"
   with_items:
-    - { property: 'IPADDR', value: '10.20.0.1' }
-    - { property: 'NETWORK', value: '10.20.0.0' }
+    - { property: 'IPADDR', value: '10.40.0.1' }
+    - { property: 'NETWORK', value: '10.40.0.0' }
     - { property: 'NETMASK', value: '255.255.255.0' }
-    - { property: 'BROADCAST', value: '10.20.0.255' }
+    - { property: 'BROADCAST', value: '10.40.0.255' }
     - { property: 'ZONE', value: 'trusted' }
     - { property: 'IPV6INIT', value: 'no' }
 
