@@ -8,6 +8,8 @@
   vars:
     # NETWORK #
     virt_env_ospd_undercloud_hostname: instack.training.lab
+    virt_env_ospd_libvirt_bridge: virbr0
+    virt_env_ospd_external_bridge: bond0
     virt_env_ospd_bridges:
       - net-pxe
       - net-full
@@ -21,34 +23,38 @@
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud:
       name: instack
-      disk_size: 80g
+      disk_size: 512g
       cpu: 4
-      mem: 8192
+      mem: 24576
       cloud_init_iso: cloud-init.iso
 
       # CEPH VM
     virt_env_ospd_ceph:
       name: ceph
-      disk_size: 41g
+      disk_size: 128g
       cpu: 4
-      mem: 4096
+      mem: 8192
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:8
       vm_count: 3
-      extra_disk_count: 3
+      extra_disk_count: 7
 
     # CEPH EXTRA DISKS
     virt_env_ospd_ceph_extra_disk:
-      - { name: sdb, size: 512g, format: qcow2, bus: sata }
-      - { name: sdc, size: 512g, format: qcow2, bus: sata }
-      - { name: sdd, size: 512g, format: qcow2, bus: sata }
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdd, size: 8192g, format: qcow2, bus: sata }
+      - { name: sde, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdf, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdg, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdh, size: 8192g, format: qcow2, bus: sata }
 
     # SWIFT VM
     virt_env_ospd_swift:
       name: swift
-      disk_size: 41g
+      disk_size: 128g
       cpu: 4
-      mem: 4096
+      mem: 8192
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:5
       vm_count: 3
@@ -60,9 +66,9 @@
     # CONTROL VM
     virt_env_ospd_control:
       name: control
-      disk_size: 41g
+      disk_size: 128g
       cpu: 4
-      mem: 8192
+      mem: 24576
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:6
       vm_count: 3
@@ -70,12 +76,21 @@
     # COMPUTE VM
     virt_env_ospd_compute:
       name: compute
-      disk_size: 41g
+      disk_size: 128g
       cpu: 4
       mem: 4096
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:7
       vm_count: 3
+      extra_disk_count: 7
+    virt_env_ospd_compute_extra_disk:
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdd, size: 8192g, format: qcow2, bus: sata }
+      - { name: sde, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdf, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdg, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdh, size: 8192g, format: qcow2, bus: sata }
 
 # UNDERCLOUD #
 - hosts: undercloud
@@ -88,7 +103,7 @@
     # UNDERCLOUD NODE #
     virt_env_ospd_ironic_introspection: false
     virt_env_ospd_rhos_release: false
-    virt_env_ospd_undercloud_hostname: instack.training.lab
+    virt_env_ospd_undercloud_hostname: instack.lasthome.solace.krynn
     virt_env_ospd_director_version: 10-director
     virt_env_ospd_upload_images: false
     virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
@@ -101,7 +116,7 @@
     # BAREMETAL NODES #
     # You can use this command to get the SSH key on one line:
     # sed ':a;N;$!ba;s/\n/\\n/g' ~/.ssh/id_rsa
-    virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAx/UpBl9AScb6pYxUIYyORAnESbMFFf8qRuRtib4ZcM0J+Reg\nG2RVb9KKTB+UQqVItsByTyttCuuxCjw+b/oxSzZdDAx8YGAMmJ49AbuC9hxorBzA\nNRQw2mjxLW4mrxgC2UR/DOJj4upyXEqVDE/QGuw1cFKgmkHocH2uN+7R0WoZsplR\n1A4MhmmPLXgJTP4hgmoCFpgVOH0Jr25dmHhPJQVRS5avMqW9zXsluVzOs1kegq1Z\nur6SszNCIjjhGDPuxMwkKVjEOAS15X0M4giADwiloUOyKWNiJHg5xJbtb0eQJXAc\n23XWcjWxX+SDM2L+K9ATZNkPKXE0+9F6o58newIDAQABAoIBAQCi9E+PqtZ4iZlA\niuERSjuyhQcbTLJrX7xzc7s1EuAmxmJHRpKrYBQkgj9ElEO+IHbmwGUn0esWiEeK\nYNg9Z3b+pXok1JQT8pKxWdu76rVqnnJLOU8GssKxa+6IqIkMDpRbve+Qb3sZtRin\nz/wxwWWGW1OdiyjpLacg7buqR41kjBFGVybknT5NsMxTGhqtT4ggYSCIRMN0TG7C\nYwXKBzpiUL6JyDduTTq3pA6tptxso6H3Am9rDcwSab9F94jMFTDUghmgOmbcYgJI\nviUiLf9lw29FWMBMtEEV6lWzKnZ3VrS/I9BTxcYPocSFQH41UkoRGahMdL97n9g8\ntcxyTwxJAoGBAPst+zw7qG741HY+LUoK7qkLvBPIzRZmMWAE9tPBnVq2lDJcKPyn\nXGzX9RFaWHH7utnXCSuVBcwqjueJExs6lsZe5GEWvDu4GmYDXPYh6/iaeacfMny7\nd9XfmYqsV8iIkWFGPamp8Y7wdzpfgUJURfkxikXTINOo93jRYYnNiIHNAoGBAMvL\nh+Z6sVzegC9B1C3EoE346NDVWRdULDHzqP+lc6KqmchB32pCmWG7Ka8wJ/hyJ6ha\nAGsl5yO43gSBEAlxKbuxzRoBYTjC0v1sGumtrRlNzm1dwjV5ocz+3jJoJMr7U42S\nZJgc1WU7d4jLNQQYO0WyxhnFXbyzZZvqGk87qKZnAoGAK2iQ6KHuw+7g2OZ58Tfe\ncvyCLnEfcGWM1ulEtufZB9pR1jozIybRREY2Jh+U9W3ppsgQ36VLcTNRqxX3ZVdE\nw1eW5GiHc1KnzUV7hVXrb/VSXN15XjEPzrhr0pliOlfPuB3pfi7OfkN0d3QV5J6n\n0R8MpHCOVcX3rruQvb31f2kCgYB2SwDqdsNm7bwoMiTQIDcQq2+wcHaTRQeWQyIQ\nqmARxscW562gR2IyyWorx18cJl8AqKVfjJO7N36fzK6bXHVl/pHYC378bJH+Cfch\nNu+oJXKyJt8pHR4fGL2vMqZQsEvSfGwpo2r2pOsAmzt90fbtwRSeNuLvOo67TsrQ\nvQdq9wKBgDLYYhLc6rNAskanLmz4zoeSx3jWA8XcmV2sDWde0a78uKUkYfhgCv3Y\nmRQLrAGD2fRuxWk1jFqMrYRmeHn94s3K4AEp+GR3mlYYOp1PUWNq/b0kbJerBnW3\n7iLOKepjqB952zwc8l0tMXsSfFvrmu+Vqbz6OzX0tPdXYeh25YA4\n-----END RSA PRIVATE KEY-----
+    virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nMIIEoQIBAAKCAQEAo5rMVDTzgjmpB24uJFIP69cjoymYFWhO5wv52Y7e6hFbAC15\nd3wdiojK2SwJNj5lN7xTyfmMAS66XHN1GeEv9C91pme31fKQvuS/iLmPyvhvaFAL\nQeBJSvZktpbrcHWrKv95n8bYdGePBA6oPu7wm4aLJRXPrdbKQbxqEgZW5J3yG/Ue\nVhltME2/f+evkQVzq9I/7M+xNw7zNUcQJwmsprTVC7ZVHTjOmUPodGHlnilD1BRA\nh/uObP8a4UmHoysDWDaThAABDueQuvINmFkW4tfJ4EQ1XlVOm9kQYNV+P5gc+Y67\nPWkMxdO4LY9V4A/s84sRBq6ZHUI2t9rjJZg82QIBIwKCAQB+NZZPlo/2vsQ47pif\nrQT3wzi/sl9g+LHlb6N78d8pmFwktV2z8ggpCnCY53TSEuBeMjICNYlCvaW1CJwp\n6DrvklNxvbmzrH5KHi1a2Epav6ZmaaJIwva2K8oJMpheEaFNDjlAvfdvvZo2VHMp\nO/twqZ6KUqeGGrlIp0qC7vKTGYY1Imvw2pyrnh/6zhBqLvj3sDOm43I+FQkhBfrE\nUa+ODjyxfxXbGuPPocoaIsNVP6hGANZ093Qr5wGMa3eOA2ypcAut1vZLaQeCMfCm\nih34nE8luHb+KHi+P6qebgGyC3xgGM9QZotkyYGAawaFOhhgocIjIqQjR3iZHs6M\n+YEPAoGBANKHjzimF9GvGkAdipFlDDrFzkXM57TgFpbzpsnGi21AM7XSZpB2hLBp\n0qlVtIHoh+H+sCwoOM4DCnNsOZDwn8r2mnoM1hG8D7lNXO98lLZa8v2GGrcsGrVZ\nYX7NAO/H5i+W4tO2FfYpYa2RrFD8/wfbvRarGj2BUXRQOU1ewbITAoGBAMbwtIkr\n77P4ETAAzUHIQRKbdOaTa9CLO+ggTKv5tYs8lJeojpVbRWinB9DW3yQhMmtBwc73\ni3WsTfFNQkjBkEM6HdFv49911G7hQWrlEVYfseEDVtD7ukiXs0KgiFNhfRzALO3A\nSWtlpbgR3QXqgzdFNS4bEh6KpxMcZq/zphLjAoGANiLbr3sqskL4Hx2KCCFMSaCU\nIJPGjZi1WgQjkviKQKob7Oz1zWBOAXpMHOonGhc44ldvIUwr3TP7X4I6sD3f8lyr\nYTaAMHIv7dIQlVqMo+uAT9IG3qTw7M3XPdzxnL5fwxgrsshsDBlFAL8PDYLifl0T\nXZm2SlR0B/dfMSb+m4ECgYEAteNjO5XieKhKOoRj5F9RcBkabGmHJRGV24s+yR7R\n3mNGBwCCXKs4JSr/1OG2Emd+jfL6VtOytLrK6z9Si6mod/qe6178OgVUgqIP7LQt\nG4qxQsE5bp0CFnwRnAB8pAFccg7J/fGiNk5OXyZGa88Y4hNj0mHkrjWgEXkNbauQ\nhksCgYA4v4bHWMe9+gy/14Cc3y8v2YzwVy2DntCxgOnhmuvVffLj5pt1rPLTHFEG\ndBsalqfTj5BlDUWlCzrr89PcIPUvAeUYbivL0bTeP09lbTwzSF1C/NsAT03XJXpC\nSpzSOvrSVl69okokcyR8Soe+6zsWizz/Fp11w9/VGvQuFvd44Q==\n-----END RSA PRIVATE KEY-----
 
     # The line number should be equal to the number
     # of virtual machines
