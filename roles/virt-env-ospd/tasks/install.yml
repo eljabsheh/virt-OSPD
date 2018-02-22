@@ -74,7 +74,7 @@
         virt_env_ospd_upload_images
 
 - name: Installing OSP-d images via Yum (OSP-d 8 only)
-  package:
+  yum:
     name="{{ item }}"
     state=latest
   with_items:

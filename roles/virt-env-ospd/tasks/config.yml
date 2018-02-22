@@ -45,7 +45,7 @@
     update_cache=yes
 
 - name: Installing undercloud pre-requisites
-  package:
+  yum:
     name={{ item }}
     state=present
   with_items: "{{ virt_env_ospd_undercloud_packages }}"

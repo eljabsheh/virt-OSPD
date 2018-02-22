@@ -7,7 +7,7 @@
     key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
 - name: Installing required packages
-  package:
+  yum:
     name={{ item }}
     state=latest
   with_items: "{{ virt_env_ospd_packages }}"
