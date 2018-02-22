@@ -12,11 +12,11 @@
 #
 time openstack overcloud deploy \
 --templates templates \
---stack {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_director_version }} \
+--stack overcloud \
 --timeout 120 \
---control-scale 1 \
+--control-scale 3 \
 --compute-scale 1 \
---ceph-storage-scale 1 \
+--ceph-storage-scale 3 \
 --control-flavor control \
 --compute-flavor compute \
 --ceph-storage-flavor ceph-storage \
@@ -33,6 +33,7 @@ time openstack overcloud deploy \
 -e disable_telemetry.yaml \
 -e custom.yaml
 
+#--stack {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_director_version }} \
 #--control-scale {{ virt_env_ospd_control.vm_count }} \
 #--compute-scale {{ virt_env_ospd_compute.vm_count }} \
 #--ceph-storage-scale {{ virt_env_ospd_ceph.vm_count | default(0) }} \
