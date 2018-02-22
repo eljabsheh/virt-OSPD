@@ -27,6 +27,7 @@
         --upload {{ ssh_build_dir }}/fullkey:{{ ssh_auth_list }}
   when: vm.failed is defined and
         vm.failed
+  ignore_errors: true
 
 - name: Copying cloud-init ISO to working directory
   copy:
