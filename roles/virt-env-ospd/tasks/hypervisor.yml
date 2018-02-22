@@ -98,7 +98,7 @@
     else
     qemu-img create -f {{ item.0.format }} {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-ceph-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }}
     virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{item.1}} \
-      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-os-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
+      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
       --target {{ item.0.name }} \
       --targetbus {{ item.0.bus }} \
       --cache {{ virt_env_ospd_cache_mode }} \
@@ -118,7 +118,7 @@
     else
     qemu-img create -f {{ item.0.format }} {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-swift-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }}
     virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{item.1}} \
-      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-os-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
+      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
       --target {{ item.0.name }} \
       --targetbus {{ item.0.bus }} \
       --cache {{ virt_env_ospd_cache_mode }} \
@@ -138,7 +138,7 @@
     else
     qemu-img create -f {{ item.0.format }} {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-compute-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }}
     virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{item.1}} \
-      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-os-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
+      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
       --target {{ item.0.name }} \
       --targetbus {{ item.0.bus }} \
       --cache {{ virt_env_ospd_cache_mode }} \
