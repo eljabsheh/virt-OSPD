@@ -69,6 +69,9 @@
     group=stack
     mode=0755
 
+- name: Creating 'bonding' configuration file..
+  lineinfile: create=yes state=present dest=/etc/modules-load.d/bonding.conf line="bonding"
+
 - name: openstack undercloud install (grab a coffee)
   command:
     openstack undercloud install
