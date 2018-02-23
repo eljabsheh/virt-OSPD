@@ -30,7 +30,7 @@
     <emulator>/usr/libexec/qemu-kvm</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' cache='{{ virt_env_ospd_cache_mode }}'/>
-      <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}.{{ virt_env_ospd_format }}'/>
+      <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}-boot.{{ virt_env_ospd_format }}'/>
 {% if virt_env_ospd_disk_os_bus == 'sata' %}
       <target dev='sda' bus='sata'/>
 {% elif virt_env_ospd_disk_os_bus == 'ide' %}
