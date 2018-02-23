@@ -30,6 +30,11 @@
     echo {{ undercloud_dhcp_ip.stdout }}|xargs|awk '{ print $1}'
   register: undercloud_public_ip
 
+- name: Obtain undercloud's DHCP ip on external (bond2)
+  shell: |
+    /sbin/ip -4 -o a sh dev bond2 |awk '{ if ( $4 ~ /\// ) { split($4,i,"/") ; print i[1] } }'
+  register: undercloud_external_ip
+
 - name: Set some other SSH key facts (contents)
   set_fact:
     virt_env_ospd_ssh_prv: "{{ ironic_prv_key.stdout }}"
