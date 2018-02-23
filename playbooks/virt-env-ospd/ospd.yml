@@ -6,6 +6,8 @@
     - virt-env-ospd
 
   vars:
+    #virt_env_ospd_dir: /var/lib/libvirt
+    virt_env_ospd_dir: /shared/kvm0
     # NETWORK #
     virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_libvirt_bridge: virbr0
@@ -79,6 +81,9 @@
       # The last digit is not missing !!
       mac: 52:54:00:aa:e3:6
       vm_count: 3
+    virt_env_ospd_control_extra_disk:
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
 
     # COMPUTE VM
     virt_env_ospd_compute:

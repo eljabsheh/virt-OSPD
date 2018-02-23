@@ -151,3 +151,23 @@
   when: "virt_env_ospd_compute_extra_disk is defined and {{virt_env_ospd_compute_extra_disk | length | int != 0}}"
   ignore_errors: True
 
+- name: Creating extra QCOW2 file(s) for Controllers
+  shell: |
+    if [ -f {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-control-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} ]; then
+      echo "Disk already OK"
+    else
+    qemu-img create -f {{ item.0.format }} {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-control-{{ item.1 }}-extra-{{ item.0.name }}.{{ item.0.format }} {{ item.0.size }}
+    virsh attach-disk {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{item.1}} \
+      --source {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{item.1}}-extra-{{ item.0.name }}.{{ item.0.format }} \
+      --target {{ item.0.name }} \
+      --targetbus {{ item.0.bus }} \
+      --cache {{ virt_env_ospd_cache_mode }} \
+      --subdriver {{ item.0.format }} \
+      --persistent
+    fi
+  with_nested:
+  - "{{ virt_env_ospd_control_extra_disk }}"
+  - "{{lookup('sequence', 'start=0 count={{ virt_env_ospd_control.vm_count }}', wantlist=True)}}"
+  when: "virt_env_ospd_control_extra_disk is defined and {{virt_env_ospd_control_extra_disk | length | int != 0}}"
+  ignore_errors: True
+
