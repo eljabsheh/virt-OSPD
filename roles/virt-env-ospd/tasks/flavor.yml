@@ -12,8 +12,7 @@
     - control
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version is defined and
-        virt_env_ospd_director_version == '8-director'
+  when: virt_env_ospd_director_version in ['8-director','9-director','10-director']
 
 - name: Creating scenario flavors
   shell:
@@ -22,8 +21,7 @@
   with_items: "{{ virt_env_ospd_flavors }}"
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version is defined and
-        virt_env_ospd_director_version == '8-director'
+  when: virt_env_ospd_director_version in ['8-director','9-director','10-director']
 
 - name: Set profile to flavors
   shell:
@@ -32,5 +30,4 @@
   with_items: "{{ virt_env_ospd_flavors }}"
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version is defined and
-        virt_env_ospd_director_version == '8-director'
+  when: virt_env_ospd_director_version in ['8-director','9-director','10-director']
