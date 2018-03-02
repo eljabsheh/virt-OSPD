@@ -6,12 +6,11 @@
     - virt-env-ospd
 
   vars:
-    #virt_env_ospd_dir: /var/lib/libvirt
-    virt_env_ospd_dir: /shared/kvm0
     # NETWORK #
     virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
+    virt_env_ospd_dir: /shared/kvm0
     virt_env_ospd_bridges:
       - net-pxe
       - net-full
@@ -112,6 +111,7 @@
     - virt-env-ospd
 
   vars:
+    virt_env_ospd_dir: /shared/kvm0
     # UNDERCLOUD NODE #
     virt_env_ospd_ironic_introspection: false
     virt_env_ospd_rhos_release: false
