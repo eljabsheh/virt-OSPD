@@ -1,6 +1,7 @@
 ---
 # file: roles/virt-env-ospd/vars/main.yml
-virt_env_ospd_dir: /var/lib/libvirt
+# virt_env_ospd_dir: /var/lib/libvirt
+virt_env_ospd_dir: /shared/kvm0
 virt_env_ospd_format: qcow2
 
 # HYPERVISOR PACKAGES
