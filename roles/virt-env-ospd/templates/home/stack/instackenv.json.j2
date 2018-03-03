@@ -14,7 +14,7 @@
 {
 {% endif %}
             "name":"bm-{{ loop.index0 }}",
-            "pm_type":"{{ hostvars['localhost']['instackenv_pm_type'] }}",
+            "pm_type":"{{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}",
             "mac":[
                 "{{ item.mac }}"
             ],
@@ -22,13 +22,13 @@
             "memory":"{{ instackenv_memory }}",
             "disk":"{{ instackenv_disk }}",
             "arch":"{{ instackenv_arch }}",
-{% if hostvars['localhost']['instackenv_pm_type'] == 'pxe_ssh' %}
+{% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ssh' %}
             "pm_user":"{{ instackenv_pm_user }}",
             "pm_password":"{{ instackenv_pm_password }}",
 {% endif %}
-{% if hostvars['localhost']['instackenv_pm_type'] == 'pxe_ipmitool' %}
-            "pm_user":"{{ hostvars['localhost']['virt_env_ospd_vbmc_user'] }}",
-            "pm_password":"{{ hostvars['localhost']['virt_env_ospd_vbmc_password'] }}",
+{% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ipmitool' %}
+            "pm_user":"{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_vbmc_user'] }}",
+            "pm_password":"{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_vbmc_password'] }}",
 {% endif %}
             "pm_addr":"{{ instackenv_pm_addr }}"
         }{% if not loop.last %}
