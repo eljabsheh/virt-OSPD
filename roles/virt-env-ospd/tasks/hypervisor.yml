@@ -1,5 +1,9 @@
 ---
 # file: roles/virt-env-ospd/tasks/hypervisor.yml
+- name: set_fact on instackenv_pm_type
+  set_fact:
+    instackenv_pm_type: "{{ instackenv_pm_type }}"
+
 - name: Checking if VM exists (ignore the error)
   virt:
     name={{ virt_env_ospd_undercloud.name }}

@@ -16,6 +16,10 @@
       - net-full
       - net-other
 
+    # PM_TYPE # It is either pxe_ssh or pxe_ipmitool
+    # instackenv_pm_type: pxe_ssh
+    instackenv_pm_type: pxe_ipmitool
+
     # VM #
     virt_env_ospd_vm_name: overcloud
     virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2

@@ -14,7 +14,7 @@
 {
 {% endif %}
             "name":"bm-{{ loop.index0 }}",
-            "pm_type":"{{ instackenv_pm_type }}",
+            "pm_type":"{{ hostvars['localhost']['instackenv_pm_type'] }}",
             "mac":[
                 "{{ item.mac }}"
             ],

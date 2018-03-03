@@ -1,4 +1,5 @@
 ---
+# file: roles/virt-env-ospd/tasks/masquerade.yml
 - name: Add NAT Masquerading rule for private networks
   shell: |
     mydev=$(/sbin/ip -o r g 8.8.8.8|awk '{ if ( $4 ~ dev) print $5}')
