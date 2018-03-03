@@ -3,6 +3,8 @@
 - name: set_fact on instackenv_pm_type
   set_fact:
     instackenv_pm_type: "{{ instackenv_pm_type }}"
+    virt_env_ospd_vbmc_user: "{{ virt_env_ospd_vbmc_user }}"
+    virt_env_ospd_vbmc_password: "{{ virt_env_ospd_vbmc_password }}"
 
 - name: Checking if VM exists (ignore the error)
   virt:

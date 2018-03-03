@@ -6,11 +6,14 @@
     state: present
     key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
-- name: Installing required packages
-  yum:
-    name={{ item }}
-    state=latest
-  with_items: "{{ virt_env_ospd_packages }}"
+- fail: msg="instackenv_pm_type must be either 'pxe_ssh' or 'pxe_ipmitool' (OSP12)"
+  when: instackenv_pm_type not in ['pxe_ssh','pxe_ipmitool']
+
+#- name: Installing required packages
+#  yum:
+#    name={{ item }}
+#    state=latest
+#  with_items: "{{ virt_env_ospd_packages }}"
 
 - name: Generating the Linux bridge(s) config file
   template:
