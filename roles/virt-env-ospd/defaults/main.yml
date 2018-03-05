@@ -14,9 +14,10 @@ virt_env_ospd_vm_name: baremetal
 virt_env_ospd_undercloud_hostname: manager.mydomain.lab
 virt_env_ospd_neutron_dns: 8.8.8.8
 virt_env_ospd_conf_undercloud_for_me: true
-virt_env_ospd_vbmc_user: admin
-virt_env_ospd_vbmc_password: password
-virt_env_ospd_vbmc_port: 6230
+vbmc_user: admin
+vbmc_password: password
+vbmc_port: 6231
+vbmc_non_root_user: nobody
 virt_env_ospd_bridges:
   - director-pxe
   - director-full

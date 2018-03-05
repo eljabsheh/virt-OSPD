@@ -27,9 +27,9 @@
             "pm_password":"{{ instackenv_pm_password }}",
 {% endif %}
 {% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ipmitool' %}
-            "pm_user":"{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_vbmc_user'] }}",
-            "pm_password":"{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_vbmc_password'] }}",
-            "pm_port":"{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_vbmc_port'] |int + loop.index }}",
+            "pm_user":"{{ hostvars[groups['hypervisor'][0]]['vbmc_user'] }}",
+            "pm_password":"{{ hostvars[groups['hypervisor'][0]]['vbmc_password'] }}",
+            "pm_port":"{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] |int + loop.index }}",
 {% endif %}
             "pm_addr":"{{ instackenv_pm_addr }}"
         }{% if not loop.last %}

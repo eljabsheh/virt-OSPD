@@ -6,9 +6,9 @@
     - virt-env-ospd
 
   vars:
-    virt_env_ospd_vbmc_user: admin
-    virt_env_ospd_vbmc_password: password
-    virt_env_ospd_vbmc_port: 6230
+    vbmc_user: admin
+    vbmc_password: password
+    vbmc_port: 6230
     # NETWORK #
     virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_libvirt_bridge: virbr0
