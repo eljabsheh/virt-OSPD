@@ -5,6 +5,7 @@
     instackenv_pm_type: "{{ instackenv_pm_type }}"
     virt_env_ospd_vbmc_user: "{{ virt_env_ospd_vbmc_user }}"
     virt_env_ospd_vbmc_password: "{{ virt_env_ospd_vbmc_password }}"
+    virt_env_ospd_vbmc_port: "{{ virt_env_ospd_vbmc_port }}"
 
 - name: Checking if VM exists (ignore the error)
   virt:
