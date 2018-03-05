@@ -18,7 +18,7 @@
   when: "'hypervisor' in group_names and
         instackenv_pm_type == 'pxe_ipmitool'"
   tags:
-    [ virt-env-ospd, virt-env-ospd-hypervisor ]
+    [ virt-env-ospd, virt-env-ospd-hypervisor, virt-env-ospd-virtualbmc ]
 
 - include: hypervisor.yml
   when: "'hypervisor' in group_names and
