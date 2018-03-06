@@ -14,12 +14,6 @@
   tags:
     [ virt-env-ospd, virt-env-ospd-prepare ]
 
-- include: virtualbmc.yml
-  when: "'hypervisor' in group_names and
-        instackenv_pm_type == 'pxe_ipmitool'"
-  tags:
-    [ virt-env-ospd, virt-env-ospd-hypervisor, virt-env-ospd-virtualbmc ]
-
 - include: hypervisor.yml
   when: "'hypervisor' in group_names and
         virt_env_ospd_hypervisor is defined and
@@ -33,6 +27,12 @@
         virt_env_ospd_hypervisor"
   tags:
     [ virt-env-ospd, virt-env-ospd-masquerade ]
+
+- include: virtualbmc.yml
+  when: "'hypervisor' in group_names and
+        instackenv_pm_type == 'pxe_ipmitool'"
+  tags:
+    [ virt-env-ospd, virt-env-ospd-hypervisor, virt-env-ospd-virtualbmc ]
 
 - include: undercloud-vm.yml
   when: "'hypervisor' in group_names"

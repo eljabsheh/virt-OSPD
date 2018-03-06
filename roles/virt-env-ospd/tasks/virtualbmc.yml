@@ -1,0 +1,140 @@
+---
+# file: roles/virt-env-ospd/tasks/virtualbmc.yml
+- name: set_fact on vbmc_port
+  set_fact: vbmc_port="{{ vbmc_port }}"
+
+- name: Install VirtualBMC package
+  when: virt_env_ospd_director_version in ['11-director','12-director']
+  package:
+    name: "python2-virtualbmc"
+    state: present
+    use: yum
+  become: true
+
+- name: Create VirtualBMC directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+    owner: root
+    group: root
+  with_items:
+    - "/etc/virtualbmc"
+    - "/var/log/virtualbmc"
+  become: true
+
+- name: Create VirtualBMC configuration file
+  when: virt_env_ospd_director_version in ['10-director', '11-director','12-director']
+  copy:
+    mode: 0750
+    dest: "/etc/virtualbmc/virtualbmc.conf"
+    content: |
+      [default]
+      config_dir=/root/.vbmc
+      [log]
+      logfile=/var/log/virtualbmc/virtualbmc.log
+      debug=True
+      [ipmi]
+      session_timout=20
+  become: true
+
+- name: get virthost non_root_user userid
+  shell: id -u "{{ vbmc_non_root_user }}"
+  register: non_root_user_uid
+  delegate_to: localhost
+  become: false
+
+- name: set fact on non_root_user_uid
+  set_fact:
+    non_root_user_uid: "{{ non_root_user_uid.stdout }}"
+
+- name: Update value for vbmc_port
+  set_fact: vbmc_port="{{ vbmc_port }}"
+
+- name: Creating vBMC entries file for Ceph nodes
+  shell:
+    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} ; \
+    vbmc add \
+    {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} \
+    --port "{{ vbmc_port | int + item | int}}"  \
+    --username "{{ vbmc_user }}" \
+    --password "{{ vbmc_password }}" \
+    --address "{{ instackenv_pm_addr }}" \
+    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_ceph.vm_count | int }}
+  args:
+    creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
+  when: virt_env_ospd_ceph is defined
+  become: true
+
+- name: Update value for vbmc_port
+  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
+
+- name: Creating vBMC entries file for Swift nodes
+  shell:
+    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} ; \
+    vbmc add \
+    {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} \
+    --port "{{ vbmc_port | int + item | int}}"  \
+    --username "{{ vbmc_user }}" \
+    --password "{{ vbmc_password }}" \
+    --address "{{ instackenv_pm_addr }}" \
+    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_swift.vm_count | int }}
+  args:
+    creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
+  when: virt_env_ospd_swift is defined
+  become: true
+
+- name: Update value for vbmc_port
+  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
+
+- name: Creating vBMC entries file for controller nodes
+  shell:
+    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} ; \
+    vbmc add \
+    {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} \
+    --port "{{ vbmc_port | int + item | int}}"  \
+    --username "{{ vbmc_user }}" \
+    --password "{{ vbmc_password }}" \
+    --address "{{ instackenv_pm_addr }}" \
+    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_control.vm_count | int }}
+  args:
+    creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
+  when: virt_env_ospd_control is defined
+  become: true
+
+- name: Update value for vbmc_port
+  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
+
+- name: Creating vBMC entries file for compute nodes
+  shell:
+    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} ; \
+    vbmc add \
+    {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} \
+    --port "{{ vbmc_port | int + item | int}}"  \
+    --username "{{ vbmc_user }}" \
+    --password "{{ vbmc_password }}" \
+    --address "{{ instackenv_pm_addr }}" \
+    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_compute.vm_count | int }}
+  args:
+    creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
+  when: virt_env_ospd_compute is defined
+  become: true
+
+- name: Update value for vbmc_port
+  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_compute.vm_count | int }}"
