@@ -1,7 +1,7 @@
 ---
 # file: roles/virt-env-ospd/tasks/virtualbmc.yml
-- name: set_fact on vbmc_port
-  set_fact: vbmc_port="{{ vbmc_port }}"
+- name: set_fact on local_vbmc_port
+  set_fact: local_vbmc_port="{{ vbmc_port }}"
 
 - name: Install VirtualBMC package
   when: virt_env_ospd_director_version in ['11-director','12-director']
@@ -48,15 +48,15 @@
   set_fact:
     non_root_user_uid: "{{ non_root_user_uid.stdout }}"
 
-- name: Update value for vbmc_port
-  set_fact: vbmc_port="{{ vbmc_port }}"
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port }}"
 
 - name: Creating vBMC entries file for Ceph nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} ; \
     vbmc add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} \
-    --port "{{ vbmc_port | int + item | int}}"  \
+    --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
@@ -70,15 +70,15 @@
   when: virt_env_ospd_ceph is defined
   become: true
 
-- name: Update value for vbmc_port
-  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
 
 - name: Creating vBMC entries file for Swift nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} ; \
     vbmc add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} \
-    --port "{{ vbmc_port | int + item | int}}"  \
+    --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
@@ -92,15 +92,15 @@
   when: virt_env_ospd_swift is defined
   become: true
 
-- name: Update value for vbmc_port
-  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
 
 - name: Creating vBMC entries file for controller nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} ; \
     vbmc add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} \
-    --port "{{ vbmc_port | int + item | int}}"  \
+    --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
@@ -114,15 +114,15 @@
   when: virt_env_ospd_control is defined
   become: true
 
-- name: Update value for vbmc_port
-  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
 
 - name: Creating vBMC entries file for compute nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} ; \
     vbmc add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} \
-    --port "{{ vbmc_port | int + item | int}}"  \
+    --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
@@ -136,5 +136,5 @@
   when: virt_env_ospd_compute is defined
   become: true
 
-- name: Update value for vbmc_port
-  set_fact: vbmc_port="{{ vbmc_port | int + virt_env_ospd_compute.vm_count | int }}"
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_compute.vm_count | int }}"

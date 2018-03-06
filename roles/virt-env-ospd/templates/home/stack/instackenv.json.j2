@@ -1,7 +1,9 @@
 {
+{% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ssh' %}
     "ssh-user": "{{ instackenv_pm_user }}",
     "ssh_key": "{{ virt_env_ospd_ssh_prv }}",
     "seed-ip": "",
+{% endif %}
     "power_manager": "nova.virt.baremetal.virtual_power_driver.VirtualPowerManager",
     "host-ip": "{{ instackenv_pm_addr }}",
     "arch": "{{ instackenv_arch }}",
@@ -29,7 +31,7 @@
 {% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ipmitool' %}
             "pm_user":"{{ hostvars[groups['hypervisor'][0]]['vbmc_user'] }}",
             "pm_password":"{{ hostvars[groups['hypervisor'][0]]['vbmc_password'] }}",
-            "pm_port":"{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] |int + loop.index }}",
+            "pm_port":"{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] |int + loop.index0 }}",
 {% endif %}
             "pm_addr":"{{ instackenv_pm_addr }}"
         }{% if not loop.last %}
