@@ -33,7 +33,7 @@
       name: instack
       disk_size: 512g
       cpu: 4
-      mem: 24576
+      mem: 16384
       cloud_init_iso: cloud-init.iso
 
       # CEPH VM
@@ -41,9 +41,9 @@
       name: ceph
       disk_size: 128g
       cpu: 4
-      mem: 8192
+      mem: 4096
       # The last digit is not missing !!
-      mac: 52:54:00:aa:e3:8
+      mac: 52:54:00:ac:e3:8
       vm_count: 4
       extra_disk_count: 7
 
@@ -62,9 +62,9 @@
       name: swift
       disk_size: 128g
       cpu: 4
-      mem: 8192
+      mem: 4096
       # The last digit is not missing !!
-      mac: 52:54:00:aa:e3:5
+      mac: 52:54:00:ac:e3:5
       vm_count: 3
       extra_disk_count: 0
 
@@ -83,9 +83,9 @@
       name: control
       disk_size: 128g
       cpu: 4
-      mem: 24576
+      mem: 12288
       # The last digit is not missing !!
-      mac: 52:54:00:aa:e3:6
+      mac: 52:54:00:ac:e3:6
       vm_count: 3
     virt_env_ospd_control_extra_disk:
       - { name: sdb, size: 8192g, format: qcow2, bus: sata }
@@ -96,9 +96,9 @@
       name: compute
       disk_size: 128g
       cpu: 4
-      mem: 4096
+      mem: 6144
       # The last digit is not missing !!
-      mac: 52:54:00:aa:e3:7
+      mac: 52:54:00:ac:e3:7
       vm_count: 6
       extra_disk_count: 7
     virt_env_ospd_compute_extra_disk:
@@ -140,22 +140,22 @@
     # Number of lines for type should match count of said type above.
     # Each MAC should start with type-prefix and with '0' as the first digit. These values are not automagically computed...
     undercloud_nodes:
-      - { mac: "52:54:00:aa:e3:60", profile: "control" }
-      - { mac: "52:54:00:aa:e3:61", profile: "control" }
-      - { mac: "52:54:00:aa:e3:62", profile: "control" }
-      - { mac: "52:54:00:aa:e3:80", profile: "ceph-storage" }
-      - { mac: "52:54:00:aa:e3:81", profile: "ceph-storage" }
-      - { mac: "52:54:00:aa:e3:82", profile: "ceph-storage" }
-      - { mac: "52:54:00:aa:e3:83", profile: "ceph-storage" }
-      - { mac: "52:54:00:aa:e3:70", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:71", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:72", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:73", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:74", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:75", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:50", profile: "swift-storage" }
-      - { mac: "52:54:00:aa:e3:51", profile: "swift-storage" }
-      - { mac: "52:54:00:aa:e3:52", profile: "swift-storage" }
+      - { mac: "52:54:00:ac:e3:60", profile: "control" }
+      - { mac: "52:54:00:ac:e3:61", profile: "control" }
+      - { mac: "52:54:00:ac:e3:62", profile: "control" }
+      - { mac: "52:54:00:ac:e3:80", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:81", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:82", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:83", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:70", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:71", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:72", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:73", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:74", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:75", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:50", profile: "swift-storage" }
+      - { mac: "52:54:00:ac:e3:51", profile: "swift-storage" }
+      - { mac: "52:54:00:ac:e3:52", profile: "swift-storage" }
 
     virt_env_ospd_flavors:
       - { name: "control", ram: "4096", disk: "20", cpu: "2" }
