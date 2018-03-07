@@ -3,10 +3,10 @@
     "ssh-user": "{{ instackenv_pm_user }}",
     "ssh_key": "{{ virt_env_ospd_ssh_prv }}",
     "seed-ip": "",
-{% endif %}
     "power_manager": "nova.virt.baremetal.virtual_power_driver.VirtualPowerManager",
     "host-ip": "{{ instackenv_pm_addr }}",
     "arch": "{{ instackenv_arch }}",
+{% endif %}
     "nodes":[
 {% for item in undercloud_nodes %}
 {% if loop.first %}
@@ -15,25 +15,25 @@
 {% if not loop.first %}
 {
 {% endif %}
-            "name":"bm-{{ loop.index0 }}",
-            "pm_type":"{{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}",
+            "name": "bm-{{ loop.index0 }}",
+            "pm_type": "{{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}",
             "mac":[
                 "{{ item.mac }}"
             ],
-            "cpu":"{{ instackenv_cpu }}",
-            "memory":"{{ instackenv_memory }}",
-            "disk":"{{ instackenv_disk }}",
-            "arch":"{{ instackenv_arch }}",
+            "cpu": "{{ instackenv_cpu }}",
+            "memory": "{{ instackenv_memory }}",
+            "disk": "{{ instackenv_disk }}",
+            "arch": "{{ instackenv_arch }}",
 {% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ssh' %}
-            "pm_user":"{{ instackenv_pm_user }}",
-            "pm_password":"{{ instackenv_pm_password }}",
+            "pm_user": "{{ instackenv_pm_user }}",
+            "pm_password": "{{ instackenv_pm_password }}",
 {% endif %}
 {% if hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] == 'pxe_ipmitool' %}
-            "pm_user":"{{ hostvars[groups['hypervisor'][0]]['vbmc_user'] }}",
-            "pm_password":"{{ hostvars[groups['hypervisor'][0]]['vbmc_password'] }}",
-            "pm_port":"{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] |int + loop.index0 }}",
+            "pm_user": "{{ hostvars[groups['hypervisor'][0]]['vbmc_user'] }}",
+            "pm_password": "{{ hostvars[groups['hypervisor'][0]]['vbmc_password'] }}",
+            "pm_port": "{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] |int + loop.index0 }}",
 {% endif %}
-            "pm_addr":"{{ instackenv_pm_addr }}"
+            "pm_addr": "{{ instackenv_pm_addr }}"
         }{% if not loop.last %}
 ,
         {% endif %}
