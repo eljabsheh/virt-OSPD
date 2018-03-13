@@ -2,6 +2,9 @@
   <name>{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}</name>
   <memory unit='KiB'>{{ (virt_env_ospd_control.mem * 1024) | int }}</memory>
   <currentMemory unit='KiB'>{{ (virt_env_ospd_control.mem * 1024) | int }}</currentMemory>
+  <memoryBacking>
+    <hugepages/>
+  </memoryBacking>
   <vcpu placement='static'>{{ virt_env_ospd_control.cpu | int }}</vcpu>
   <os>
     <type arch='x86_64' machine='{{ virt_env_ospd_machine_type }}'>hvm</type>
