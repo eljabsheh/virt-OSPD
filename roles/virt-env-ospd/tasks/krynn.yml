@@ -1,0 +1,13 @@
+---
+# file: roles/virt-env-ospd/tasks/krynn.yml
+  - name: "Debug hostname"
+    debug: msg="ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"
+    when: ansible_dns.domain == "lasthome.solace.krynn"
+
+  - name: Copy RHEL 7.4 image to destination
+    copy:
+      src=/net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.4-guest.x86_64.qcow2
+      dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
+      owner=root
+      group=root
+      mode=0644
