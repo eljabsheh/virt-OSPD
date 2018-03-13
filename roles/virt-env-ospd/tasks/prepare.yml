@@ -30,6 +30,7 @@
     src=etc/sysconfig/network-scripts/ifcfg-bridge
     dest=/etc/sysconfig/network-scripts/ifcfg-{{ item }}
   with_items: "{{ virt_env_ospd_bridges }}"
+  when: item != "{{ virt_env_ospd_bridges[0] }}"
 
 - name: Creating network gateway for PXE network
   lineinfile:
@@ -72,3 +73,10 @@
   changed_when: false
   when: virt_env_ospd_tuned
 
+- name: Create subdirectory "images" under {{ virt_env_ospd_dir }}
+  file:
+    path: "{{ virt_env_ospd_dir }}/images"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
