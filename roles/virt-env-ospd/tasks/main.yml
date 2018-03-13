@@ -14,6 +14,11 @@
   tags:
     [ virt-env-ospd, virt-env-ospd-prepare ]
 
+- include: krynn.yml
+  when: "'hypervisor' in group_names"
+  tags:
+    [ virt-env-hypervisor, virt-env-ospd-site-specific ]
+
 - include: hypervisor.yml
   when: "'hypervisor' in group_names and
         virt_env_ospd_hypervisor is defined and
