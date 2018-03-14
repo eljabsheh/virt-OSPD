@@ -41,8 +41,10 @@
     virt_env_ospd_ssh_pub: "{{ ironic_pub_key.stdout }}"
 
 - name: Push out stack's ironic SSH back to the hypervisor ({{ instackenv_pm_addr }})
-  shell: |
-    ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}
+  #shell: |
+  #  ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}
+  debug:
+    msg: "Remember to : ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}"
 
 - name: Copying undercloud.conf to stack's home
   template:
