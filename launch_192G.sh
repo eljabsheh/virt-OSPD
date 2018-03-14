@@ -1,4 +1,5 @@
 #!/bin/bash
+# host: palanthas
 set -x
 ansible-playbook -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/ospd_192G.yml
 
