@@ -1,7 +1,8 @@
 ---
 # file: roles/virt-env-ospd/tasks/krynn.yml
   - name: "Debug hostname"
-    debug: msg="ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"
+    debug:
+      msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"
     when: ansible_dns.domain == "lasthome.solace.krynn"
 
   - name: Copy RHEL 7.4 image to destination
@@ -11,3 +12,4 @@
       owner=root
       group=root
       mode=0644
+      force=no
