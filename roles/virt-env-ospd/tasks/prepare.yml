@@ -19,7 +19,6 @@
   template:
     src=etc/libvirt/qemu/networks/default.xml
     dest=/root/default.xml
-    force=no
 
 - name: Creating Default Linux bridge (virbr0)
   shell:
@@ -30,6 +29,7 @@
   template:
     src=etc/sysconfig/network-scripts/ifcfg-bridge
     dest=/etc/sysconfig/network-scripts/ifcfg-{{ item }}
+    force=no
   with_items: "{{ virt_env_ospd_bridges }}"
   #when: item != "{{ virt_env_ospd_bridges[0] }}"
 

@@ -15,7 +15,8 @@
     [ virt-env-ospd, virt-env-ospd-prepare ]
 
 - include: krynn.yml
-  when: "'hypervisor' in group_names"
+  when: "'hypervisor' in group_names and
+        ansible_dns.domain is defined"
   tags:
     [ virt-env-hypervisor, virt-env-ospd-site-specific ]
 
