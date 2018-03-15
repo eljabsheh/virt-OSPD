@@ -108,7 +108,7 @@
     dest=/etc/hosts
     regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
     line='{{ ip.stdout.split('/')[0] }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
-  when: ansible_dns.domain != "lasthome.solace.krynn"
+  when: ansible_dns.domain is defined and ansible_dns.domain != "lasthome.solace.krynn"
 
 - name: Waiting for undercloud to finish booting
   wait_for:

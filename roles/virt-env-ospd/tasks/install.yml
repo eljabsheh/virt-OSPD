@@ -25,6 +25,15 @@
     cat {{ ironic_ssh_pub_key }}
   register: ironic_pub_key
 
+- name: Add ironic's public SSH key to authorized keys on Hypervisor..
+  authorized_key:
+    user: root
+    state: present
+    key: "{{ ironic_pub_key.stdout }}"
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['hypervisor'] }}"
+  become: true
+
 - name: Clean undercloud's DHCP ip a bit...
   shell: |
     echo {{ undercloud_dhcp_ip.stdout }}|xargs|awk '{ print $1}'
