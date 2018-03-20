@@ -6,9 +6,16 @@
     - virt-env-ospd
 
   vars:
+    # Director Version
+    virt_env_ospd_director_version: 10-director
+
+    # PM_TYPE # It is either pxe_ssh or pxe_ipmitool
+    instackenv_pm_type: pxe_ssh
+    # instackenv_pm_type: pxe_ipmitool
     vbmc_user: admin
     vbmc_password: password
     vbmc_port: 6231
+
     # NETWORK #
     virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_libvirt_bridge: virbr0
@@ -18,10 +25,6 @@
       - net-pxe
       - net-full
       - net-other
-
-    # PM_TYPE # It is either pxe_ssh or pxe_ipmitool
-    instackenv_pm_type: pxe_ssh
-    # instackenv_pm_type: pxe_ipmitool
 
     # VM #
     virt_env_ospd_vm_name: overcloud

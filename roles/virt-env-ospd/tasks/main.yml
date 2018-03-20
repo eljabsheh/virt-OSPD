@@ -9,6 +9,9 @@
 - include_vars: 10-director.yml
   when: virt_env_ospd_director_version == '10-director'
 
+- include_vars: 12-director.yml
+  when: virt_env_ospd_director_version == '12-director'
+
 - include: prepare.yml
   when: "'hypervisor' in group_names"
   tags:
