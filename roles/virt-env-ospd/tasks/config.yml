@@ -1,8 +1,19 @@
 ---
 # file: roles/virt-env-ospd/tasks/config.yml
+- name: Propagate director version from Hypervisor (needed for vbmc setup on hypervisor)
+  set_fact:
+    virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
+
 - name: Set undercloud hostname
   hostname:
     name={{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
+
+- fail: msg="instackenv_pm_type must be either 'pxe_ssh' or 'pxe_ipmitool' (OSP12)"
+  when: instackenv_pm_type not in ['pxe_ssh','pxe_ipmitool']
+
+- name: "Debug instackenv_pm_type"
+  debug:
+    msg: "instackenv_pm_type={{ instackenv_pm_type }}, HVM={{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}"
 
 - name: Find my own IP on 192.168.122.x/24
   shell: |

@@ -93,7 +93,7 @@ Role Variables
 ```
 virt_env_ospd_hypervisor: true
 virt_env_ospd_tuned: true
-virt_env_ospd_rcip_tools: true
+virt_env_ospd_git_tools: true
 virt_env_ospd_rhn_unsubscribe: true
 virt_env_ospd_rhos_release: true
 virt_env_ospd_disable_repos: true

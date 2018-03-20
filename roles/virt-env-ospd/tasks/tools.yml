@@ -1,6 +1,6 @@
 ---
 # file: roles/virt-env-ospd/tasks/tools.yml
-- name: Cloning rcip-tools repository
+- name: Cloning tools repository
   git:
     repo=https://gitlab.cee.redhat.com/RCIP/rcip-tools.git
     dest=/home/stack/rcip-tools

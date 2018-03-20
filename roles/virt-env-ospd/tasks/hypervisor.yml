@@ -6,6 +6,7 @@
     vbmc_user: "{{ vbmc_user }}"
     vbmc_password: "{{ vbmc_password }}"
     vbmc_port: "{{ vbmc_port }}"
+    virt_env_ospd_director_version: "{{ virt_env_ospd_director_version }}"
 
 - name: Checking if VM exists (ignore the error)
   virt:

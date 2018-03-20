@@ -3,7 +3,7 @@
 virt_env_ospd_dir: /var/lib/libvirt
 virt_env_ospd_hypervisor: true
 virt_env_ospd_tuned: true
-virt_env_ospd_rcip_tools: false
+virt_env_ospd_git_tools: false
 virt_env_ospd_rhn_unsubscribe: false
 virt_env_ospd_rhn_subscribe: false
 virt_env_ospd_rhos_release: false

@@ -1,16 +1,10 @@
 ---
 # file: roles/virt-env-ospd/tasks/main.yml
-- include_vars: 7-director.yml
-  when: virt_env_ospd_director_version == '7-director'
-
-- include_vars: 8-director.yml
-  when: virt_env_ospd_director_version == '8-director'
-
-- include_vars: 10-director.yml
-  when: virt_env_ospd_director_version == '10-director'
-
-- include_vars: 12-director.yml
-  when: virt_env_ospd_director_version == '12-director'
+- name: Include OSP version-specific variables.. ( {{ virt_env_ospd_director_version }} )
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ virt_env_ospd_director_version }}.yml"
+    - "default.yml"
 
 - include: prepare.yml
   when: "'hypervisor' in group_names"
@@ -82,7 +76,7 @@
 
 - include: tools.yml
   when: "'undercloud' in group_names and
-        virt_env_ospd_rcip_tools is defined and
-        virt_env_ospd_rcip_tools"
+        virt_env_ospd_git_tools is defined and
+        virt_env_ospd_git_tools"
   tags:
     [ virt-env-ospd, virt-env-ospd-tool ]
