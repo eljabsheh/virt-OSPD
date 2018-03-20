@@ -140,22 +140,22 @@
     # Number of lines for type should match count of said type above.
     # Each MAC should start with type-prefix and with '0' as the first digit. These values are not automagically computed...
     undercloud_nodes:
-      - { mac: "52:54:00:aa:e3:60", profile: "control" }
-      - { mac: "52:54:00:aa:e3:61", profile: "control" }
-      - { mac: "52:54:00:aa:e3:62", profile: "control" }
+      - { mac: "52:54:00:aa:e3:50", profile: "swift-storage" }
+      - { mac: "52:54:00:aa:e3:51", profile: "swift-storage" }
+      - { mac: "52:54:00:aa:e3:52", profile: "swift-storage" }
       - { mac: "52:54:00:aa:e3:80", profile: "ceph-storage" }
       - { mac: "52:54:00:aa:e3:81", profile: "ceph-storage" }
       - { mac: "52:54:00:aa:e3:82", profile: "ceph-storage" }
       - { mac: "52:54:00:aa:e3:83", profile: "ceph-storage" }
+      - { mac: "52:54:00:aa:e3:60", profile: "control" }
+      - { mac: "52:54:00:aa:e3:61", profile: "control" }
+      - { mac: "52:54:00:aa:e3:62", profile: "control" }
       - { mac: "52:54:00:aa:e3:70", profile: "compute" }
       - { mac: "52:54:00:aa:e3:71", profile: "compute" }
       - { mac: "52:54:00:aa:e3:72", profile: "compute" }
       - { mac: "52:54:00:aa:e3:73", profile: "compute" }
       - { mac: "52:54:00:aa:e3:74", profile: "compute" }
       - { mac: "52:54:00:aa:e3:75", profile: "compute" }
-      - { mac: "52:54:00:aa:e3:50", profile: "swift-storage" }
-      - { mac: "52:54:00:aa:e3:51", profile: "swift-storage" }
-      - { mac: "52:54:00:aa:e3:52", profile: "swift-storage" }
 
     virt_env_ospd_flavors:
       - { name: "control", ram: "4096", disk: "20", cpu: "2" }
