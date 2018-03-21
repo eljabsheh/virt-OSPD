@@ -111,11 +111,12 @@ virt_env_ospd_disk_os_bus: sata
 # Because virtio driver doesn't work well with Ironic
 # depending of the qemu-kvm version (rhev or not)
 # Change it if needed :)
+# virt_env_ospd_net_driver_pxe: e1000
 virt_env_ospd_net_driver_pxe: virtio
 
 # Some issues during overcloud deployment due to virtio
 # network driver (resource create failed)
 # Change it if needed :)
-virt_env_ospd_net_driver: e1000
+virt_env_ospd_net_driver: virtio
 
 virt_env_ospd_cache_mode: none
