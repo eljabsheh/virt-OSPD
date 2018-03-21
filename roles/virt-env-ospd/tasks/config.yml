@@ -3,6 +3,7 @@
 - name: Propagate director version from Hypervisor (needed for vbmc setup on hypervisor)
   set_fact:
     virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
+    instackenv_pm_type: "{{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}"
 
 - name: Set undercloud hostname
   hostname:
@@ -10,6 +11,9 @@
 
 - fail: msg="instackenv_pm_type must be either 'pxe_ssh' or 'pxe_ipmitool' (OSP12)"
   when: instackenv_pm_type not in ['pxe_ssh','pxe_ipmitool']
+
+- fail: msg="instackenv_pm_type var on undercloud must match value on hypervisor. Check your vars!!"
+  when: instackenv_pm_type != hostvars[groups['hypervisor'][0]]['instackenv_pm_type']
 
 - name: "Debug instackenv_pm_type"
   debug:
