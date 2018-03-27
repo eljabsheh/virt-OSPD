@@ -6,11 +6,22 @@ fi
 
 for vm in $(virsh list|grep -vw instack |awk '{ if ( $1 ~ /[0-9]/ ) { print $2 } }')
 do
-	virsh destroy $vm
+	case $vm in 
+		overcloud*)
+			virsh destroy $vm
+			;;
+		*)
+	esac
 done
 
 for vm in $(virsh list --all|grep -vw instack |awk '{ if ( $1 == "-" ) { print $2 } }')
 do
-	virsh undefine $vm
-	/bin/rm -fv /var/lib/libvirt/images/${vm}*.qcow2
+	case $vm in 
+		overcloud*)
+			virsh undefine $vm
+			vbmc delete $vm
+			/bin/rm -fv /var/lib/libvirt/images/${vm}*.qcow2 /shared/kvm0/images/${vm}*.qcow2
+			;;
+		*)
+	esac
 done
