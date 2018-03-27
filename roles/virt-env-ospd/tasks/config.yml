@@ -19,6 +19,10 @@
   debug:
     msg: "instackenv_pm_type={{ instackenv_pm_type }}, HVM={{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}"
 
+- name: "Debug OSP Director version"
+  debug:
+    msg: "virt_env_ospd_director_version={{ virt_env_ospd_director_version }}, HVM={{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
+
 - name: Find my own IP on 192.168.122.x/24
   shell: |
     hostname -I|xargs -n1|grep '192\.168\.122\.'
