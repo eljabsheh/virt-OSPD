@@ -7,7 +7,6 @@ virt_env_ospd_undercloud_packages:
   - screen
   - tmux
   - git
-  - python-tripleoclient
   - libguestfs-tools
   - sysstat
   - sos
