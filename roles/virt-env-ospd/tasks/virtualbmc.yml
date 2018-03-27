@@ -51,7 +51,7 @@
 - name: Update value for local_vbmc_port
   set_fact: local_vbmc_port="{{ local_vbmc_port }}"
 
-- name: Creating vBMC entries file for Ceph nodes
+- name: Creating vBMC consoles file for Ceph nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} ; \
     vbmc add \
@@ -73,7 +73,7 @@
 - name: Update value for local_vbmc_port
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
 
-- name: Creating vBMC entries file for Swift nodes
+- name: Creating vBMC consoles file for Swift nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} ; \
     vbmc add \
@@ -95,7 +95,7 @@
 - name: Update value for local_vbmc_port
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
 
-- name: Creating vBMC entries file for controller nodes
+- name: Creating vBMC consoles file for controller nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} ; \
     vbmc add \
@@ -117,7 +117,7 @@
 - name: Update value for local_vbmc_port
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
 
-- name: Creating vBMC entries file for compute nodes
+- name: Creating vBMC consoles file for compute nodes
   shell:
     vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} ; \
     vbmc add \
@@ -138,3 +138,56 @@
 
 - name: Update value for local_vbmc_port
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_compute.vm_count | int }}"
+
+# Make really really sure we started all of the vbmc consoles...
+- name: Update value for local_vbmc_port (bis)
+  set_fact: local_vbmc_port="{{ local_vbmc_port }}"
+
+- name: Starting vBMC consoles for Ceph nodes
+  shell:
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_ceph.vm_count | int }}
+  when: virt_env_ospd_ceph is defined
+  become: true
+
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
+
+- name: Starting vBMC consoles for Swift nodes
+  shell:
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_swift.vm_count | int }}
+  when: virt_env_ospd_swift is defined
+  become: true
+
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
+
+- name: Starting vBMC consoles for controller nodes
+  shell:
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_control.vm_count | int }}
+  when: virt_env_ospd_control is defined
+  become: true
+
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
+
+- name: Starting vBMC consoles for compute nodes
+  shell:
+    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}
+  with_sequence:
+    start=0
+    count={{ virt_env_ospd_compute.vm_count | int }}
+  when: virt_env_ospd_compute is defined
+  become: true
+
+- name: Update value for local_vbmc_port
+  set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_compute.vm_count | int }}"
+
