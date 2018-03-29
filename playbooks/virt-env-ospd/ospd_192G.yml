@@ -33,7 +33,7 @@
 
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud:
-      name: instack
+      name: instack-10
       disk_size: 512g
       cpu: 4
       mem: 24576
