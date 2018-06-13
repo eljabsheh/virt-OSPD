@@ -16,6 +16,7 @@
   </features>
   <cpu mode='host-model'>
     <model fallback='allow'/>
+    <topology sockets='1' cores='{{ virt_env_ospd_compute.cpu | int }}' threads='1'/>
   </cpu>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
