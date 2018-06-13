@@ -1,0 +1,16 @@
+---
+# file: roles/virt-env-ospd/vars/13-director.yml
+virt_env_ospd_undercloud_packages:
+  - vim
+  - strace
+  - tcpdump
+  - screen
+  - tmux
+  - git
+  - libguestfs-tools
+  - sysstat
+  - sysfsutils
+  - sos
+  - bash-completion
+  - ceph-ansible
+instackenv_pm_type: pxe_ipmitool
