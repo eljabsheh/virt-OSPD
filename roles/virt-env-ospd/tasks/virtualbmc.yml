@@ -4,7 +4,7 @@
   set_fact: local_vbmc_port="{{ vbmc_port }}"
 
 - name: Install VirtualBMC package
-  when: virt_env_ospd_director_version in ['11-director','12-director']
+  when: virt_env_ospd_director_version in ['11-director', '12-director', '13-director']
   package:
     name: "python2-virtualbmc"
     state: present
@@ -24,7 +24,7 @@
   become: true
 
 - name: Create VirtualBMC configuration file
-  when: virt_env_ospd_director_version in ['10-director', '11-director','12-director']
+  when: virt_env_ospd_director_version in ['10-director', '11-director', '12-director', '13-director']
   copy:
     mode: 0750
     dest: "/etc/virtualbmc/virtualbmc.conf"

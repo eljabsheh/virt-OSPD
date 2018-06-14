@@ -22,7 +22,7 @@
     openstack baremetal instackenv validate
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director','9-director','10-director','12-director']
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director']
         and virt_env_ospd_conf_undercloud_for_me
 
 - name: Importing instackenv.json file
@@ -31,5 +31,5 @@
     openstack baremetal import --json ~/instackenv.json
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director','9-director','10-director','12-director']
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director']
         and virt_env_ospd_conf_undercloud_for_me
