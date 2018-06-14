@@ -7,11 +7,11 @@
 
   vars:
     # Director Version
-    virt_env_ospd_director_version: 10-director
+    virt_env_ospd_director_version: 13-director
 
     # PM_TYPE # It is either pxe_ssh or pxe_ipmitool (using vbmc)
-    instackenv_pm_type: pxe_ssh
-    # instackenv_pm_type: pxe_ipmitool
+    # instackenv_pm_type: pxe_ssh
+    instackenv_pm_type: pxe_ipmitool
     vbmc_user: admin
     vbmc_password: password
     vbmc_port: 6231
@@ -33,7 +33,7 @@
 
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud:
-      name: instack-10
+      name: instack-13
       disk_size: 512g
       cpu: 4
       mem: 24576
