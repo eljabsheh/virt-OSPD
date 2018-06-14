@@ -83,23 +83,23 @@
 - name: Creating 'bonding' configuration file..
   lineinfile: create=yes state=present dest=/etc/modules-load.d/bonding.conf line="bonding"
 
-- name: openstack undercloud install (grab a coffee)
+- name: openstack undercloud install (go grab a coffee)
   command:
     openstack undercloud install
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version == '8-director' and
-        virt_env_ospd_upload_images is defined and
-        virt_env_ospd_upload_images
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director'] and
+        virt_env_ospd_conf_undercloud_for_me is defined and
+        virt_env_ospd_conf_undercloud_for_me
 
-- name: Installing OSP-d images via Yum (OSP-d 8 only)
+- name: Installing OSP-d images via Yum (OSP-d 8+ only)
   yum:
     name="{{ item }}"
     state=latest
   with_items:
     - rhosp-director-images
     - rhosp-director-images-ipa
-  when: virt_env_ospd_director_version == '8-director' and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director'] and
         virt_env_ospd_upload_images is defined and
         not virt_env_ospd_upload_images
 
@@ -112,7 +112,7 @@
   become_user: stack
   when: virt_env_ospd_director_version == '7-director' and
         virt_env_ospd_upload_images is defined and
-        not virt_env_ospd_upload_images
+        virt_env_ospd_upload_images
 
 - name: Uploading images from playbook (OSP-d 7 only)
   copy:
@@ -128,7 +128,7 @@
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
-- name: Uploading images from playbook (OSP-d 8 only)
+- name: Uploading images from playbook (OSP-d 8+ only)
   copy:
     src=ospd8/{{ item }}
     dest=~/images/
@@ -137,11 +137,11 @@
     - overcloud-full.tar
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version == '8-director' and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
-- name: Extracting OSP-d images (OSP-d 8 only)
+- name: Extracting OSP-d images (OSP-d 8+ only)
   unarchive:
     src=/usr/share/rhosp-director-images/{{ item }}
     dest=~/images/
@@ -151,7 +151,7 @@
     - overcloud-full.tar
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version == '8-director' and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director'] and
         virt_env_ospd_upload_images is defined and
         not virt_env_ospd_upload_images
 
@@ -178,7 +178,7 @@
     - overcloud-full.tar
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version == '8-director' and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
@@ -197,7 +197,7 @@
     neutron subnet-update $(neutron subnet-list -F id --quote none -f csv | grep -v id) --dns-nameserver {{ virt_env_ospd_neutron_dns }}
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version == '8-director' and
-        virt_env_ospd_upload_images is defined and
-        virt_env_ospd_upload_images
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '12-director', '13-director'] and
+        virt_env_ospd_conf_undercloud_for_me is defined and
+        virt_env_ospd_conf_undercloud_for_me
 
