@@ -19,7 +19,9 @@ do
 	case $vm in 
 		overcloud*)
 			virsh undefine $vm
-			vbmc delete $vm
+			if [ -x /usr/bin/vbmc ]; then
+				vbmc delete $vm
+			fi
 			/bin/rm -fv /var/lib/libvirt/images/${vm}*.qcow2 /shared/kvm0/images/${vm}*.qcow2
 			;;
 		*)
