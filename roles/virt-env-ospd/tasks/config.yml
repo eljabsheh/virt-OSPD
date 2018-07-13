@@ -32,7 +32,8 @@
   lineinfile:
     dest=/etc/hosts
     regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
-    line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    line='10.20.0.2 {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    #line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 
 - include: subscribtion.yml
   when: virt_env_ospd_rhos_release is defined and
