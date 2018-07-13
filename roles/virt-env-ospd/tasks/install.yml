@@ -30,8 +30,7 @@
     user: root
     state: present
     key: "{{ ironic_pub_key.stdout }}"
-  delegate_to: "{{ item }}"
-  with_items: "{{ groups['hypervisor'] }}"
+  delegate_to: "{{ groups.hypervisor[0] }}"
   become: true
 
 - name: Clean undercloud's DHCP ip a bit...
