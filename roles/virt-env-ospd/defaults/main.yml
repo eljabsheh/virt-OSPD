@@ -9,7 +9,6 @@ virt_env_ospd_rhn_subscribe: false
 virt_env_ospd_rhos_release: false
 virt_env_ospd_disable_repos: false
 virt_env_ospd_ironic_introspection: true
-virt_env_ospd_director_version: 8-director
 virt_env_ospd_vm_name: baremetal
 virt_env_ospd_undercloud_hostname: manager.mydomain.lab
 virt_env_ospd_neutron_dns: 8.8.8.8
