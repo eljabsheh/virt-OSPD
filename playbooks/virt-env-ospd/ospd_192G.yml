@@ -129,6 +129,7 @@
     virt_env_ospd_upload_images: false
     virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
     virt_env_ospd_conf_undercloud_for_me: false
+    virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
 
     virt_env_ospd_undercloud_conf:
       - { section: 'DEFAULT', option: 'enable_tempest', value: 'false' }
