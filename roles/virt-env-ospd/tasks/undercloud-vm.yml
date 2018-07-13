@@ -114,9 +114,9 @@
 - name: Configuring hypervisor's /etc/hosts file
   lineinfile:
     dest=/etc/hosts
-    regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
-    line='{{ ip.stdout.split('/')[0] }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
-  when: ansible_dns.domain is defined and ansible_dns.domain != "lasthome.solace.krynn"
+    regexp='([0-9]{1,3}\.){3}[0-9]{1,3} .*{{ virt_env_ospd_undercloud.name }}$'
+    line='{{ ip.stdout.split('/')[0] }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }} {{ virt_env_ospd_undercloud.name }}'
+  when: ansible_dns.domain is not defined or ansible_dns.domain != "lasthome.solace.krynn"
 
 - name: Waiting for undercloud to finish booting
   wait_for:
