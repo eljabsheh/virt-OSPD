@@ -28,11 +28,18 @@
     hostname -I|xargs -n1|grep '192\.168\.122\.'
   register: undercloud_dhcp_ip
 
-- name: Configuring Undercloud's /etc/hosts file
+- name: Configuring Undercloud's /etc/hosts file (Purge old entries)
   lineinfile:
     dest=/etc/hosts
-    regexp='.*\s{{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    regexp='[0-9.]+\s{{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    state=absent
+
+- name: Configuring Undercloud's /etc/hosts file (Add new entries)
+  lineinfile:
+    dest=/etc/hosts
+    state=present
     line='10.20.0.2\t{{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    insertafter='^127\.0\.0\.1'
     #line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 
 - include: subscribtion.yml
