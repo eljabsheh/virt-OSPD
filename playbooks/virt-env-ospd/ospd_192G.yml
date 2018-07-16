@@ -33,7 +33,7 @@
 
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud:
-      name: instack-10
+      name: name: instack-{{ virt_env_ospd_director_version.split("-")[0] | lower }}
       disk_size: 512g
       cpu: 4
       mem: 24576
