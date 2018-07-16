@@ -28,7 +28,7 @@
 
     # VM #
     virt_env_ospd_vm_name: overcloud
-    virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
+    virt_env_ospd_guest_name: rhel-7.y-guest.x86_64.qcow2
     virt_env_ospd_guest_download: false
 
     # UNDERCLOUD NODE #
@@ -127,7 +127,7 @@
     virt_env_ospd_rhos_release: false
     virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_upload_images: false
-    virt_env_ospd_guest_name: rhel-7.4-guest.x86_64.qcow2
+    virt_env_ospd_guest_name: rhel-7.y-guest.x86_64.qcow2
     virt_env_ospd_conf_undercloud_for_me: false
     virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
 

@@ -4,7 +4,7 @@
     debug:
       msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"
 
-  - name: Copy RHEL 7.5 image to destination
+  - name: Copy RHEL 7.y image to destination
     copy:
       src=/net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.5-guest.x86_64.qcow2
       dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
