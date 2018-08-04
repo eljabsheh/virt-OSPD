@@ -14,7 +14,7 @@
     <acpi/>
     <apic/>
   </features>
-  <cpu mode='host-model'>
+  <cpu mode='host-model' check='partial'>
     <model fallback='allow'/>
     <topology sockets='1' cores='{{ virt_env_ospd_compute.cpu | int }}' threads='1'/>
   </cpu>
