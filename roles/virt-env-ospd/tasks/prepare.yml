@@ -52,7 +52,7 @@
   with_items: "{{ virt_env_ospd_bridges }}"
   changed_when: false
 
-- name: Enabling nested for KVM module
+- name: Enabling nested KVM (kvm_intel module)
   copy:
     src=etc/modprobe.d/kvm_intel.conf
     dest=/etc/modprobe.d/kvm_intel.conf
@@ -74,10 +74,11 @@
   changed_when: false
   when: virt_env_ospd_tuned
 
-- name: Create subdirectory "images" under {{ virt_env_ospd_dir }}
-  file:
-    path: "{{ virt_env_ospd_dir }}/images"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+#- name: Create subdirectory "images" under {{ virt_env_ospd_dir }}
+#  become: true
+#  file:
+#    path: "{{ virt_env_ospd_dir }}/images"
+#    state: directory
+#    owner: root
+#    group: root
+#    mode: 0755
