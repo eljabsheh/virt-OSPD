@@ -1,5 +1,8 @@
 #!/bin/bash
 # Root check
+STIMEOUT=30
+[ "root" != "$USER" ] && exec sudo $0 "$@"
+
 if [ $UID -ne 0 ]; then
         echo "Run $0 as root!" ; exit 127
 fi
