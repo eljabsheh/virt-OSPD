@@ -8,12 +8,19 @@
   debug:
     msg: "virt_env_ospd_undercloud.name = {{ virt_env_ospd_undercloud.name  }}"
 
-- name: Copy RHEL 7.y image to destination
-  copy:
-    src=/net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.5-guest.x86_64.qcow2
-    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
-    owner=root
-    group=root
-    mode=0644
-    force=no
-  when: ansible_dns.domain == "lasthome.solace.krynn"
+# BROKEN BROKEN BROKEN on vxfs, see: https://github.com/ansible/ansible/issues/29728
+#- name: Copy RHEL 7.y image to destination
+#  copy:
+#    src=/net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.5-guest.x86_64.qcow2
+#    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
+#    owner=qemu
+#    group=qemu
+#    mode=0644
+#    #force=no
+#  when: ansible_dns.domain == "lasthome.solace.krynn"
+
+- name: Copy RHEL 7 image to destination ( {{ virt_env_ospd_dir }}/images )
+  become: true
+  shell:
+    /usr/bin/rsync -upt /net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.5-guest.x86_64.qcow2 \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
