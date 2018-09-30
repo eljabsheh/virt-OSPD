@@ -29,20 +29,40 @@
         vm.failed
   ignore_errors: true
 
-- name: Copying cloud-init ISO to working directory
-  copy:
-    src=files/{{ virt_env_ospd_undercloud.cloud_init_iso }}
-    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+#- name: Copying cloud-init ISO to working directory
+#  become: true
+#  copy:
+#    src=files/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+#    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}
+#  when: vm.failed is defined and
+#        vm.failed
+
+#- name: Creating QCOW2 backing file for the undercloud
+#  command:
+#    qemu-img create \
+#    -b {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
+#    -f {{ virt_env_ospd_format }} \
+#    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
+#  creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
+#  when: vm.failed is defined and
+#        vm.failed
+
+- name: Creating QCOW2 independent boot disk for the undercloud
+  command:
+    qemu-img convert \
+    -O {{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
+  args:
+    creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
   when: vm.failed is defined and
         vm.failed
 
-- name: Creating QCOW2 baking file for the undercloud
+- name: Resize undercloud boot disk
   command:
-    qemu-img create \
-    -b {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
-    -f {{ virt_env_ospd_format }} \
-    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
-    creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
+    qemu-img resize \
+    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }} \
+    {{ virt_env_ospd_undercloud.disk_size }}
   when: vm.failed is defined and
         vm.failed
 
