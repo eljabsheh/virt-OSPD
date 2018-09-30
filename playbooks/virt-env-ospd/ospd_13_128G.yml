@@ -28,13 +28,13 @@
 
     # VM #
     virt_env_ospd_vm_name: overcloud
-    virt_env_ospd_guest_name: rhel-7.y-guest.x86_64.qcow2
+    virt_env_ospd_guest_name: rhel-7-guest.x86_64.qcow2
     virt_env_ospd_guest_download: false
 
     # UNDERCLOUD NODE #
     virt_env_ospd_undercloud:
       name: instack-{{ virt_env_ospd_director_version.split("-")[0] | lower }}
-      disk_size: 512g
+      disk_size: 512G
       cpu: 4
       mem: 16384
       cloud_init_iso: cloud-init.iso
@@ -42,7 +42,7 @@
       # CEPH VM
     virt_env_ospd_ceph:
       name: ceph
-      disk_size: 128g
+      disk_size: 128G
       cpu: 4
       mem: 6144
       # The last digit is not missing !!
@@ -63,7 +63,7 @@
     # SWIFT VM
     virt_env_ospd_swift:
       name: swift
-      disk_size: 128g
+      disk_size: 128G
       cpu: 4
       mem: 6144
       # The last digit is not missing !!
@@ -84,7 +84,7 @@
     # CONTROL VM
     virt_env_ospd_control:
       name: control
-      disk_size: 128g
+      disk_size: 128G
       cpu: 4
       mem: 16384
       # The last digit is not missing !!
@@ -97,7 +97,7 @@
     # COMPUTE VM
     virt_env_ospd_compute:
       name: compute
-      disk_size: 128g
+      disk_size: 128G
       cpu: 4
       mem: 8192
       # The last digit is not missing !!
@@ -127,7 +127,7 @@
     virt_env_ospd_rhos_release: false
     virt_env_ospd_undercloud_hostname: instack.training.lab
     virt_env_ospd_upload_images: false
-    virt_env_ospd_guest_name: rhel-7.y-guest.x86_64.qcow2
+    virt_env_ospd_guest_name: rhel-7-guest.x86_64.qcow2
     virt_env_ospd_conf_undercloud_for_me: false
     virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
 
