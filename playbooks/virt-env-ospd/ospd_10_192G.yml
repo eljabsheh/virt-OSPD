@@ -17,7 +17,7 @@
     vbmc_port: 6231
 
     # NETWORK #
-    virt_env_ospd_undercloud_hostname: instack.training.lab
+    virt_env_ospd_undercloud_hostname: osp5t.lasthome.solace.krynn
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
     virt_env_ospd_dir: /shared/kvm0
@@ -125,7 +125,7 @@
     # UNDERCLOUD NODE #
     virt_env_ospd_ironic_introspection: false
     virt_env_ospd_rhos_release: false
-    virt_env_ospd_undercloud_hostname: instack.training.lab
+    virt_env_ospd_undercloud_hostname: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_undercloud_hostname'] }}"
     virt_env_ospd_upload_images: false
     virt_env_ospd_guest_name: rhel-7-guest.x86_64.qcow2
     virt_env_ospd_conf_undercloud_for_me: false
