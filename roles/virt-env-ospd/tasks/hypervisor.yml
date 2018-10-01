@@ -1,12 +1,13 @@
 ---
 # file: roles/virt-env-ospd/tasks/hypervisor.yml
-- name: set_fact on instackenv_pm_type
+- name: set some facts on Hypervisor (instackenv_pm_type, vbmc_user, etc...)
   set_fact:
     instackenv_pm_type: "{{ instackenv_pm_type }}"
     vbmc_user: "{{ vbmc_user }}"
     vbmc_password: "{{ vbmc_password }}"
     vbmc_port: "{{ vbmc_port }}"
     virt_env_ospd_director_version: "{{ virt_env_ospd_director_version }}"
+    virt_env_ospd_undercloud_hostname: "{{ virt_env_ospd_undercloud_hostname }}"
 
 - name: Checking if VM exists (ignore the error)
   virt:
