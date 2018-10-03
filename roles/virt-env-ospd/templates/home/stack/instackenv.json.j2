@@ -33,7 +33,8 @@
             "pm_password": "{{ hostvars[groups['hypervisor'][0]]['vbmc_password'] }}",
             "pm_port": "{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] |int + loop.index0 }}",
 {% endif %}
-            "pm_addr": "{{ instackenv_pm_addr }}"
+            "pm_addr": "{{ instackenv_pm_addr }}",
+            "_comment": "Node info: {{ item }}"
         }{% if not loop.last %}
 ,
         {% endif %}
