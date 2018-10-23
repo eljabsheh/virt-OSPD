@@ -16,7 +16,7 @@
     group=stack
     mode=0640
     force=yes
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director']
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director']
 
 - name: Validating instackenv.json file (OSP-d 8 only)
   shell:
