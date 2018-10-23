@@ -12,5 +12,4 @@ virt_env_ospd_undercloud_packages:
   - sysfsutils
   - sos
   - bash-completion
-  - ceph-ansible
 instackenv_pm_type: pxe_ipmitool
