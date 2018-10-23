@@ -102,6 +102,16 @@
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
+- name: Installing ceph-ansible via Yum (OSP-d 12+ only)
+  yum:
+    name="{{ item }}"
+    state=latest
+  with_items:
+    - ceph-ansible
+  when: virt_env_ospd_director_version in ['12-director', '13-director'] and
+        virt_env_ospd_upload_images is defined and
+        virt_env_ospd_upload_images
+
 - name: Downloading images from mburns repo (OSP-d 7 only)
   get_url:
     url={{ item }}
