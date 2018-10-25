@@ -7,7 +7,7 @@
 
   vars:
     # Director Version
-    virt_env_ospd_director_version: 11-director
+    virt_env_ospd_director_version: 9-director
 
     # PM_TYPE # It is either pxe_ssh or pxe_ipmitool
     instackenv_pm_type: pxe_ssh
@@ -17,7 +17,7 @@
     vbmc_port: 6231
 
     # NETWORK #
-    virt_env_ospd_undercloud_hostname: osp6p.lasthome.solace.krynn
+    virt_env_ospd_undercloud_hostname: osp3r.lasthome.solace.krynn
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
     virt_env_ospd_dir: /shared/kvm0
@@ -36,7 +36,7 @@
       name: instack-{{ virt_env_ospd_director_version.split("-")[0] | lower }}
       disk_size: 512G
       cpu: 4
-      mem: 16384
+      mem: 12288
       cloud_init_iso: cloud-init.iso
 
       # CEPH VM
@@ -44,9 +44,9 @@
       name: ceph
       disk_size: 128G
       cpu: 4
-      mem: 6144
+      mem: 4096
       # The last digit is not missing !!
-      mac: 52:54:00:ab:e3:8
+      mac: 52:54:00:ae:e3:8
       vm_count: 4
       extra_disk_count: 7
 
@@ -65,9 +65,9 @@
       name: swift
       disk_size: 128G
       cpu: 4
-      mem: 6144
+      mem: 4096
       # The last digit is not missing !!
-      mac: 52:54:00:ab:e3:5
+      mac: 52:54:00:ae:e3:5
       vm_count: 3
       extra_disk_count: 0
 
@@ -86,9 +86,9 @@
       name: control
       disk_size: 128G
       cpu: 4
-      mem: 16384
+      mem: 12288
       # The last digit is not missing !!
-      mac: 52:54:00:ab:e3:6
+      mac: 52:54:00:ae:e3:6
       vm_count: 3
     virt_env_ospd_control_extra_disk:
       - { name: sdb, size: 8192g, format: qcow2, bus: sata }
@@ -99,9 +99,9 @@
       name: compute
       disk_size: 128G
       cpu: 4
-      mem: 8192
+      mem: 6144
       # The last digit is not missing !!
-      mac: 52:54:00:ab:e3:7
+      mac: 52:54:00:ae:e3:7
       vm_count: 6
       extra_disk_count: 7
     virt_env_ospd_compute_extra_disk:
@@ -143,22 +143,22 @@
     # Number of lines for type should match count of said type above.
     # Each MAC should start with type-prefix and with '0' as the first digit. These values are not automagically computed...
     undercloud_nodes:
-      - { mac: "52:54:00:ab:e3:80", profile: "ceph-storage" }
-      - { mac: "52:54:00:ab:e3:81", profile: "ceph-storage" }
-      - { mac: "52:54:00:ab:e3:82", profile: "ceph-storage" }
-      - { mac: "52:54:00:ab:e3:83", profile: "ceph-storage" }
-      - { mac: "52:54:00:ab:e3:50", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:51", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:52", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:60", profile: "control" }
-      - { mac: "52:54:00:ab:e3:61", profile: "control" }
-      - { mac: "52:54:00:ab:e3:62", profile: "control" }
-      - { mac: "52:54:00:ab:e3:70", profile: "compute" }
-      - { mac: "52:54:00:ab:e3:71", profile: "compute" }
-      - { mac: "52:54:00:ab:e3:72", profile: "compute" }
-      - { mac: "52:54:00:ab:e3:73", profile: "compute" }
-      - { mac: "52:54:00:ab:e3:74", profile: "compute" }
-      - { mac: "52:54:00:ab:e3:75", profile: "compute" }
+      - { mac: "52:54:00:ae:e3:80", profile: "ceph-storage" }
+      - { mac: "52:54:00:ae:e3:81", profile: "ceph-storage" }
+      - { mac: "52:54:00:ae:e3:82", profile: "ceph-storage" }
+      - { mac: "52:54:00:ae:e3:83", profile: "ceph-storage" }
+      - { mac: "52:54:00:ae:e3:50", profile: "swift-storage" }
+      - { mac: "52:54:00:ae:e3:51", profile: "swift-storage" }
+      - { mac: "52:54:00:ae:e3:52", profile: "swift-storage" }
+      - { mac: "52:54:00:ae:e3:60", profile: "control" }
+      - { mac: "52:54:00:ae:e3:61", profile: "control" }
+      - { mac: "52:54:00:ae:e3:62", profile: "control" }
+      - { mac: "52:54:00:ae:e3:70", profile: "compute" }
+      - { mac: "52:54:00:ae:e3:71", profile: "compute" }
+      - { mac: "52:54:00:ae:e3:72", profile: "compute" }
+      - { mac: "52:54:00:ae:e3:73", profile: "compute" }
+      - { mac: "52:54:00:ae:e3:74", profile: "compute" }
+      - { mac: "52:54:00:ae:e3:75", profile: "compute" }
 
     virt_env_ospd_flavors:
       - { name: "control", ram: "4096", disk: "20", cpu: "2" }

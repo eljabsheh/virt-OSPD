@@ -17,7 +17,7 @@
     vbmc_port: 6231
 
     # NETWORK #
-    virt_env_ospd_undercloud_hostname: osp3p.lasthome.solace.krynn
+    virt_env_ospd_undercloud_hostname: osp5p.lasthome.solace.krynn
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
     virt_env_ospd_dir: /shared/kvm0
@@ -143,13 +143,13 @@
     # Number of lines for type should match count of said type above.
     # Each MAC should start with type-prefix and with '0' as the first digit. These values are not automagically computed...
     undercloud_nodes:
-      - { mac: "52:54:00:ab:e3:50", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:51", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:52", profile: "swift-storage" }
       - { mac: "52:54:00:ab:e3:80", profile: "ceph-storage" }
       - { mac: "52:54:00:ab:e3:81", profile: "ceph-storage" }
       - { mac: "52:54:00:ab:e3:82", profile: "ceph-storage" }
       - { mac: "52:54:00:ab:e3:83", profile: "ceph-storage" }
+      - { mac: "52:54:00:ab:e3:50", profile: "swift-storage" }
+      - { mac: "52:54:00:ab:e3:51", profile: "swift-storage" }
+      - { mac: "52:54:00:ab:e3:52", profile: "swift-storage" }
       - { mac: "52:54:00:ab:e3:60", profile: "control" }
       - { mac: "52:54:00:ab:e3:61", profile: "control" }
       - { mac: "52:54:00:ab:e3:62", profile: "control" }

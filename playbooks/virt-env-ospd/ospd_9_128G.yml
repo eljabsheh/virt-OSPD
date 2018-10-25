@@ -7,7 +7,7 @@
 
   vars:
     # Director Version
-    virt_env_ospd_director_version: 11-director
+    virt_env_ospd_director_version: 9-director
 
     # PM_TYPE # It is either pxe_ssh or pxe_ipmitool
     instackenv_pm_type: pxe_ssh
@@ -17,7 +17,7 @@
     vbmc_port: 6231
 
     # NETWORK #
-    virt_env_ospd_undercloud_hostname: osp6p.lasthome.solace.krynn
+    virt_env_ospd_undercloud_hostname: osp5p.lasthome.solace.krynn
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
     virt_env_ospd_dir: /shared/kvm0

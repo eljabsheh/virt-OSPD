@@ -10,7 +10,7 @@
     virt_env_ospd_director_version: 12-director
 
     # PM_TYPE # It is either pxe_ssh or pxe_ipmitool (using vbmc)
-    # # instackenv_pm_type: pxe_ssh
+    # instackenv_pm_type: pxe_ssh
     instackenv_pm_type: pxe_ipmitool
     vbmc_user: admin
     vbmc_password: password

@@ -143,13 +143,13 @@
     # Number of lines for type should match count of said type above.
     # Each MAC should start with type-prefix and with '0' as the first digit. These values are not automagically computed...
     undercloud_nodes:
-      - { mac: "52:54:00:ab:e3:50", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:51", profile: "swift-storage" }
-      - { mac: "52:54:00:ab:e3:52", profile: "swift-storage" }
       - { mac: "52:54:00:ab:e3:80", profile: "ceph-storage" }
       - { mac: "52:54:00:ab:e3:81", profile: "ceph-storage" }
       - { mac: "52:54:00:ab:e3:82", profile: "ceph-storage" }
       - { mac: "52:54:00:ab:e3:83", profile: "ceph-storage" }
+      - { mac: "52:54:00:ab:e3:50", profile: "swift-storage" }
+      - { mac: "52:54:00:ab:e3:51", profile: "swift-storage" }
+      - { mac: "52:54:00:ab:e3:52", profile: "swift-storage" }
       - { mac: "52:54:00:ab:e3:60", profile: "control" }
       - { mac: "52:54:00:ab:e3:61", profile: "control" }
       - { mac: "52:54:00:ab:e3:62", profile: "control" }
