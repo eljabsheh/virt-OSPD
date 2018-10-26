@@ -1,0 +1,6 @@
+#!/bin/bash
+
+{% for item in undercloud_nodes %}
+ironicUuid=$(openstack baremetal port list --long --address {{ item.mac }} -f value -c 'Node UUID')
+openstack baremetal node set $ironicUuid --property capabilities=profile:{{ item.profile }},boot_option:local
+{% endfor %}
