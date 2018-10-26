@@ -35,7 +35,7 @@
     virt_env_ospd_undercloud:
       name: instack-{{ virt_env_ospd_director_version.split("-")[0] | lower }}
       disk_size: 512G
-      cpu: 4
+      cpu: 8
       mem: 16384
       cloud_init_iso: cloud-init.iso
 
