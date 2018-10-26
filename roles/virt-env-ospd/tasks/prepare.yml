@@ -57,7 +57,7 @@
     src=etc/modprobe.d/kvm_intel.conf
     dest=/etc/modprobe.d/kvm_intel.conf
 
-- name: Reloading module (if no KVM are running)
+- name: Reloading module (if no KVM domains are running)
   shell:
     if ! grep -q Y /sys/module/kvm_intel/parameters/nested; then rmmod kvm_intel; modprobe kvm_intel; fi
   changed_when: false
