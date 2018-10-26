@@ -22,9 +22,19 @@
         virt_env_ospd_conf_undercloud_for_me is defined
         and virt_env_ospd_conf_undercloud_for_me
 
-- name: Generating ironic-profiling script
+- name: Generating ironic-profiling script (ironic cli)
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director']
   template:
     src=home/stack/ironic-profiling.sh.j2
+    dest=/home/stack/ironic-profiling.sh
+    owner=stack
+    group=stack
+    mode=0755
+
+- name: Generating ironic-profiling script (openstack baremetal cli)
+  when: virt_env_ospd_director_version in ['11-director', '12-director', '13-director']
+  template:
+    src=home/stack/ironic-profiling-v2.sh.j2
     dest=/home/stack/ironic-profiling.sh
     owner=stack
     group=stack
