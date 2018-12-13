@@ -99,7 +99,7 @@
       name: compute
       disk_size: 128G
       cpu: 4
-      mem: 8192
+      mem: 16384
       # The last digit is not missing !!
       mac: 52:54:00:ab:e3:7
       vm_count: 6
