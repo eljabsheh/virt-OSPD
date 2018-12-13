@@ -120,4 +120,4 @@ virt_env_ospd_net_driver: virtio
 
 # virt_env_ospd_cache_mode: none
 # virt_env_ospd_cache_mode: writethrough
-virt_env_ospd_cache_mode: writeback
+virt_env_ospd_cache_mode: directsync
