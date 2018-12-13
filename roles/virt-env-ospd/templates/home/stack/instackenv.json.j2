@@ -20,6 +20,7 @@
             "mac":[
                 "{{ item.mac }}"
             ],
+            "capabilities":"profile:{{ item.profile }},boot_option:local",
             "cpu": "{{ instackenv_cpu }}",
             "memory": "{{ instackenv_memory }}",
             "disk": "{{ instackenv_disk }}",
