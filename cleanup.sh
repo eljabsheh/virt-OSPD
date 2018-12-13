@@ -21,11 +21,27 @@ for vm in $(virsh list --all|grep -vw instack |awk '{ if ( $1 == "-" ) { print $
 do
 	case $vm in 
 		overcloud*)
+			# Start by looking at disks listed in the domain config
+			for mydisk in $(virsh domblklist ${vm}| \
+				egrep  '[[:space:]]/')
+			do
+				/bin/rm -fv ${mydisk}
+			done
+			# Just to be sure, make an extra clean pass
+			for mydir in $(virsh domblklist ${vm}| \
+				egrep  '[[:space:]]/'| \
+				sed -e  's@^.*[[:space:]]/@\/@'| \
+				xargs -n1 dirname| \
+				sort -u)
+			do
+				/bin/rm -fv ${mydir}/${vm}-{boot,extra}*.qcow2
+			done
+
+			# Undefine domain
 			virsh undefine $vm
 			if [ -x /usr/bin/vbmc ]; then
 				vbmc delete $vm
 			fi
-			/bin/rm -fv /var/lib/libvirt/images/${vm}*.qcow2 /shared/kvm0/images/${vm}*.qcow2
 			;;
 		*)
 	esac
