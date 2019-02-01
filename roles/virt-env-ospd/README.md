@@ -441,7 +441,7 @@ EOF
 
 Register to RHSM
 ---------
-If you don't want to use ``rho-release``, you will have to register the server to the RHSM. As usual to perform this action you will need your Red Hat credentials and declare them to the playbook and then enable repositories.
+If you don't want to use ``rhos-release``, you will have to register the server to RHSM. As usual to perform this action you will need your Red Hat credentials and declare them to the playbook and then enable repositories.
 
 **With RHSM subscription, you will not be able to deploy puddle versions.**
 
