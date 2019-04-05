@@ -74,7 +74,7 @@
 - name: Installing undercloud pre-requisites
   yum:
     name={{ item }}
-    state=present
+    state=installed
   with_items: "{{ virt_env_ospd_undercloud_packages }}"
 
 - name: Creating directories in stack's home
