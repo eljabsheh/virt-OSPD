@@ -100,6 +100,10 @@
     virsh domiflist {{ virt_env_ospd_undercloud.name }} | awk '$3 ~ /{{ virt_env_ospd_libvirt_bridge }}/ { print $NF }'
   register: mac
 
+- name: Set an MTU of 9000 on the internal-only networks
+  shell:
+    for vnet in $(cd /sys/class/net/{{ virt_env_ospd_bridges[1] }}/brif/;ls) ; do /sbin/ip link set dev ${vnet} mtu 9000; done
+
 - name: Getting the undercloud's DHCP address
   shell:
     virsh net-dhcp-leases {{ virt_env_ospd_libvirt_net_name }} | awk '$3 ~ /{{ mac.stdout }}/ { print $5 }'
