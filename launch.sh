@@ -1,6 +1,9 @@
 #!/bin/bash
 
-# Give hints:
+# Garbage collection
+find . -name "*.retry" -exec rm -f {} \;
+
+# Provide hints:
 echo -e "(II) Here are some suggestions for some specific systems:"
 echo -e "----------------------------------------------"
 echo -e " - p50r or ravenvale\t: 32G config"
