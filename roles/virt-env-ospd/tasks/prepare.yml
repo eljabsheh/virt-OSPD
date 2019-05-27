@@ -70,7 +70,7 @@
 
 - name: Activating virtual-host tuned profile
   shell:
-    if [ $(tuned-adm active | awk '{ print $NF }') != 'virtual-host' ]; then tuned-adm profile virtual-host; fi
+    if [ $(tuned-adm active | awk '{ print $NF }') != 'balanced' ]; then tuned-adm profile balanced; fi
   changed_when: false
   when: virt_env_ospd_tuned
 
