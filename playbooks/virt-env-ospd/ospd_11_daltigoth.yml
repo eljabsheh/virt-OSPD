@@ -1,0 +1,167 @@
+# HYPERVISOR #
+- hosts: hypervisor
+  remote_user: root
+
+  roles:
+    - virt-env-ospd
+
+  vars:
+    # Director Version
+    virt_env_ospd_director_version: 11-director
+
+    # PM_TYPE # It is either pxe_ssh or pxe_ipmitool
+    instackenv_pm_type: pxe_ssh
+    # instackenv_pm_type: pxe_ipmitool
+    vbmc_user: admin
+    vbmc_password: password
+    vbmc_port: 6231
+
+    # NETWORK #
+    virt_env_ospd_undercloud_hostname: osp6d.lasthome.solace.krynn
+    virt_env_ospd_libvirt_bridge: virbr0
+    virt_env_ospd_external_bridge: bond0
+    virt_env_ospd_dir: /shared/kvm0
+    virt_env_ospd_bridges:
+      - net-pxe
+      - net-full
+      - net-other
+
+    # VM #
+    virt_env_ospd_vm_name: overcloud
+    virt_env_ospd_guest_name: rhel-7-guest.x86_64.qcow2
+    virt_env_ospd_guest_download: false
+
+    # UNDERCLOUD NODE #
+    virt_env_ospd_undercloud:
+      name: instack-{{ virt_env_ospd_director_version.split("-")[0] | lower }}
+      disk_size: 512G
+      cpu: 4
+      mem: 24576
+      cloud_init_iso: cloud-init.iso
+
+      # CEPH VM
+    virt_env_ospd_ceph:
+      name: ceph
+      disk_size: 128G
+      cpu: 4
+      mem: 8192
+      # The last digit is not missing !!
+      mac: 52:54:00:ac:e3:8
+      vm_count: 4
+      extra_disk_count: 7
+
+    # CEPH EXTRA DISKS
+    virt_env_ospd_ceph_extra_disk:
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdd, size: 8192g, format: qcow2, bus: sata }
+      - { name: sde, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdf, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdg, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdh, size: 8192g, format: qcow2, bus: sata }
+
+    # SWIFT VM
+    virt_env_ospd_swift:
+      name: swift
+      disk_size: 128G
+      cpu: 4
+      mem: 8192
+      # The last digit is not missing !!
+      mac: 52:54:00:ac:e3:5
+      vm_count: 3
+      extra_disk_count: 0
+
+    # SWIFT EXTRA DISKS
+    virt_env_ospd_swift_extra_disk:
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdd, size: 8192g, format: qcow2, bus: sata }
+      - { name: sde, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdf, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdg, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdh, size: 8192g, format: qcow2, bus: sata }
+
+    # CONTROL VM
+    virt_env_ospd_control:
+      name: control
+      disk_size: 128G
+      cpu: 4
+      mem: 24576
+      # The last digit is not missing !!
+      mac: 52:54:00:ac:e3:6
+      vm_count: 3
+    virt_env_ospd_control_extra_disk:
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
+
+    # COMPUTE VM
+    virt_env_ospd_compute:
+      name: compute
+      disk_size: 128G
+      cpu: 4
+      mem: 16384
+      # The last digit is not missing !!
+      mac: 52:54:00:ac:e3:7
+      vm_count: 6
+      extra_disk_count: 7
+    virt_env_ospd_compute_extra_disk:
+      - { name: sdb, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdc, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdd, size: 8192g, format: qcow2, bus: sata }
+      - { name: sde, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdf, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdg, size: 8192g, format: qcow2, bus: sata }
+      - { name: sdh, size: 8192g, format: qcow2, bus: sata }
+
+# UNDERCLOUD #
+- hosts: undercloud
+  remote_user: root
+
+  roles:
+    - virt-env-ospd
+
+  vars:
+    virt_env_ospd_dir: /shared/kvm0
+    # UNDERCLOUD NODE #
+    virt_env_ospd_ironic_introspection: false
+    virt_env_ospd_rhos_release: false
+    virt_env_ospd_undercloud_hostname: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_undercloud_hostname'] }}"
+    virt_env_ospd_upload_images: false
+    virt_env_ospd_guest_name: rhel-7-guest.x86_64.qcow2
+    virt_env_ospd_conf_undercloud_for_me: false
+    virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
+
+    virt_env_ospd_undercloud_conf:
+      - { section: 'DEFAULT', option: 'enable_tempest', value: 'false' }
+      - { section: 'DEFAULT', option: 'inspection_extras', value: 'true' }
+
+    # BAREMETAL NODES #
+    # You can use this command to get the SSH key on one line:
+    # sed ':a;N;$!ba;s/\n/\\n/g' ~/.ssh/id_rsa
+    virt_env_ospd_ssh_prv: -----BEGIN RSA PRIVATE KEY-----\nMIIEoQIBAAKCAQEAo5rMVDTzgjmpB24uJFIP69cjoymYFWhO5wv52Y7e6hFbAC15\nd3wdiojK2SwJNj5lN7xTyfmMAS66XHN1GeEv9C91pme31fKQvuS/iLmPyvhvaFAL\nQeBJSvZktpbrcHWrKv95n8bYdGePBA6oPu7wm4aLJRXPrdbKQbxqEgZW5J3yG/Ue\nVhltME2/f+evkQVzq9I/7M+xNw7zNUcQJwmsprTVC7ZVHTjOmUPodGHlnilD1BRA\nh/uObP8a4UmHoysDWDaThAABDueQuvINmFkW4tfJ4EQ1XlVOm9kQYNV+P5gc+Y67\nPWkMxdO4LY9V4A/s84sRBq6ZHUI2t9rjJZg82QIBIwKCAQB+NZZPlo/2vsQ47pif\nrQT3wzi/sl9g+LHlb6N78d8pmFwktV2z8ggpCnCY53TSEuBeMjICNYlCvaW1CJwp\n6DrvklNxvbmzrH5KHi1a2Epav6ZmaaJIwva2K8oJMpheEaFNDjlAvfdvvZo2VHMp\nO/twqZ6KUqeGGrlIp0qC7vKTGYY1Imvw2pyrnh/6zhBqLvj3sDOm43I+FQkhBfrE\nUa+ODjyxfxXbGuPPocoaIsNVP6hGANZ093Qr5wGMa3eOA2ypcAut1vZLaQeCMfCm\nih34nE8luHb+KHi+P6qebgGyC3xgGM9QZotkyYGAawaFOhhgocIjIqQjR3iZHs6M\n+YEPAoGBANKHjzimF9GvGkAdipFlDDrFzkXM57TgFpbzpsnGi21AM7XSZpB2hLBp\n0qlVtIHoh+H+sCwoOM4DCnNsOZDwn8r2mnoM1hG8D7lNXO98lLZa8v2GGrcsGrVZ\nYX7NAO/H5i+W4tO2FfYpYa2RrFD8/wfbvRarGj2BUXRQOU1ewbITAoGBAMbwtIkr\n77P4ETAAzUHIQRKbdOaTa9CLO+ggTKv5tYs8lJeojpVbRWinB9DW3yQhMmtBwc73\ni3WsTfFNQkjBkEM6HdFv49911G7hQWrlEVYfseEDVtD7ukiXs0KgiFNhfRzALO3A\nSWtlpbgR3QXqgzdFNS4bEh6KpxMcZq/zphLjAoGANiLbr3sqskL4Hx2KCCFMSaCU\nIJPGjZi1WgQjkviKQKob7Oz1zWBOAXpMHOonGhc44ldvIUwr3TP7X4I6sD3f8lyr\nYTaAMHIv7dIQlVqMo+uAT9IG3qTw7M3XPdzxnL5fwxgrsshsDBlFAL8PDYLifl0T\nXZm2SlR0B/dfMSb+m4ECgYEAteNjO5XieKhKOoRj5F9RcBkabGmHJRGV24s+yR7R\n3mNGBwCCXKs4JSr/1OG2Emd+jfL6VtOytLrK6z9Si6mod/qe6178OgVUgqIP7LQt\nG4qxQsE5bp0CFnwRnAB8pAFccg7J/fGiNk5OXyZGa88Y4hNj0mHkrjWgEXkNbauQ\nhksCgYA4v4bHWMe9+gy/14Cc3y8v2YzwVy2DntCxgOnhmuvVffLj5pt1rPLTHFEG\ndBsalqfTj5BlDUWlCzrr89PcIPUvAeUYbivL0bTeP09lbTwzSF1C/NsAT03XJXpC\nSpzSOvrSVl69okokcyR8Soe+6zsWizz/Fp11w9/VGvQuFvd44Q==\n-----END RSA PRIVATE KEY-----
+
+    # Number of lines for type should match count of said type above.
+    # Each MAC should start with type-prefix and with '0' as the first digit. These values are not automagically computed...
+    undercloud_nodes:
+      - { mac: "52:54:00:ac:e3:80", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:81", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:82", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:83", profile: "ceph-storage" }
+      - { mac: "52:54:00:ac:e3:50", profile: "swift-storage" }
+      - { mac: "52:54:00:ac:e3:51", profile: "swift-storage" }
+      - { mac: "52:54:00:ac:e3:52", profile: "swift-storage" }
+      - { mac: "52:54:00:ac:e3:60", profile: "control" }
+      - { mac: "52:54:00:ac:e3:61", profile: "control" }
+      - { mac: "52:54:00:ac:e3:62", profile: "control" }
+      - { mac: "52:54:00:ac:e3:70", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:71", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:72", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:73", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:74", profile: "compute" }
+      - { mac: "52:54:00:ac:e3:75", profile: "compute" }
+
+    virt_env_ospd_flavors:
+      - { name: "control", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "compute", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "ceph-storage", ram: "4096", disk: "20", cpu: "2" }
+      - { name: "swift-storage", ram: "4096", disk: "20", cpu: "2" }
