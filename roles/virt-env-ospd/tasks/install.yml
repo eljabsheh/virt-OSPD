@@ -55,6 +55,7 @@
   #  ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}
   debug:
     msg: "Remember to : ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}"
+  when: instackenv_pm_type in ['pxe_ssh']
 
 - name: Copying undercloud.conf to stack's home
   template:
