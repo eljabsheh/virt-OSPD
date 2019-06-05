@@ -12,3 +12,5 @@ virt_env_ospd_undercloud_packages:
   - sos
   - bash-completion
 instackenv_pm_type: pxe_ssh
+virt_env_ospd_rhos_release: false
+virt_env_ospd_use_cloud_init_iso: false

@@ -6,16 +6,16 @@
     - "{{ virt_env_ospd_director_version }}.yml"
     - "default.yml"
 
-- include: prepare.yml
-  when: "'hypervisor' in group_names"
-  tags:
-    [ virt-env-ospd, virt-env-ospd-prepare ]
-
 - include: krynn.yml
   when: "'hypervisor' in group_names and
         ansible_dns.domain is defined"
   tags:
     [ virt-env-hypervisor, virt-env-ospd-site-specific ]
+
+- include: prepare.yml
+  when: "'hypervisor' in group_names"
+  tags:
+    [ virt-env-ospd, virt-env-ospd-prepare ]
 
 - include: hypervisor.yml
   when: "'hypervisor' in group_names and

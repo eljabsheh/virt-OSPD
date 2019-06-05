@@ -45,7 +45,9 @@
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      ## <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}'/>
+{% if virt_env_ospd_use_cloud_init_iso == 'true' %}
+      <source file='{{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}'/>
+{% endif %}
       <target dev='hda' bus='ide'/>
       <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
@@ -67,7 +69,7 @@
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='virtio-serial' index='0'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0b' function='0x0'/>
     </controller>
     <controller type='ide' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
@@ -94,7 +96,7 @@
       <source bridge='{{ virt_env_ospd_libvirt_bridge }}'/>
       <mac address='{{ mac.stdout }}'/>
       <model type='virtio'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0xa' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
     </interface>
     <serial type='pty'>
       <target port='0'/>

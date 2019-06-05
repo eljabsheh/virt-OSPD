@@ -13,3 +13,4 @@ virt_env_ospd_undercloud_packages:
   - bash-completion
 instackenv_pm_type: pxe_ipmitool
 virt_env_ospd_rhos_release: false
+virt_env_ospd_use_cloud_init_iso: false

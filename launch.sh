@@ -47,7 +47,7 @@ echo "(II) RH-OSP v${OSP} on ${RAM} RAM selected, proceeding..."
 PLAYB="playbooks/virt-env-ospd/ospd_${OSP}_${RAM}.yml"
 if [ -f ${PLAYB} ]; then
 	set -x
-	ansible-playbook -i inventories/virt-env-ospd/hosts ${PLAYB}
+	ansible-playbook -i inventories/virt-env-ospd/hosts ${PLAYB} $@
 else
 	echo "(**) No ansible playbook found at: ${PLAYB}"
 fi
