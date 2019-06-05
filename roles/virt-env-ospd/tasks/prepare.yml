@@ -9,11 +9,14 @@
 - fail: msg="instackenv_pm_type must be either 'pxe_ssh' or 'pxe_ipmitool' (OSP12)"
   when: instackenv_pm_type not in ['pxe_ssh','pxe_ipmitool']
 
-#- name: Installing required packages
-#  yum:
-#    name={{ item }}
-#    state=latest
-#  with_items: "{{ virt_env_ospd_packages }}"
+- name: Installing required packages
+  yum:
+    name={{ item }}
+    state=latest
+  with_items: "{{ virt_env_ospd_packages }}"
+  when: virt_env_ospd_conf_undercloud_for_me is defined and
+    virt_env_ospd_conf_undercloud_for_me
+
 
 - name: Generating the Linux bridge(s) config file
   template:

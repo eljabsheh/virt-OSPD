@@ -70,6 +70,8 @@
     name=*
     state=latest
     update_cache=yes
+  when: virt_env_ospd_conf_undercloud_for_me is defined and
+    virt_env_ospd_conf_undercloud_for_me
 
 - name: Installing undercloud pre-requisites
   yum:
