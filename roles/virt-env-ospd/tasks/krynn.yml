@@ -16,7 +16,6 @@
     owner=qemu
     group=qemu
     mode=0644
-    force=no
   when: ansible_dns.domain == "lasthome.solace.krynn"
 
 #- name: Copy RHEL 7 image to destination ( {{ virt_env_ospd_dir }}/images )
