@@ -16,6 +16,12 @@
   register: vm
   ignore_errors: true
 
+- name: Checking if VM is shutdown (ignore the error)
+  virt:
+    name={{ virt_env_ospd_undercloud.name }}
+    command=shutdown
+  ignore_errors: true
+
 - name: Creating QCOW2 file for Ceph
   command:
     qemu-img create \
