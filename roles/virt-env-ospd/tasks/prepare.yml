@@ -71,7 +71,7 @@
     state=restarted
     enabled=yes
 
-- name: Activating virtual-host tuned profile
+- name: Activating balanced (ex: virtual-host) tuned profile
   shell:
     if [ $(tuned-adm active | awk '{ print $NF }') != 'balanced' ]; then tuned-adm profile balanced; fi
   changed_when: false
