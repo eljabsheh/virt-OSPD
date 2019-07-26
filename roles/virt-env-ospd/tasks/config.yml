@@ -79,6 +79,7 @@
     state=installed
   with_items: "{{ virt_env_ospd_undercloud_packages }}"
 
+# 
 - name: Creating directories in stack's home
   file:
     path=/home/stack/{{ item }}
