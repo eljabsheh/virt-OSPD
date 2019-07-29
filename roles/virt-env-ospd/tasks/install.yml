@@ -57,17 +57,17 @@
     msg: "Remember to : ssh-copy-id -o StrictHostKeyChecking=no -i {{ ironic_ssh_prv_key }} root@{{ instackenv_pm_addr }}"
   when: instackenv_pm_type in ['pxe_ssh']
 
-- name: Copying undercloud.conf to stack's home
+- name: Copying undercloud.conf to stack's home as undercloud-sample.conf
   template:
     src=home/stack/undercloud.conf.j2
-    dest=/home/stack/undercloud.conf
+    dest=/home/stack/undercloud-sample.conf
     owner=stack
     group=stack
     mode=0644
 
 - name: Configuring undercloud.conf
   ini_file:
-    dest=/home/stack/undercloud.conf
+    dest=/home/stack/undercloud-sample.conf
     section="{{ item.section }}"
     option="{{ item.option }}"
     value="{{ item.value }}"
