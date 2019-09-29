@@ -17,7 +17,7 @@
     vbmc_port: 6231
 
     # NETWORK #
-    virt_env_ospd_undercloud_hostname: osp6h.lasthome.solace.krynn
+    virt_env_ospd_undercloud_hostname: osp11h.lasthome.solace.krynn
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
     virt_env_ospd_dir: /shared/kvm0
