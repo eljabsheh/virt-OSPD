@@ -6,11 +6,11 @@ find . -name "*.retry" -exec rm -f {} \;
 # Provide hints:
 echo -e "(II) Here are some suggestions for some specific systems:"
 echo -e "----------------------------------------------"
-echo -e " - p50r or ravenvale\t: 32G config"
+echo -e " - ravenvale\t\t: 32G config or 'ravenvale' config"
 echo -e " - daltigoth\t\t: 64G config or 'daltigoth' config"
 echo -e " - palanthas\t\t: 160G config or 'palanthas' config"
 echo -e " - thorbardin\t\t: 192G config or 'thorbardin' config"
-echo -e "----------------------------------------------\n"
+echo -e "----------------------------------------------"
 
 # Select OSP version..
 PS3="(II) Please select an OSP version: "
@@ -29,10 +29,10 @@ done
 
 # Select RAM
 PS3="(II) Please select memory config for your hypervisor: "
-select option in 32G 64G 128G 160G 192G 256G daltigoth palanthas thorbardin
+select option in 32G 64G 128G 160G 192G 256G daltigoth palanthas thorbardin ravenvale
 do
 	case ${option} in
-		32G|64G|128G|160G|192G|256G|daltigoth|palanthas|thorbardin)
+		32G|64G|128G|160G|192G|256G|daltigoth|palanthas|thorbardin|ravenvale)
 			RAM=${option}
 			break
 			;;
