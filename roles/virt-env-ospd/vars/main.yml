@@ -15,3 +15,7 @@ virt_env_ospd_packages:
 
 # RHEL GUEST IMAGE
 virt_env_ospd_guest_link: http://download.eng.bos.redhat.com/brewroot/packages/rhel-guest-image/7.2/20160302.0/images/{{ virt_env_ospd_guest_name }}
+
+# Krynn Proxy
+http_proxy_host: imladris.lasthome.solace.krynn
+http_proxy_port: 3128

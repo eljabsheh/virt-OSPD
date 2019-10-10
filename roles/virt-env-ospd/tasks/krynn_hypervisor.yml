@@ -1,5 +1,5 @@
 ---
-# file: roles/virt-env-ospd/tasks/krynn.yml
+# file: roles/virt-env-ospd/tasks/krynn_hypervisor.yml
 - name: "Debug hostname"
   debug:
     msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"

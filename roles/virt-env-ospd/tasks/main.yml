@@ -6,7 +6,8 @@
     - "{{ virt_env_ospd_director_version }}.yml"
     - "default.yml"
 
-- include: krynn.yml
+# Krynn-specific
+- include: krynn_hypervisor.yml
   when: "'hypervisor' in group_names and
         ansible_dns.domain is defined"
   tags:
@@ -41,6 +42,13 @@
   when: "'hypervisor' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-undercloud ]
+
+# Krynn-specific
+- include: krynn_undercloud.yml
+  when: "'undercloud' in group_names and
+        ansible_dns.domain is defined"
+  tags:
+    [ virt-env-ospd, virt-env-ospd-site-specific ]
 
 - include: config.yml
   when: "'undercloud' in group_names"
