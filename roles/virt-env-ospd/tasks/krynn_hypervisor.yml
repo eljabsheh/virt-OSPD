@@ -1,14 +1,14 @@
 ---
 # file: roles/virt-env-ospd/tasks/krynn_hypervisor.yml
-- name: "Debug hostname"
+- name: "Debug hostname / dns domain"
   debug:
-    msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"
+    msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_domain }}"
 
 - name: "Debug OSP Director guest name"
   debug:
     msg: "virt_env_ospd_undercloud.name = {{ virt_env_ospd_undercloud.name  }}"
 
-# BROKEN BROKEN BROKEN on vxfs, see: https://github.com/ansible/ansible/issues/29728
+# Fixed on vxfs, see: https://github.com/ansible/ansible/issues/29728
 - name: Copy RHEL 7.y image to destination
   copy:
     src=/net/imladris//export/home/raistlin/World/Vincent/Code/GIT/Instack/rhel-7-guest.x86_64.qcow2
@@ -16,12 +16,4 @@
     owner=qemu
     group=qemu
     mode=0644
-  when: ansible_dns.domain == "lasthome.solace.krynn"
-#    src=/net/imladris//export/home/raistlin/World/Vincent/Code/GIT/Instack/rhel-7.6-guest.x86_64.qcow2
-#   src=/net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.6-guest.x86_64.qcow2
-
-#- name: Copy RHEL 7 image to destination ( {{ virt_env_ospd_dir }}/images )
-#  become: true
-#  shell:
-#    /usr/bin/rsync -upt /net/imladris/export/home/raistlin/World/Vincent/Projects/www.redhat.com/Instack/rhel-7.6-guest.x86_64.qcow2 \
-#    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
+  when: ansible_domain == "lasthome.solace.krynn"

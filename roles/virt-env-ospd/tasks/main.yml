@@ -9,7 +9,7 @@
 # Krynn-specific
 - include: krynn_hypervisor.yml
   when: "'hypervisor' in group_names and
-        ansible_dns.domain is defined"
+        ansible_domain == 'lasthome.solace.krynn'"
   tags:
     [ virt-env-hypervisor, virt-env-ospd-site-specific ]
 
@@ -46,7 +46,7 @@
 # Krynn-specific
 - include: krynn_undercloud.yml
   when: "'undercloud' in group_names and
-        ansible_dns.domain is defined"
+        ansible_domain == 'lasthome.solace.krynn'"
   tags:
     [ virt-env-ospd, virt-env-ospd-site-specific ]
 

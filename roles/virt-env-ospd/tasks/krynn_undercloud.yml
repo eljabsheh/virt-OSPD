@@ -1,8 +1,8 @@
 ---
 # file: roles/virt-env-ospd/tasks/krynn_hypervisor.yml
-- name: "Debug hostname"
+- name: "Debug hostname / dns domain"
   debug:
-    msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_dns.domain }}"
+    msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_domain }}"
 
 - name: "Debug OSP Director guest name"
   debug:
@@ -15,8 +15,7 @@
               state=present
               create=yes
               line="proxy=http://{{ http_proxy_host }}:{{ http_proxy_port }}"
-  when:
-    - ansible_distribution == 'RedHat'
+  when: ansible_domain == "lasthome.solace.krynn"
 
 - name: Enforce Proxy config in /etc/rhsm/rhsm.conf (proxy_hostname)
   lineinfile: dest=/etc/rhsm/rhsm.conf
@@ -24,8 +23,7 @@
               state=present
               create=yes
               line="proxy_hostname = {{ http_proxy_host }}"
-  when:
-    - ansible_distribution == 'RedHat'
+  when: ansible_domain == "lasthome.solace.krynn"
 
 - name: Enforce Proxy config in /etc/rhsm/rhsm.conf (proxy_port)
   lineinfile: dest=/etc/rhsm/rhsm.conf
@@ -33,6 +31,5 @@
               state=present
               create=yes
               line="proxy_port = {{ http_proxy_port }}"
-  when:
-    - ansible_distribution == 'RedHat'
+  when: ansible_domain == "lasthome.solace.krynn"
 
