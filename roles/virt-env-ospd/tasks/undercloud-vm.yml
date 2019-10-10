@@ -73,6 +73,7 @@
     name={{ virt_env_ospd_undercloud.name }}
     command=status
   register: vm
+  changed_when: false
   ignore_errors: true
 
 - name: Generating random MAC address

@@ -15,6 +15,7 @@
     command=status
   register: vm
   ignore_errors: true
+  changed_when: false
 
 - name: Checking if VM is shutdown (ignore the error)
   virt:
