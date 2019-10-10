@@ -3,6 +3,11 @@
 # Garbage collection
 find . -name "*.retry" -exec rm -f {} \;
 
+# Krynn
+if [ -f ../krynn-ansible/files/ssh/krynn_rsa ]; then
+	ssh-add ../krynn-ansible/files/ssh/krynn_rsa
+fi
+
 # Provide hints:
 echo -e "(II) Here are some suggestions for some specific systems:"
 echo -e "----------------------------------------------"
