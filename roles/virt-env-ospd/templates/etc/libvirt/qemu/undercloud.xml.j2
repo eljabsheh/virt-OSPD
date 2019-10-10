@@ -89,6 +89,9 @@
     </interface>
     <interface type='bridge'>
       <source bridge='{{ virt_env_ospd_external_bridge }}'/>
+{% if virt_env_ospd_external_mac is defined %}
+      <mac address='{{ virt_env_ospd_external_mac }}'/>
+{% endif %}
       <model type='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </interface>

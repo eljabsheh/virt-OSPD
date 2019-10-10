@@ -20,6 +20,7 @@
     virt_env_ospd_undercloud_hostname: osp9t.lasthome.solace.krynn
     virt_env_ospd_libvirt_bridge: virbr0
     virt_env_ospd_external_bridge: bond0
+    virt_env_ospd_external_mac: 56:09:00:af:e1:03
     virt_env_ospd_dir: /shared/kvm0
     virt_env_ospd_bridges:
       - net-pxe
