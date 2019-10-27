@@ -18,6 +18,7 @@
     <model fallback='allow'/>
     <topology sockets='1' cores='{{ virt_env_ospd_undercloud.cpu | int }}' threads='1'/>
   </cpu>
+  <iothreads>{{ ( virt_env_ospd_undercloud.cpu | int / 2 ) | int }}</iothreads>
   <clock offset='utc'>
     <timer name='rtc' tickpolicy='catchup'/>
     <timer name='pit' tickpolicy='delay'/>
