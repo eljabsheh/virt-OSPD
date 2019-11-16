@@ -5,7 +5,7 @@
   <memoryBacking>
     <hugepages/>
   </memoryBacking>
-  <vcpu placement='static'>{{ virt_env_ospd_undercloud.cpu }}</vcpu>
+  <vcpu placement='static' current='{{ ( virt_env_ospd_undercloud.cpu | int / 2 ) | int }}'>{{ virt_env_ospd_undercloud.cpu }}</vcpu>
   <os>
     <type arch='x86_64' machine='{{ virt_env_ospd_machine_type }}'>hvm</type>
     <boot dev='hd'/>
@@ -16,7 +16,6 @@
   </features>
   <cpu mode='host-passthrough' check='partial'>
     <model fallback='allow'/>
-    <topology sockets='1' cores='{{ virt_env_ospd_undercloud.cpu | int }}' threads='1'/>
   </cpu>
   <iothreads>{{ ( virt_env_ospd_undercloud.cpu | int / 2 ) | int }}</iothreads>
   <clock offset='utc'>
