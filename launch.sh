@@ -19,7 +19,7 @@ echo -e "----------------------------------------------"
 
 # Select OSP version..
 PS3="(II) Please select an OSP version: "
-select option in 8 9 10 11 12 13
+select option in 8 9 10 11 12 13 15 16
 do
 	case ${option} in
 		8|9|10|11|12|13)
