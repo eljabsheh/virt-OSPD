@@ -35,8 +35,8 @@
     virt_env_ospd_undercloud:
       name: instack-{{ virt_env_ospd_director_version.split("-")[0] | lower }}
       disk_size: 512G
-      cpu: 8
-      mem: 24576
+      cpu: 12
+      mem: 32768
       cloud_init_iso: cloud-init.iso
 
       # CEPH VM
@@ -86,7 +86,7 @@
       name: control
       disk_size: 128G
       cpu: 4
-      mem: 24576
+      mem: 32768
       # The last digit is not missing !!
       mac: 52:54:00:af:e3:6
       vm_count: 3
