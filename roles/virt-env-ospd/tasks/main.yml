@@ -43,7 +43,7 @@
   tags:
     [ virt-env-ospd, virt-env-ospd-undercloud ]
 
-# Krynn-specific
+# Krynn-specific (Undercloud)
 - include: krynn_undercloud.yml
   when: "'undercloud' in group_names and
         ansible_domain == 'lasthome.solace.krynn'"
