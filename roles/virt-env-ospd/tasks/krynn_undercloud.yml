@@ -33,3 +33,20 @@
               line="proxy_port = {{ http_proxy_port }}"
   when: ansible_domain == "lasthome.solace.krynn"
 
+- name: register external IP on bond2
+  shell:
+    host -4 $(hostname -f)|awk '{ print $4}'
+  register: undercloud_bond2_ip
+
+- name: rebuild ifcfg-bond2
+  template:
+    src=etc/sysconfig/network-scripts/ifcfg-bond2
+    dest=/etc/sysconfig/network-scripts/ifcfg-bond2
+    force=yes
+  with_items:
+    - "{{ undercloud_bond2_ip.stdout }}"
+
+- name: reconfigure bond2 on undercloud VM
+  shell: |
+    /usr/sbin/ifdown bond2
+    /usr/sbin/ifup bond2

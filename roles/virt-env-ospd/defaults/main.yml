@@ -22,6 +22,7 @@ virt_env_ospd_bridges:
   - director-pxe
   - director-full
 virt_env_ospd_guest_name: rhel-7.5-guest.x86_64.qcow2
+virt_env_ospd_syns_guest_image: false
 # IMAGES
 virt_env_ospd_upload_images: false
 virt_env_ospd_images_link:

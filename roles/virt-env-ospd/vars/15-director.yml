@@ -1,0 +1,15 @@
+---
+# file: roles/virt-env-ospd/vars/13-director.yml
+virt_env_ospd_undercloud_packages:
+  - strace
+  - tcpdump
+  - tmux
+  - git
+  - libguestfs-tools
+  - sysstat
+  - sysfsutils
+  - sos
+  - bash-completion
+instackenv_pm_type: pxe_ipmitool
+virt_env_ospd_rhos_release: false
+virt_env_ospd_use_cloud_init_iso: false

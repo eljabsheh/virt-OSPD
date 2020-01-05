@@ -15,8 +15,7 @@
     state=latest
   with_items: "{{ virt_env_ospd_packages }}"
   when: virt_env_ospd_conf_undercloud_for_me is defined and
-    virt_env_ospd_conf_undercloud_for_me
-
+    virt_env_ospd_conf_undercloud_for_me == "true"
 
 - name: Generating the Linux bridge(s) config file
   template:
