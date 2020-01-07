@@ -4,9 +4,13 @@
   debug:
     msg: "ansible_hostname={{ ansible_hostname }}, dns_domain={{ ansible_domain }}"
 
-- name: "Debug OSP Director guest name"
+- name: "Debug OSP Director KVM guest name"
   debug:
     msg: "virt_env_ospd_undercloud.name = {{ virt_env_ospd_undercloud.name  }}"
+
+- name: "Debug OSP Director hostname"
+  debug:
+    msg: "virt_env_ospd_undercloud_hostname = {{ virt_env_ospd_undercloud_hostname  }}"
 
 # proxy config for krynn
 - name: Enforce Proxy config in /etc/yum.conf
@@ -33,12 +37,13 @@
               line="proxy_port = {{ http_proxy_port }}"
   when: ansible_domain == "lasthome.solace.krynn"
 
-- name: register external IP on bond2
-  shell:
-    host -4 $(hostname -f)|awk '{ print $4}'
+- name: discover target external IP on bond2
+  shell: |
+    echo {{ virt_env_ospd_undercloud_hostname }}
+    #host -4 $(hostname -f)|awk '{ print $4}'
   register: undercloud_bond2_ip
 
-- name: rebuild ifcfg-bond2
+- name: rebuild /etc/sysconfig/network-scripts/ifcfg-bond2 on Undercloud
   template:
     src=etc/sysconfig/network-scripts/ifcfg-bond2
     dest=/etc/sysconfig/network-scripts/ifcfg-bond2
