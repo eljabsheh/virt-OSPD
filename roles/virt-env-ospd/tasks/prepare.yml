@@ -54,10 +54,19 @@
   with_items: "{{ virt_env_ospd_bridges }}"
   changed_when: false
 
-- name: Enabling nested KVM (kvm_intel module)
+- name: Enable nested KVM (kvm_intel module)
   copy:
-    src=etc/modprobe.d/kvm_intel.conf
-    dest=/etc/modprobe.d/kvm_intel.conf
+    src=etc/modprobe.d/kvm-intel.conf
+    dest=/etc/modprobe.d/kvm-intel.conf
+
+- name: Remove obsolete modules files.
+  become: true
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/modprobe.d/kvm.conf
+    - /etc/modprobe.d/kvm_intel.conf
 
 - name: Reloading module (if no KVM domains are running)
   shell:
