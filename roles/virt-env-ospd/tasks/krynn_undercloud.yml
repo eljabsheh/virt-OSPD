@@ -39,7 +39,7 @@
 
 - name: discover target external IP on bond2
   shell: |
-    echo {{ virt_env_ospd_undercloud_hostname }}
+    host -4 {{ virt_env_ospd_undercloud_hostname }}|awk '{ print $4}'
     #host -4 $(hostname -f)|awk '{ print $4}'
   register: undercloud_bond2_ip
 
