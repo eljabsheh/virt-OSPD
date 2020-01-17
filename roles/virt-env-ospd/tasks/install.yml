@@ -80,8 +80,20 @@
     group=stack
     mode=0755
 
-- name: Creating 'bonding' configuration file..
+- name: Creating '/etc/modules-load.d/bonding.conf' configuration file..
   lineinfile: create=yes state=present dest=/etc/modules-load.d/bonding.conf line="bonding"
+
+- name: Creating '/etc/modprobe.d/bonding.conf' configuration file (bond0)
+  lineinfile: create=yes state=present dest=/etc/modprobe.d/bonding.conf line="alias bond0 bonding"
+
+- name: Update (1/3) '/etc/modprobe.d/bonding.conf' configuration file (bond1)
+  lineinfile: create=yes state=present dest=/etc/modprobe.d/bonding.conf line="alias bond1 bonding"
+
+- name: Update (2/3) '/etc/modprobe.d/bonding.conf' configuration file (bond2)
+  lineinfile: create=yes state=present dest=/etc/modprobe.d/bonding.conf line="alias bond2 bonding"
+
+- name: Update (3/3) '/etc/modprobe.d/bonding.conf' configuration file (bond3)
+  lineinfile: create=yes state=present dest=/etc/modprobe.d/bonding.conf line="alias bond3 bonding"
 
 - name: openstack undercloud install (go grab a coffee)
   command:
