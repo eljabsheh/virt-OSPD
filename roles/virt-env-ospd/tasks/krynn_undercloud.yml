@@ -55,3 +55,20 @@
   shell: |
     /usr/sbin/ifdown bond2
     /usr/sbin/ifup bond2
+
+#
+- name: build short hostname
+  shell: echo {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
+  register: short_dns_hostname
+
+- name: Check if network reconfiguration script exists for our VM
+  stat:
+    path: /net/imladris/export/shared/data/install/Krynn/{{ short_dns_hostname.stdout }}/install_from_nfs.sh
+  register: network_reconfig
+
+- name: Execute network reconfiguration
+  shell: |
+    /net/imladris/export/shared/data/install/Krynn/{{ short_dns_hostname.stdout }}/install_from_nfs.sh
+    systemctl restart network
+  when:
+    - network_reconfig.stat.exists == true
