@@ -17,6 +17,7 @@
 - name: Inject our own ssh-key into the undercloud image
   shell: |
     export LIBGUESTFS_BACKEND=direct
+    export LIBGUESTFS_PATH='/net/imladris/export/home/raistlin/World/Vincent/Code/GIT/Instack/appliance/'
     export PATH="/sbin:/usr/sbin:/bin:/usr/bin"
     virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
       --ssh-inject root:file:{{ ssh_pub_key }}
