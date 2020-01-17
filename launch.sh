@@ -9,12 +9,12 @@ if [ -f ../krynn-ansible/files/ssh/krynn_rsa ]; then
 fi
 
 # Provide hints:
-echo -e "(II) Here are some suggestions for some specific systems:"
+echo -e "(II) Here are some suggestions for your systems:"
 echo -e "----------------------------------------------"
-echo -e " - ravenvale\t\t: 32G config or 'ravenvale' config"
-echo -e " - daltigoth\t\t: 64G config or 'daltigoth' config"
-echo -e " - palanthas\t\t: 160G config or 'palanthas' config"
-echo -e " - thorbardin\t\t: 192G config or 'thorbardin' config"
+echo -e " - ravenvale\t\t: 64G config or 'ravenvale' config"
+echo -e " - daltigoth\t\t: 128G config or 'daltigoth' config"
+echo -e " - palanthas\t\t: 192G config or 'palanthas' config"
+echo -e " - thorbardin\t\t: 256G config or 'thorbardin' config"
 echo -e "----------------------------------------------"
 
 # Select OSP version..
