@@ -8,8 +8,9 @@
 
 # Krynn-specific
 - include: krynn_hypervisor.yml
-  when: "'hypervisor' in group_names and
-        ansible_domain == 'lasthome.solace.krynn'"
+  when:
+    - "'hypervisor' in group_names"
+    - virt_env_ospd_undercloud_hostname | regex_search('\.lasthome\.solace\.krynn$')
   tags:
     [ virt-env-hypervisor, virt-env-ospd-site-specific ]
 
@@ -19,72 +20,84 @@
     [ virt-env-ospd, virt-env-ospd-prepare ]
 
 - include: hypervisor.yml
-  when: "'hypervisor' in group_names and
-        virt_env_ospd_hypervisor is defined and
-        virt_env_ospd_hypervisor"
+  when:
+    - "'hypervisor' in group_names"
+    - virt_env_ospd_hypervisor is defined
+    - virt_env_ospd_hypervisor
   tags:
     [ virt-env-ospd, virt-env-ospd-hypervisor ]
 
 - include: masquerade.yml
-  when: "'hypervisor' in group_names and
-        virt_env_ospd_hypervisor is defined and
-        virt_env_ospd_hypervisor"
+  when:
+    - "'hypervisor' in group_names"
+    - virt_env_ospd_hypervisor is defined
+    - virt_env_ospd_hypervisor
   tags:
     [ virt-env-ospd, virt-env-ospd-masquerade ]
 
 - include: virtualbmc.yml
-  when: "'hypervisor' in group_names and
-        instackenv_pm_type == 'pxe_ipmitool'"
+  when:
+    - "'hypervisor' in group_names"
+    - "instackenv_pm_type == 'pxe_ipmitool'"
   tags:
     [ virt-env-ospd, virt-env-ospd-hypervisor, virt-env-ospd-virtualbmc ]
 
 - include: undercloud-vm.yml
-  when: "'hypervisor' in group_names"
+  when:
+    - "'hypervisor' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-undercloud ]
 
 # Krynn-specific
 - include: krynn_undercloud.yml
-  when: "'undercloud' in group_names and
-        ansible_domain == 'lasthome.solace.krynn'"
+  when:
+    - "'undercloud' in group_names"
+    - virt_env_ospd_undercloud_hostname | regex_search('\.lasthome\.solace\.krynn$')
   tags:
     [ virt-env-ospd, virt-env-ospd-site-specific ]
 
 - include: config.yml
-  when: "'undercloud' in group_names"
+  when:
+    - "'undercloud' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-config ]
 
 - include: install.yml
-  when: "'undercloud' in group_names"
+  when:
+    - "'undercloud' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-install ]
 
 - include: instackenv.yml
-  when: "'undercloud' in group_names"
+  when:
+    - "'undercloud' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-instackenv ]
 
 - include: ironic.yml
-  when: "'undercloud' in group_names"
+  when:
+    - "'undercloud' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-ironic ]
 
 - include: flavor.yml
-  when: "'undercloud' in group_names and
-        virt_env_ospd_conf_undercloud_for_me is defined
-        and virt_env_ospd_conf_undercloud_for_me"
+  when:
+    - "'undercloud' in group_names"
+    - virt_env_ospd_conf_undercloud_for_me is defined
+    - virt_env_ospd_conf_undercloud_for_me
   tags:
     [ virt-env-ospd, virt-env-ospd-flavor ]
 
 - include: templates.yml
-  when: "'undercloud' in group_names"
+  when:
+    - "'undercloud' in group_names"
   tags:
     [ virt-env-ospd, virt-env-ospd-template ]
 
 - include: tools.yml
-  when: "'undercloud' in group_names and
-        virt_env_ospd_git_tools is defined and
-        virt_env_ospd_git_tools"
+  when:
+    - "'undercloud' in group_names"
+    - virt_env_ospd_git_tools is defined
+    - virt_env_ospd_git_tools
   tags:
     [ virt-env-ospd, virt-env-ospd-tool ]
