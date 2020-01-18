@@ -15,8 +15,9 @@
     state=link
     owner=stack
     group=stack
-  when: virt_env_ospd_conf_undercloud_for_me is defined
-         and virt_env_ospd_conf_undercloud_for_me
+  when:
+    - virt_env_ospd_conf_undercloud_for_me is defined
+    - virt_env_ospd_conf_undercloud_for_me
   ignore_errors: true
 
 - name: Adding deploy.sh script to templates directory
