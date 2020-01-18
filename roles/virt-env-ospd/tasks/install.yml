@@ -100,7 +100,7 @@
     openstack undercloud install
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_conf_undercloud_for_me is defined and
         virt_env_ospd_conf_undercloud_for_me
 
@@ -111,7 +111,7 @@
   with_items:
     - rhosp-director-images
     - rhosp-director-images-ipa
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
@@ -121,7 +121,7 @@
     state=latest
   with_items:
     - ceph-ansible
-  when: virt_env_ospd_director_version in ['12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
@@ -159,7 +159,7 @@
     - overcloud-full.tar
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
@@ -173,7 +173,7 @@
     - overcloud-full.tar
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
@@ -200,7 +200,7 @@
     - overcloud-full.tar
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_upload_images is defined and
         virt_env_ospd_upload_images
 
@@ -219,7 +219,7 @@
     neutron subnet-update $(neutron subnet-list -F id --quote none -f csv | grep -v id) --dns-nameserver {{ virt_env_ospd_neutron_dns }}
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director'] and
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director'] and
         virt_env_ospd_conf_undercloud_for_me is defined and
         virt_env_ospd_conf_undercloud_for_me
 
