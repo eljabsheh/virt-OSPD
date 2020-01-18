@@ -7,7 +7,7 @@
     vbmc_password: "{{ hostvars[groups['hypervisor'][0]]['vbmc_password'] }}"
     vbmc_port: "{{ hostvars[groups['hypervisor'][0]]['vbmc_port'] }}"
 
-# Only to this for osp11 and below
+# Do this for all OSP versions..
 - name: Generating the instackenv.json file
   template:
     src=home/stack/instackenv.json.j2
@@ -16,7 +16,7 @@
     group=stack
     mode=0640
     force=yes
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director']
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director']
 
 - name: Validating instackenv.json file (OSP-d 8 only)
   shell:
@@ -24,7 +24,7 @@
     openstack baremetal instackenv validate
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director']
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director']
         and virt_env_ospd_conf_undercloud_for_me
 
 - name: Importing instackenv.json file
@@ -33,5 +33,5 @@
     openstack baremetal import --json ~/instackenv.json
   become: true
   become_user: stack
-  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director']
+  when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director']
         and virt_env_ospd_conf_undercloud_for_me

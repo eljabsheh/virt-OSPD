@@ -32,7 +32,7 @@
     mode=0755
 
 - name: Generating ironic-profiling script (openstack baremetal cli)
-  when: virt_env_ospd_director_version in ['11-director', '12-director', '13-director']
+  when: virt_env_ospd_director_version in ['11-director', '12-director', '13-director', '15-director', '16-director']
   template:
     src=home/stack/ironic-profiling-v2.sh.j2
     dest=/home/stack/ironic-profiling.sh
