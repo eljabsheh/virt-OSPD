@@ -33,7 +33,7 @@
   become: true
   when: instackenv_pm_type in ['pxe_ssh']
 
-- name: Clean undercloud's DHCP ip a bit...
+- name: Process undercloud's DHCP ip stdout a little...
   shell: |
     echo {{ undercloud_dhcp_ip.stdout }}|xargs|awk '{ print $1}'
   register: undercloud_public_ip
