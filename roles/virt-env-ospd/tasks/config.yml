@@ -41,7 +41,7 @@
     state=present
     line='10.20.0.2\t{{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
     insertafter='^127\.0\.0\.1'
-    #line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+#    line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 
 - include: subscribtion.yml
   when: virt_env_ospd_rhos_release is defined and
@@ -75,7 +75,7 @@
     virt_env_ospd_conf_undercloud_for_me
 
 - name: Installing undercloud pre-requisites
-  yum:
+  package:
     name={{ item }}
     state=installed
   with_items: "{{ virt_env_ospd_undercloud_packages }}"

@@ -17,11 +17,12 @@
   ignore_errors: true
   changed_when: false
 
-- name: Checking if VM is shutdown (ignore the error)
-  virt:
-    name={{ virt_env_ospd_undercloud.name }}
-    command=shutdown
-  ignore_errors: true
+# No need to shutdown, the vm.failed handles this
+#- name: Checking if VM is shutdown (ignore the error)
+#  virt:
+#    name={{ virt_env_ospd_undercloud.name }}
+#    command=shutdown
+#  ignore_errors: true
 
 - name: Creating QCOW2 file for Ceph
   command:

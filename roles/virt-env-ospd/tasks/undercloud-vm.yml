@@ -4,8 +4,9 @@
   get_url:
     url={{ virt_env_ospd_guest_link }}
     dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }}
-  when: virt_env_ospd_guest_download is defined and
-        virt_env_ospd_guest_download == 'true'
+  when:
+    - virt_env_ospd_guest_download is defined
+    - virt_env_ospd_guest_download
 
 - name: set some more facts
   set_fact:
@@ -27,8 +28,9 @@
     cat {{ ssh_build_dir }}/autorized_keys {{ ssh_auth_list }} |sort -u > {{ ssh_build_dir }}/fullkey
     virt-customize -a {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
         --upload {{ ssh_build_dir }}/fullkey:{{ ssh_auth_list }}
-  when: vm.failed is defined and
-        vm.failed
+  when:
+    - vm.failed is defined
+    - vm.failed
   ignore_errors: true
 
 #- name: Copying cloud-init ISO to working directory
@@ -36,8 +38,9 @@
 #  copy:
 #    src=files/{{ virt_env_ospd_undercloud.cloud_init_iso }}
 #    dest={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.cloud_init_iso }}
-#  when: vm.failed is defined and
-#        vm.failed
+#  when:
+#    - vm.failed is defined
+#    - vm.failed
 
 #- name: Creating QCOW2 backing file for the undercloud
 #  command:
@@ -46,8 +49,9 @@
 #    -f {{ virt_env_ospd_format }} \
 #    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
 #  creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
-#  when: vm.failed is defined and
-#        vm.failed
+#  when:
+#    - vm.failed is defined
+#    - vm.failed
 
 - name: Creating QCOW2 independent boot disk for the undercloud
   command:
@@ -57,16 +61,18 @@
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
   args:
     creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
-  when: vm.failed is defined and
-        vm.failed
+  when:
+    - vm.failed is defined
+    - vm.failed
 
 - name: Resize undercloud boot disk
   command:
     qemu-img resize \
     {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }} \
     {{ virt_env_ospd_undercloud.disk_size }}
-  when: vm.failed is defined and
-        vm.failed
+  when:
+    - vm.failed is defined
+    - vm.failed
 
 - name: Loop checking if VM exists (ignore the error)
   virt:
@@ -80,16 +86,18 @@
   shell:
     od -An -N6 -tx1 /dev/urandom | sed -e 's/^  *//' -e 's/  */:/g' -e 's/:$//' -e 's/^\(.\)[13579bdf]/\10/'
   register: mac
-  when: vm.failed is defined and
-        vm.failed
+  when:
+    - vm.failed is defined
+    - vm.failed
 
 - name: Creating undercloud virtual machine
   virt:
     name={{ virt_env_ospd_undercloud.name }}
     command=define
     xml={{ lookup('template', 'etc/libvirt/qemu/undercloud.xml.j2') }}
-  when: vm.failed is defined and
-        vm.failed
+  when:
+    - vm.failed is defined
+    - vm.failed
 
 - name: Starting undercloud virtual machine
   virt:
@@ -135,7 +143,8 @@
 #    dest=/etc/hosts
 #    regexp='.* {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 #    line='{{ ip.stdout.split('/')[0] }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
-#  when: ansible_dns.domain is defined and ansible_dns.domain != "lasthome.solace.krynn"
+#  when:
+#    - virt_env_ospd_undercloud_hostname | regex_search('\.lasthome\.solace\.krynn$')
 
 # 10.20.0.2 is from roles/virt-env-ospd/templates/home/stack/undercloud.conf.j2
 - name: Configuring hypervisor's /etc/hosts file
