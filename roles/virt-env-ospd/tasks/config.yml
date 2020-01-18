@@ -1,9 +1,11 @@
 ---
 # file: roles/virt-env-ospd/tasks/config.yml
-- name: Propagate director version from Hypervisor (needed for vbmc setup on hypervisor)
+- name: Propagate director version and pm_type from Hypervisor (needed for vbmc setup on hypervisor)
   set_fact:
     virt_env_ospd_director_version: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_director_version'] }}"
+    virt_env_ospd_undercloud_vm_name: "{{ hostvars[groups['hypervisor'][0]]['virt_env_ospd_undercloud_vm_name'] }}"
     instackenv_pm_type: "{{ hostvars[groups['hypervisor'][0]]['instackenv_pm_type'] }}"
+    vm: "{{ hostvars[groups['hypervisor'][0]]['vm'] }}"
 
 - name: Set undercloud hostname
   hostname:
