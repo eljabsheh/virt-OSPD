@@ -1,0 +1,46 @@
+---
+# file: roles/virt-env-ospd/tasks/post-install.yml
+# No need to shutdown, the vm.failed handles this
+- name: "Debug vm.failed var transmitted from Hypervisor"
+  debug:
+    msg: " {{ vm.failed }} "
+
+- name: "Relabel SELinux files for entire undercloud VM"
+  shell:
+    /usr/sbin/setfiles /etc/selinux/targeted/contexts/files/file_contexts /
+  become: true
+  when:
+    - vm.failed is defined
+    - vm.failed
+
+- name: Shut down undercloud VM (ignore the error)
+  virt:
+    name: "{{ virt_env_ospd_undercloud_vm_name }}"
+    command: shutdown
+  delegate_to: localhost
+  when:
+    - vm.failed is defined
+    - vm.failed
+  ignore_errors: true
+
+- name: wait for the vm to shut down
+  virt:
+    name: "{{ virt_env_ospd_undercloud_vm_name }}"
+    command: status
+  register: vmstatus
+  until: vmstatus.status == 'shutdown'
+  delegate_to: localhost
+  retries: 15
+  delay: 2
+  when:
+    - vm.failed is defined
+    - vm.failed
+
+- name: Take an initial snapshot of the undercloud VM
+  shell: |
+    export LIBVIRT_DEFAULT_URI=qemu+ssh://localhost/system
+    virsh snapshot-create-as {{ virt_env_ospd_undercloud_vm_name }} RHEL_init
+  delegate_to: localhost
+  when:
+    - vm.failed is defined
+    - vm.failed
