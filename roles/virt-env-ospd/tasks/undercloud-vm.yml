@@ -42,17 +42,6 @@
 #    - vm.failed is defined
 #    - vm.failed
 
-#- name: Creating QCOW2 backing file for the undercloud
-#  command:
-#    qemu-img create \
-#    -b {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_guest_name }} \
-#    -f {{ virt_env_ospd_format }} \
-#    {{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }} {{ virt_env_ospd_undercloud.disk_size }}
-#  creates={{ virt_env_ospd_dir }}/images/{{ virt_env_ospd_undercloud.name }}-boot.{{ virt_env_ospd_format }}
-#  when:
-#    - vm.failed is defined
-#    - vm.failed
-
 - name: Creating QCOW2 independent boot disk for the undercloud
   command:
     qemu-img convert \
