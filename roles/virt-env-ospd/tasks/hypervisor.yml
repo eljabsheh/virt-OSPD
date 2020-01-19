@@ -8,6 +8,7 @@
     vbmc_port: "{{ vbmc_port }}"
     virt_env_ospd_director_version: "{{ virt_env_ospd_director_version }}"
     virt_env_ospd_undercloud_hostname: "{{ virt_env_ospd_undercloud_hostname }}"
+    virt_env_ospd_undercloud_vm_name: "{{ virt_env_ospd_undercloud.name }}"
 
 - name: Checking if VM exists (ignore the error)
   virt:
@@ -16,13 +17,6 @@
   register: vm
   ignore_errors: true
   changed_when: false
-
-# No need to shutdown, the vm.failed handles this
-#- name: Checking if VM is shutdown (ignore the error)
-#  virt:
-#    name={{ virt_env_ospd_undercloud.name }}
-#    command=shutdown
-#  ignore_errors: true
 
 - name: Creating QCOW2 file for Ceph
   command:
@@ -187,4 +181,3 @@
   - "{{lookup('sequence', 'start=0 count={{ virt_env_ospd_control.vm_count }}', wantlist=True)}}"
   when: "virt_env_ospd_control_extra_disk is defined and {{virt_env_ospd_control_extra_disk | length | int != 0}}"
   ignore_errors: True
-
