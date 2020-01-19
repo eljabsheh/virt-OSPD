@@ -101,3 +101,9 @@
     - virt_env_ospd_git_tools
   tags:
     [ virt-env-ospd, virt-env-ospd-tool ]
+
+- include: post-install.yml
+  when:
+    - "'undercloud' in group_names"
+  tags:
+    [ virt-env-ospd, virt-env-ospd-tool ]
