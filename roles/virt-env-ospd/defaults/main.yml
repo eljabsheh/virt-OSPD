@@ -21,6 +21,8 @@ vbmc_non_root_user: nobody
 virt_env_ospd_bridges:
   - director-pxe
   - director-full
+virt_env_ospd_vbmc_containerized: false
+virt_env_ospd_vbmc_container_image: krynn-vbmc
 virt_env_ospd_guest_name: rhel-7.5-guest.x86_64.qcow2
 virt_env_ospd_refresh_guest_image: true
 # IMAGES

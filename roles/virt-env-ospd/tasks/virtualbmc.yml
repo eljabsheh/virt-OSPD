@@ -3,13 +3,31 @@
 - name: set_fact on local_vbmc_port
   set_fact: local_vbmc_port="{{ vbmc_port }}"
 
+- name: Set VirtualBMC cli for non-containerized vbmc deployments (Option 1/2)
+  set_fact:
+    vbmc_cli: "vbmc"
+    vbmc_libvirt_uri: "qemu+ssh://root@{{ instackenv_pm_addr }}/system"
+  when:
+    - virt_env_ospd_vbmc_containerized is defined
+    - not virt_env_ospd_vbmc_containerized
+
+- name: Set VirtualBMC cli for containerized vbmc deployments (Option 2/2)
+  set_fact:
+    vbmc_cli: "docker exec -t {{ virt_env_ospd_vbmc_container_image }} vbmc "
+    vbmc_libvirt_uri: "qemu:///system"
+  when:
+    - virt_env_ospd_vbmc_containerized
+
 - name: Install VirtualBMC package
-  when: virt_env_ospd_director_version in ['11-director', '12-director', '13-director', '15-director', '16-director']
   package:
     name: "python2-virtualbmc"
     state: present
     use: yum
   become: true
+  when:
+    - virt_env_ospd_director_version in ['11-director', '12-director', '13-director', '15-director', '16-director']
+    - virt_env_ospd_vbmc_containerized is defined
+    - not virt_env_ospd_vbmc_containerized
 
 - name: Create VirtualBMC directories
   file:
@@ -43,25 +61,28 @@
   register: non_root_user_uid
   delegate_to: localhost
   become: false
+  when:
+    - not virt_env_ospd_vbmc_containerized
 
 - name: set fact on non_root_user_uid
   set_fact:
     non_root_user_uid: "{{ non_root_user_uid.stdout }}"
+  when:
+    - not virt_env_ospd_vbmc_containerized
 
 - name: Update value for local_vbmc_port
   set_fact: local_vbmc_port="{{ local_vbmc_port }}"
 
 - name: Creating vBMC consoles file for Ceph nodes
-  shell:
-    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} ; \
-    vbmc add \
+  shell: |
+    {{ vbmc_cli }} delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}
+    {{ vbmc_cli }} add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }} \
     --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
-    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}
+    --libvirt-uri "{{ vbmc_libvirt_uri }}"
   with_sequence:
     start=0
     count={{ virt_env_ospd_ceph.vm_count | int }}
@@ -74,16 +95,15 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
 
 - name: Creating vBMC consoles file for Swift nodes
-  shell:
-    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} ; \
-    vbmc add \
+  shell: |
+    {{ vbmc_cli }} delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
+    {{ vbmc_cli }} add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }} \
     --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
-    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
+    --libvirt-uri "{{ vbmc_libvirt_uri }}"
   with_sequence:
     start=0
     count={{ virt_env_ospd_swift.vm_count | int }}
@@ -96,16 +116,15 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
 
 - name: Creating vBMC consoles file for controller nodes
-  shell:
-    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} ; \
-    vbmc add \
+  shell: |
+    {{ vbmc_cli }} delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}
+    {{ vbmc_cli }} add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }} \
     --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
-    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}
+    --libvirt-uri "{{ vbmc_libvirt_uri }}"
   with_sequence:
     start=0
     count={{ virt_env_ospd_control.vm_count | int }}
@@ -118,16 +137,15 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
 
 - name: Creating vBMC consoles file for compute nodes
-  shell:
-    vbmc delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} ; \
-    vbmc add \
+  shell: |
+    {{ vbmc_cli }} delete {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}
+    {{ vbmc_cli }} add \
     {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }} \
     --port "{{ local_vbmc_port | int + item | int}}"  \
     --username "{{ vbmc_user }}" \
     --password "{{ vbmc_password }}" \
     --address "{{ instackenv_pm_addr }}" \
-    --libvirt-uri qemu+ssh://root@"{{ instackenv_pm_addr }}"/system ; \
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}
+    --libvirt-uri "{{ vbmc_libvirt_uri }}"
   with_sequence:
     start=0
     count={{ virt_env_ospd_compute.vm_count | int }}
@@ -144,8 +162,8 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port }}"
 
 - name: Starting vBMC consoles for Ceph nodes
-  shell:
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}
+  shell: |
+    {{ vbmc_cli }} start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_ceph.name }}-{{ item }}
   with_sequence:
     start=0
     count={{ virt_env_ospd_ceph.vm_count | int }}
@@ -156,8 +174,8 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_ceph.vm_count | int }}"
 
 - name: Starting vBMC consoles for Swift nodes
-  shell:
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
+  shell: |
+    {{ vbmc_cli }} start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_swift.name }}-{{ item }}
   with_sequence:
     start=0
     count={{ virt_env_ospd_swift.vm_count | int }}
@@ -168,8 +186,8 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_swift.vm_count | int }}"
 
 - name: Starting vBMC consoles for controller nodes
-  shell:
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}
+  shell: |
+    {{ vbmc_cli }} start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_control.name }}-{{ item }}
   with_sequence:
     start=0
     count={{ virt_env_ospd_control.vm_count | int }}
@@ -180,8 +198,8 @@
   set_fact: local_vbmc_port="{{ local_vbmc_port | int + virt_env_ospd_control.vm_count | int }}"
 
 - name: Starting vBMC consoles for compute nodes
-  shell:
-    vbmc start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}
+  shell: |
+    {{ vbmc_cli }} start {{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}
   with_sequence:
     start=0
     count={{ virt_env_ospd_compute.vm_count | int }}

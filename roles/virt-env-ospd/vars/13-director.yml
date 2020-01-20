@@ -12,5 +12,7 @@ virt_env_ospd_undercloud_packages:
   - sos
   - bash-completion
 instackenv_pm_type: pxe_ipmitool
+virt_env_ospd_vbmc_containerized: true 
+virt_env_ospd_vbmc_container_image: krynn-vbmc
 virt_env_ospd_rhos_release: false
 virt_env_ospd_use_cloud_init_iso: false
