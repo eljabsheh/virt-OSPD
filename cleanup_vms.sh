@@ -39,9 +39,6 @@ do
 
 			# Undefine domain
 			virsh undefine $vm
-			if [ -x /usr/bin/vbmc ]; then
-				vbmc delete $vm
-			fi
 			;;
 		*)
 	esac
