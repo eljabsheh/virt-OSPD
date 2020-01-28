@@ -51,7 +51,7 @@ default:
   #### image: docker.io/fedora:30
   image: krynn-gitlab-runner
   before_script:
-    # Obtain OSP sources
+    - cd /builds/${GITLAB_USER_LOGIN}
     - git clone https://gitlab.lasthome.solace.krynn/raistlin/OSP.git
     # this is the start of the utility functions embedded in all stages
     - source /builds/${GITLAB_USER_LOGIN}/OSP/gitlab/functions.sh
