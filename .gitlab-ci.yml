@@ -273,7 +273,7 @@ cancel_timeout:
   allow_failure: true
   script:
     - sleep 120
-    - curl -X POST --HEADER "PRIVATE-TOKEN: ${PRIVATE_API_TOKEN}" "https://gitlab.lasthome.solace.krynn/api/v4/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/cancel"
+    #- curl -X POST --HEADER "PRIVATE-TOKEN: ${PRIVATE_API_TOKEN}" "https://gitlab.lasthome.solace.krynn/api/v4/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/cancel"
 
 ######################################## LAUNCH HYPERVISOR ########################################
 wake_hypervisor:
