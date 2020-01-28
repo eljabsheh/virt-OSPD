@@ -35,3 +35,9 @@
   become_user: stack
   when: virt_env_ospd_director_version in ['8-director', '9-director', '10-director', '11-director', '12-director', '13-director', '15-director', '16-director']
         and virt_env_ospd_conf_undercloud_for_me
+
+# Clean out ssh keys
+- name: remove instackenv_pm_addr from known_hosts
+  shell: |
+    ssh-keygen -R {{ instackenv_pm_addr }}
+    ssh-keyscan -t rsa {{ instackenv_pm_addr }} >> ~/.ssh/known_hosts
