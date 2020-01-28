@@ -51,8 +51,11 @@ default:
   #### image: docker.io/fedora:30
   image: krynn-gitlab-runner
   before_script:
+    - mkdir ~/.ssh/
+    - echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n" > ~/.ssh/config
     - cd /builds/${GITLAB_USER_LOGIN}
-    - git clone https://gitlab.lasthome.solace.krynn/raistlin/OSP.git
+    - if [ ! -d OSP ]; then git clone https://gitlab.lasthome.solace.krynn/raistlin/OSP.git; fi
+    - if [ -d OSP ]; then (cd OSP && git pull -a); fi
     # this is the start of the utility functions embedded in all stages
     - source /builds/${GITLAB_USER_LOGIN}/virt-OSPD/gitlab/functions.sh
     # let's do the redis magic
