@@ -36,6 +36,12 @@
     - vm.failed is defined
     - vm.failed
 
+# clean out ssh key from known hosts
+- name: remove instackenv_pm_addr from known_hosts
+  shell: |
+    ssh-keygen -R localhost
+    ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
+
 - name: Take an initial snapshot of the undercloud VM
   shell: |
     export LIBVIRT_DEFAULT_URI=qemu+ssh://localhost/system
