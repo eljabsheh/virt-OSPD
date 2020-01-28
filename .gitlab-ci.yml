@@ -51,10 +51,10 @@ default:
   #### image: docker.io/fedora:30
   image: krynn-gitlab-runner
   before_script:
-    # this is the start of the utility functions embedded in all stages
-    - source /builds/${GITLAB_USER_LOGIN}/OSP/gitlab/functions.sh
     # Obtain OSP sources
     - git clone https://gitlab.lasthome.solace.krynn/raistlin/OSP.git
+    # this is the start of the utility functions embedded in all stages
+    - source /builds/${GITLAB_USER_LOGIN}/OSP/gitlab/functions.sh
     # let's do the redis magic
     - mkdir -p ~/.ssh/
     - echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n  ServerAliveInterval 120\n  ServerAliveCountMax 720\n  TCPKeepAlive no\n" > ~/.ssh/config
