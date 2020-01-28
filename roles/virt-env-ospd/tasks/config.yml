@@ -41,11 +41,12 @@
     - virt_env_ospd_undercloud_hostname | regex_search('\.lasthome\.solace\.krynn$')
 
 # Only do this for hosts outside of krynn since /etc/hosts is handled differently.
+#line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
 - name: Configuring Undercloud's /etc/hosts file (Add new entries)
   lineinfile:
     dest=/etc/hosts
     state=present
-    line='{{ undercloud_dhcp_ip.stdout }} {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
+    line='10.20.0.2 {{ virt_env_ospd_undercloud_hostname }} {{ virt_env_ospd_undercloud_hostname.split('.')[0] }}'
     insertafter='^127\.0\.0\.1'
   when:
     - virt_env_ospd_undercloud_hostname | regex_search('\.lasthome\.solace\.krynn$')
