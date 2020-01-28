@@ -103,9 +103,9 @@ default:
         if [ ! -z "${INSTACK_RHEL}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL "${INSTACK_RHEL}" ; fi ;
       fi
     # Summary
-    - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${SIZE}" -a ! -z "${SNAP}" ]; then
-        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP}, size ${SIZE} ( guest ${INSTACK_GUEST}, ";
-        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}, restore snapshot is ${SNAP} )" ;
+    - if [ ! -z "${HVM}" -a ! -z "${OSP}" ]; then
+        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( guest ${INSTACK_GUEST}, ";
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS} )" ;
         export LIBVIRT_DEFAULT_URI=qemu+ssh://${SSH_USER}@${HVM}/system ;
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
@@ -259,9 +259,9 @@ config_injection:
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS" "${INSTACK_DNS}"
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST" "${INSTACK_GUEST}"
     # Final banner
-    - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${SIZE}" -a ! -z "${SNAP}" ]; then
-        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP}, size ${SIZE} ( guest ${INSTACK_GUEST}, ";
-        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}, restore snapshot is ${SNAP} )" ;
+    - if [ ! -z "${HVM}" -a ! -z "${OSP}" ]; then
+        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( guest ${INSTACK_GUEST}, ";
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS} )" ;
       else
         exit 127 ;
       fi
