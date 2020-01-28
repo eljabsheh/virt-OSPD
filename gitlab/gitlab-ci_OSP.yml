@@ -1,0 +1,608 @@
+########################################################################################################################
+### CI Variables ###
+### Add those variables to a manual pipeline run to modify task execution
+########################################################################################################################
+# OSP variable:
+#   '8': Deploys RHOSP8
+#   '9': Deploys RHOSP9
+#   '10': Deploys RHOSP10
+#   '13': Deploys RHOSP13
+#   '15': Deploys RHOSP15
+#   '16': Deploys RHOSP16
+#
+# HVM variable:
+#   'thorbardin': only execute on HVM thorbardin
+#   'daltigoth': only execute on HVM daltigoth
+#   'palanthas': only execute on HVM palanthas
+#   'ravenvale': only execute on HVM ravenvale
+#
+# SIZE variable:
+#   'micro': 1*ctrl, 2*cmpt, 1*ceph
+#   'small': 3*ctrl, 2*cmpt, 1*ceph
+#   'medium': 3*ctrl, 2*cmpt, 3*ceph
+#   'large': 3*ctrl, 4*cmpt, 3*ceph
+#
+############################################ UTILITY ROUTINES ##########################################################
+
+.tag_restrict: &tag_restrict
+  only:
+    #- master
+    - web
+    - refact
+
+######################################## STAGES & GLOBALS ########################################
+# Stages
+stages:
+  - select_hypervisor
+  - select_rhosp
+  - select_deploy_size
+  - restore_undercloud
+  - initiate_launch
+  - launch_hypervisor
+  - restore_snapshot
+  - launch_undercloud
+  - rhel_sat_register
+  - initial_patching
+  - config_undercloud
+  - deploy_overcloud
+  - create_test_tenant
+  - delete_overcloud
+  - stop_undercloud
+
+# Sane Defaults
+variables:
+  REDIS_HOST: "ca8.lasthome.solace.krynn"
+  REDIS_PORT: "6379"
+  GIT_SSL_NO_VERIFY: "1"
+  PYTHONUNBUFFERED: "true"
+  SSH_USER: "vmrun"
+  VBMC_CONTAINER: "krynn-vbmc"
+
+
+######################################## DEFAULT BEFORE_SCRIPT ########################################
+
+default:
+  #### image: registry.access.redhat.com/ubi8/ubi:latest
+  #### image: docker.io/fedora:30
+  image: krynn-gitlab-runner
+  before_script:
+    # this is the start of the utility functions embedded in all stages
+    - source /builds/${GITLAB_USER_LOGIN}/OSP/gitlab/functions.sh
+    # let's do the redis magic
+    - mkdir -p ~/.ssh/
+    - echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n  ServerAliveInterval 120\n  ServerAliveCountMax 720\n  TCPKeepAlive no\n" > ~/.ssh/config
+    - chmod 0700 -R ~/.ssh
+    - unset REDIS_HVM_FAQ REDIS_OSP_FAQ REDIS_SIZE_FAQ REDIS_SNAP_FAQ REDIS_INSTACK_GUEST_FAQ REDIS_INSTACK_DNS_FAQ REDIS_INSTACK_RHEL_FAQ
+    - REDIS_CMD="redis-cli --no-auth-warning --raw -h ${REDIS_HOST} -p ${REDIS_PORT}"
+    # Hypervisor
+    - REDIS_HVM_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM)"
+    - if [ ! -z "${REDIS_HVM_FAQ}" ]; then
+        export HVM="${REDIS_HVM_FAQ}" ;
+      else
+        if [ ! -z "${HVM}" ]; then
+          ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM "${HVM}" ;
+        fi ;
+      fi
+    # OSP version
+    - REDIS_OSP_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP)"
+    - if [ ! -z "${REDIS_OSP_FAQ}" ]; then
+        export OSP="${REDIS_OSP_FAQ}";
+        export RHEL="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL)";
+      else
+        if [ ! -z "${OSP}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP "${OSP}" ; fi ;
+      fi
+    # Deploy size
+    - REDIS_SIZE_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE)"
+    - if [ ! -z "${REDIS_SIZE_FAQ}" ]; then
+        export SIZE="${REDIS_SIZE_FAQ}";
+      else
+        if [ ! -z "${SIZE}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE "${SIZE}" ; fi ;
+      fi
+    # Restore snapshots ?
+    - REDIS_SNAP_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP)"
+    - if [ ! -z "${REDIS_SNAP_FAQ}" ]; then
+        export SNAP="${REDIS_SNAP_FAQ}";
+      else
+        if [ ! -z "${SNAP}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP "${SNAP}" ; fi ;
+      fi
+    # Instack VM guest
+    - REDIS_INSTACK_GUEST_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST)"
+    - if [ ! -z "${REDIS_INSTACK_GUEST_FAQ}" ]; then
+        export INSTACK_GUEST="${REDIS_INSTACK_GUEST_FAQ}";
+      else
+        if [ ! -z "${INSTACK_GUEST}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST "${INSTACK_GUEST}" ; fi ;
+      fi
+    # Instack VM Hostname
+    - REDIS_INSTACK_DNS_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS)"
+    - if [ ! -z "${REDIS_INSTACK_DNS_FAQ}" ]; then
+        export INSTACK_DNS="${REDIS_INSTACK_DNS_FAQ}";
+      else
+        if [ ! -z "${INSTACK_DNS}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS "${INSTACK_DNS}" ; fi ;
+      fi
+    # RHEL Version ( 7 or 8 )
+    - REDIS_INSTACK_RHEL_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL)"
+    - if [ ! -z "${REDIS_INSTACK_RHEL_FAQ}" ]; then
+        export INSTACK_RHEL="${REDIS_INSTACK_RHEL_FAQ}";
+      else
+        if [ ! -z "${INSTACK_RHEL}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL "${INSTACK_RHEL}" ; fi ;
+      fi
+    # Summary
+    - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${SIZE}" -a ! -z "${SNAP}" ]; then
+        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP}, size ${SIZE} ( guest ${INSTACK_GUEST}, ";
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}, restore snapshot is ${SNAP} )" ;
+        export LIBVIRT_DEFAULT_URI=qemu+ssh://${SSH_USER}@${HVM}/system ;
+        echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
+      fi
+    - eval $(ssh-agent)
+    - chmod 600 /builds/${GITLAB_USER_LOGIN}/OSP/site-configs/${SSH_USER}_rsa
+    - ssh-add /builds/${GITLAB_USER_LOGIN}/OSP/site-configs/${SSH_USER}_rsa
+
+######################################## SELECT HYPERVISOR ########################################
+.select_hypervisor:
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "${OSP}"
+    - echo "Selected Hypervisor ${HVM} and RHOSP v${OSP}..."
+  <<: *tag_restrict
+
+hvm_thorbardin:
+  extends: .select_hypervisor
+  stage: select_hypervisor
+  #tags: thorbardin
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM" "thorbardin"
+
+hvm_daltigoth:
+  extends: .select_hypervisor
+  stage: select_hypervisor
+  #tags: daltigoth
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM" "daltigoth"
+
+hvm_palanthas:
+  extends: .select_hypervisor
+  stage: select_hypervisor
+  #tags: palanthas
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM" "palanthas"
+
+hvm_ravenvale:
+  extends: .select_hypervisor
+  stage: select_hypervisor
+  #tags: ravenvale
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM" "ravenvale"
+
+######################################## SELECT RHOSP ########################################
+.select_rhosp:
+  script:
+    - echo "Selected Hypervisor ${HVM} and RHOSP v${OSP}..."
+  <<: *tag_restrict
+
+rhosp_8:
+  extends: .select_rhosp
+  stage: select_rhosp
+  #tags: thorbardin
+  when: manual
+  script:
+    # Hypervisor
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "8"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "7"
+  allow_failure: true
+
+rhosp_9:
+  extends: .select_rhosp
+  stage: select_rhosp
+  #tags: thorbardin
+  when: manual
+  script:
+    # Hypervisor
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "9"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "7"
+  allow_failure: true
+
+rhosp_10:
+  extends: .select_rhosp
+  stage: select_rhosp
+  #tags: thorbardin
+  when: manual
+  script:
+    # Hypervisor
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "10"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "7"
+  allow_failure: true
+
+rhosp_13:
+  extends: .select_rhosp
+  stage: select_rhosp
+  #tags: thorbardin
+  when: manual
+  script:
+    # Hypervisor
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "13"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "7"
+  allow_failure: true
+
+rhosp_15:
+  extends: .select_rhosp
+  stage: select_rhosp
+  #tags: thorbardin
+  when: manual
+  script:
+    # Hypervisor
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "15"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "8"
+  allow_failure: true
+
+rhosp_16:
+  extends: .select_rhosp
+  stage: select_rhosp
+  #tags: thorbardin
+  when: manual
+  script:
+    # Hypervisor
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP" "16"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "8"
+  allow_failure: true
+
+######################################## SELECT SIZE ########################################
+.select_deploy_size:
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE" "${SIZE}"
+    - echo "Selected Hypervisor ${HVM}, RHOSP v${OSP} and size ${SIZE}..."
+  <<: *tag_restrict
+
+1_micro:
+  extends: .select_deploy_size
+  stage: select_deploy_size
+  #tags: thorbardin
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE" "micro"
+
+2_small:
+  extends: .select_deploy_size
+  stage: select_deploy_size
+  #tags: daltigoth
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE" "small"
+
+3_medium:
+  extends: .select_deploy_size
+  stage: select_deploy_size
+  #tags: palanthas
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE" "medium"
+
+4_large:
+  extends: .select_deploy_size
+  stage: select_deploy_size
+  #tags: ravenvale
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE" "large"
+
+######################################## SELECT RESTORE SNAPSHOT ########################################
+.restore_undercloud:
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP" "${SNAP}"
+    - echo "Selected Hypervisor ${HVM}, RHOSP v${OSP} and size ${SIZE}..."
+  <<: *tag_restrict
+
+restore_undercloud:
+  extends: .restore_undercloud
+  stage: restore_undercloud
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP" "yes"
+
+keep_undercloud:
+  extends: .restore_undercloud
+  stage: restore_undercloud
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP" "no"
+
+######################################## DISCOVER HYPERVISOR (BLOCKING) ########################################
+config_injection:
+  stage: initiate_launch
+  <<: *tag_restrict
+  script:
+    # Blocking loop (2hours max)
+    # 1st, Select Hypervisor:
+    - TIMEOUT=7200;
+      until test ! -z "$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM)" || [ $TIMEOUT -eq 0 ];
+        do
+          echo "Hypervisor not yet selected, sleeping (${TIMEOUT} attempts remaining)";
+          sleep 1; TIMEOUT=$(( $TIMEOUT - 1 ));
+        done;
+    - export HVM="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM)"
+    - echo "Requested Hypervisor is ${HVM}"
+    # 2nd, Select RHOSP version:
+    - TIMEOUT=7200;
+      until test ! -z "$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP)" || [ $TIMEOUT -eq 0 ];
+        do
+           echo "RHOSP Version not yet selected, sleeping (${TIMEOUT} attempts remaining)";
+           sleep 1; TIMEOUT=$(( $TIMEOUT - 1 ));
+        done;
+    - export OSP="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP)"
+    - export RHEL="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL)"
+    - echo "Requested RHOSP version is ${OSP} on RHELv${RHEL}"
+    # 3rd, Select overcloud deployment size:
+    - TIMEOUT=7200;
+      until test ! -z "$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE)" || [ $TIMEOUT -eq 0 ];
+        do
+           echo "Deployment size not yet selected, sleeping (${TIMEOUT} attempts remaining)";
+           sleep 1; TIMEOUT=$(( $TIMEOUT - 1 ));
+        done;
+    - export SIZE="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE)"
+    - echo "Requested RHOSP deployment size is ${SIZE}"
+    # 4th, Select to restore snapshots (yes/no):
+    - TIMEOUT=7200;
+      until test ! -z "$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP)" || [ $TIMEOUT -eq 0 ];
+        do
+           echo "Undercloud snapshot restore not yet selected, sleeping (${TIMEOUT} attempts remaining)";
+           sleep 1; TIMEOUT=$(( $TIMEOUT - 1 ));
+        done;
+    - export SNAP="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP)"
+    - echo "Requested to restore KVM Director snapshot is ${SNAP}"
+    # This is where the hostname/guest name logic happens:
+    - export INSTACK_DNS="osp${OSP}$(echo $HVM|cut -c1)"
+    - export INSTACK_GUEST="instack-${OSP}"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS" "${INSTACK_DNS}"
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST" "${INSTACK_GUEST}"
+    # Final banner
+    - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${SIZE}" -a ! -z "${SNAP}" ]; then
+        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP}, size ${SIZE} ( guest ${INSTACK_GUEST}, ";
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}, restore snapshot is ${SNAP} )" ;
+      else
+        exit 127 ;
+      fi
+
+######################################## LAUNCH HYPERVISOR ########################################
+wake_hypervisor:
+  stage: launch_hypervisor
+  <<: *tag_restrict
+  script:
+    - VERY_SHORT_HOSTNAME=$(echo ${HVM}|cut -c1-3)
+    - ssh -qt ${SSH_USER}@imladris.lasthome.solace.krynn "sudo /opt/krynn/scripts/wake_${VERY_SHORT_HOSTNAME}.sh"
+
+wait_hypervisor_online:
+  stage: launch_hypervisor
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 360 -h ${HVM} -p 22
+
+wait_libvirtd_online:
+  stage: launch_hypervisor
+  <<: *tag_restrict
+  script:
+    - wait_libvirtd_active -t 240 -h ${HVM}
+    - echo "Libvirtd on ${HVM} now reports 'active'"
+
+######################################## RESTORE SNAPSHOTS ########################################
+undercloud_restore_process:
+  stage: restore_snapshot
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 360 -h ${HVM} -p 22
+    - if [ "${SNAP}" = "yes" ]; then
+        echo "Force ${INSTACK_GUEST} immediate shutdown";
+        virsh destroy ${INSTACK_GUEST} || /bin/true;
+        echo "Restoring Undercloud Snapshot (Rolling back all changes since Origin)";
+        virsh snapshot-revert --current ${INSTACK_GUEST};
+      else
+        echo "NOT restoring Undercloud Snapshot (Will keep current state)";
+      fi
+    - virsh list
+
+######################################## LAUNCH VBMC ########################################
+launch_vbmc:
+  stage: launch_undercloud
+  <<: *tag_restrict
+  script:
+    - virsh list
+    - ssh ${SSH_USER}@${HVM} "timeout 60s sudo /usr/local/bin/VBMC_Start.sh || /bin/true"
+    - echo "All vbmc processes started on ${HVM}..."
+
+######################################## START VBMC CONTAINER ########################################
+start_vbmc_container:
+  stage: launch_undercloud
+  <<: *tag_restrict
+  script:
+    - ssh ${SSH_USER}@${HVM} "docker start ${VBMC_CONTAINER}"
+    - echo "vbmc container ${VBMC_CONTAINER} started on ${HVM}..."
+
+######################################## START UNDERCLOUD ########################################
+start_undercloud:
+  stage: launch_undercloud
+  <<: *tag_restrict
+  script:
+    - virsh start ${INSTACK_GUEST} || /bin/true
+    - wait_system_online -t 120 -h ${INSTACK_DNS} -p 22
+
+######################################## COPY TEMPLATES ########################################
+copy_templates_tools:
+  stage: launch_undercloud
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
+    - ssh stack@${INSTACK_DNS} 'uname -a'
+    - ssh stack@${INSTACK_DNS} 'sudo /bin/rm -fv /etc/profile.d/proxy.csh /etc/profile.d/proxy.sh /etc/yum.repos.d/krynn.repo'
+    # Copy templates on Director under /home/stack/OSP
+    - rsync -a --delete /builds/${GITLAB_USER_LOGIN}/OSP/ stack@${INSTACK_DNS}:/home/stack/OSP
+
+######################################## RHEL_SAT_REGISTER ########################################
+register_undercloud:
+  stage: rhel_sat_register
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
+    - ssh stack@${INSTACK_DNS} 'sudo subscription-manager clean'
+    # KRYNN_SPECIFIC
+    - ssh stack@${INSTACK_DNS} "sudo /home/stack/OSP/tools/sat6/sub_osp${OSP}.sh"
+
+######################################## INITIAL_PATCHING ########################################
+patch_rhel_baseos:
+  stage: initial_patching
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
+    # Set tuned profile (make instack a noisy neighbour)
+    #- ssh stack@${INSTACK_DNS} 'sudo tuned-adm profile latency-performance'
+    - ssh stack@${INSTACK_DNS} 'sudo tuned-adm profile virtual-guest'
+    # Inject networking config from NFS share (Yeah, Sat6 isn't doing the provisionning at this time... :( ) Only do this if not detected ( /etc/sysconfig/network-scripts/ifcfg-bond1.2010 )
+    - ssh stack@${INSTACK_DNS} "if [ ! -f /etc/sysconfig/network-scripts/ifcfg-bond1.2010 ]; then sudo /net/imladris/export/home/shared/data/install/Krynn/${INSTACK_DNS}/install_from_nfs.sh --force ; fi"
+    # Make sure host is subscribed
+    #- ssh stack@${INSTACK_DNS} "sudo /home/stack/OSP/tools/sat6/sub_osp${OSP}.sh"
+    # Make sure we resize root to 192G - RHEL7 has a PV on /dev/sda1, RHEL8 has a PV on /dev/sda2. Try both devices...
+    - ssh stack@${INSTACK_DNS} 'if [ -b /dev/rootdg/lv_root ]; then sudo /home/stack/OSP/tools/resize_rootdg.sh; fi'
+    # Yum clean all
+    - ssh stack@${INSTACK_DNS} 'sudo yum clean all'
+    # Yum update kernel + glibc only
+    - ssh stack@${INSTACK_DNS} 'sudo yum update -y kernel glibc systemd'
+    # Check if reboot is needed
+    - RES=$(ssh -q stack@${INSTACK_DNS} '/usr/bin/needs-restarting -r > /dev/null 2>&1 && echo "SYSTEM_OK" || echo "NEED_REBOOT"')
+    # Check if kernel was upgraded.. if yes, then rebuild initramfs for all kernels
+    - if [[ "$RES" = "NEED_REBOOT" ]]; then
+        ssh stack@${INSTACK_DNS} 'sudo /sbin/grub2-mkconfig -o /boot/grub2/grub.cfg';
+        ssh stack@${INSTACK_DNS} 'sudo /bin/dracut -f --regenerate-all ; sync';
+        ssh stack@${INSTACK_DNS} 'sudo /sbin/reboot' || /bin/true ;
+        sleep 10;
+      else
+        ssh stack@${INSTACK_DNS} 'sudo /bin/dracut -f ; sync';
+      fi
+
+######################################## CONFIG UNDERCLOUD ########################################
+install_undercloud:
+  stage: config_undercloud
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
+    # Install required packages
+    - base_rpms="rhosp-director-images libguestfs-tools libguestfs-xfs libguestfs-devel crudini";
+         case ${OSP} in
+             8|9)
+                 export full_rpms="python-tripleoclient ${base_rpms}" ;;
+             10|13)
+                 export full_rpms="python-tripleoclient ceph-ansible ${base_rpms}" ;;
+             15|16)
+                 export full_rpms="python3-tripleoclient ceph-ansible ${base_rpms}" ;
+         esac
+    - ssh stack@${INSTACK_DNS} "sudo yum install -y --allowerasing ${full_rpms}"
+    # Build/Install certificates
+    #### - ssh stack@${INSTACK_DNS} "cd /home/stack/OSP/osp${OSP}/certs ; ./build_overcloud_cert.sh"
+    - ssh stack@${INSTACK_DNS} "cd /home/stack/OSP/osp${OSP}/site_krynn ; ./install_certs_to_topdir.sh"
+    # Run undercloud install
+    - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; openstack undercloud upgrade ; else openstack undercloud install ; fi ;"
+    # Rebuild trust-anchor-hiera yaml with certs now that the undercloud is installed...
+    - ssh stack@${INSTACK_DNS} "cd /home/stack/OSP/osp${OSP}/site_krynn ; ./rebuild_yamls_for_certs.sh"
+    # Clean VMs in sat6 if undercloud is not already installed (only to be sure we are starting fresh)
+    - ssh -q stack@${INSTACK_DNS} "test -f stackrc" || ssh stack@sat6.lasthome.solace.krynn "/export/home/stack/clean_osp_VMs.sh"
+    # Import images
+    - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; cd /home/stack/images ; /home/stack/OSP/images/update_overcloud_image_netifs.sh ; fi"
+    # if nodes do not get imported, run it again here..
+    #- ssh stack@${INSTACK_DNS} ". stackrc ; openstack overcloud node import ./instackenv.json"
+    # Check if reboot is needed
+    - RES=$(ssh -q stack@${INSTACK_DNS} '/usr/bin/needs-restarting -r > /dev/null 2>&1 && echo "SYSTEM_OK" || echo "NEED_REBOOT"')
+    # Check if kernel was upgraded.. if yes, then rebuild initramfs for all kernels
+    ###### DISABLED #####    ssh stack@${INSTACK_DNS} 'sudo /sbin/reboot' || /bin/true ;
+    - if [[ "$RES" = "NEED_REBOOT" ]]; then
+        ssh stack@${INSTACK_DNS} 'sudo /sbin/grub2-mkconfig -o /boot/grub2/grub.cfg';
+        ssh stack@${INSTACK_DNS} 'sudo /bin/dracut -f --regenerate-all ; sync';
+        sleep 10;
+      else
+        ssh stack@${INSTACK_DNS} 'sudo /bin/dracut -f ; sync';
+      fi
+    - wait_system_online -t 120 -h ${INSTACK_DNS} -p 22
+    # Wait some more for the undercloud services to start
+    - wait_ironic_active -t 120 -h ${INSTACK_DNS}
+    # We want to nuke the sector from orbit, it's the only way to be sure..
+    - sleep 120
+
+######################################## DEPLOY OVERCLOUD ########################################
+deploy_overcloud:
+  stage: deploy_overcloud
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    - ssh stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; for i in $(openstack baremetal node list -c UUID -f value); do openstack baremetal node provide $i; done || /bin/true'
+    # Print nodes before deployment
+    - ssh -qt stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; fi ; openstack baremetal node list"
+    # Launch deploy script
+    - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; fi ; /home/stack/OSP/osp${OSP}/bin/deploy20_${SIZE}.sh"
+
+ansible_inventory:
+  stage: deploy_overcloud
+  <<: *tag_restrict
+  when: delayed
+  # 60 minutes ought to be enough even for 'medium' deployments.
+  start_in: 60 minutes
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    # run script. tripleo-inventory will not return anything until CREATE_COMPLETE
+    - ssh stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; /home/stack/OSP/tools/build_ansible_inventory.sh > /home/stack/hosts'
+    # Add hosts to /etc/hosts ahead of time so I can 'ssh ceph0'
+    - ssh stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; /home/stack/OSP/tools/add_etc_hosts.sh'
+
+######################################## CREATE TEST TENANT ########################################
+create_tenant_networks:
+  stage: create_test_tenant
+  <<: *tag_restrict
+  allow_failure: true
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    # Create test tenant + network
+    - ssh stack@${INSTACK_DNS} "source overcloudrc ; /home/stack/OSP/osp${OSP}/overcloud_networks_create.sh"
+    # Launch the martians
+    - ssh stack@${INSTACK_DNS} "source overcloudrc ; /home/stack/OSP/osp${OSP}/tests/_oc.sh"
+
+######################################## DELETE OVERCLOUD ########################################
+delete_overcloud:
+  stage: delete_overcloud
+  <<: *tag_restrict
+  allow_failure: true
+  when: manual
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    # Run overcloud stack delete
+    - ssh -qt stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; export PYTHONUNBUFFERED=true ; openstack stack delete --yes --wait overcloud'
+    # Clean OSP VMs in sat6 (if those didn't get deleted when the overcloud was..)
+    - ssh -qt stack@sat6.lasthome.solace.krynn '/export/home/stack/clean_osp_VMs.sh'
+
+######################################## STOP UNDERCLOUD ########################################
+stop_undercloud:
+  stage: stop_undercloud
+  <<: *tag_restrict
+  # Make shutdown manual for now...
+  #when: delayed
+  #start_in: 5 minutes
+  allow_failure: true
+  when: manual
+  #when: always
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    - virsh shutdown ${INSTACK_GUEST} || /bin/true
+    - wait_system_offline -t 60 -h ${INSTACK_DNS} -p 22
+    # Clean redis
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM"
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP"
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SIZE"
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_SNAP"
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS"
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST"
