@@ -266,6 +266,14 @@ config_injection:
         exit 127 ;
       fi
 
+cancel_timeout:
+  stage: initiate_launch
+  when: manual
+  allow_failure: true
+  script:
+    - sleep 120
+    - curl -X POST --HEADER "PRIVATE-TOKEN: %PRIVATE_API_TOKEN%" https://gitlab.lasthome.solace.krynn/api/v4/projects/%CI_PROJECT_ID%/pipelines/%CI_PIPELINE_ID%/cancel'
+
 ######################################## LAUNCH HYPERVISOR ########################################
 wake_hypervisor:
   stage: launch_hypervisor
