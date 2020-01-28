@@ -25,9 +25,15 @@
     use: yum
   become: true
   when:
-    - virt_env_ospd_director_version in ['11-director', '12-director', '13-director', '15-director', '16-director']
     - virt_env_ospd_vbmc_containerized is defined
     - not virt_env_ospd_vbmc_containerized
+
+- name: Start VirtualBMC Container
+  shell:
+    docker start krynn-vbmc
+  when:
+    - virt_env_ospd_vbmc_containerized is defined
+    - virt_env_ospd_vbmc_containerized
 
 - name: Create VirtualBMC directories
   file:
@@ -42,7 +48,6 @@
   become: true
 
 - name: Create VirtualBMC configuration file
-  when: virt_env_ospd_director_version in ['11-director', '12-director', '13-director', '15-director', '16-director']
   copy:
     mode: 0750
     dest: "/etc/virtualbmc/virtualbmc.conf"
@@ -88,7 +93,8 @@
     count={{ virt_env_ospd_ceph.vm_count | int }}
   args:
     creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
-  when: virt_env_ospd_ceph is defined
+  when:
+    - virt_env_ospd_ceph is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -109,7 +115,8 @@
     count={{ virt_env_ospd_swift.vm_count | int }}
   args:
     creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
-  when: virt_env_ospd_swift is defined
+  when:
+    - virt_env_ospd_swift is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -130,7 +137,8 @@
     count={{ virt_env_ospd_control.vm_count | int }}
   args:
     creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
-  when: virt_env_ospd_control is defined
+  when:
+    - virt_env_ospd_control is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -151,7 +159,8 @@
     count={{ virt_env_ospd_compute.vm_count | int }}
   args:
     creates: /root/.vbmc/{{ virt_env_ospd_vm_name }}-{{ virt_env_ospd_compute.name }}-{{ item }}/config
-  when: virt_env_ospd_compute is defined
+  when:
+    - virt_env_ospd_compute is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -167,7 +176,8 @@
   with_sequence:
     start=0
     count={{ virt_env_ospd_ceph.vm_count | int }}
-  when: virt_env_ospd_ceph is defined
+  when:
+    - virt_env_ospd_ceph is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -179,7 +189,8 @@
   with_sequence:
     start=0
     count={{ virt_env_ospd_swift.vm_count | int }}
-  when: virt_env_ospd_swift is defined
+  when:
+    - virt_env_ospd_swift is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -191,7 +202,8 @@
   with_sequence:
     start=0
     count={{ virt_env_ospd_control.vm_count | int }}
-  when: virt_env_ospd_control is defined
+  when:
+    - virt_env_ospd_control is defined
   become: true
 
 - name: Update value for local_vbmc_port
@@ -203,7 +215,8 @@
   with_sequence:
     start=0
     count={{ virt_env_ospd_compute.vm_count | int }}
-  when: virt_env_ospd_compute is defined
+  when:
+    - virt_env_ospd_compute is defined
   become: true
 
 - name: Update value for local_vbmc_port
