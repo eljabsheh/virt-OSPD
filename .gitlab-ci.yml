@@ -20,7 +20,6 @@
 
 .tag_restrict: &tag_restrict
   only:
-    - master
     - refact
 
 ######################################## STAGES & GLOBALS ########################################
