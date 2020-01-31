@@ -58,8 +58,8 @@ default:
     - cd /builds/${GITLAB_USER_LOGIN}
     - if [ ! -d site-configs ]; then git clone https://gitlab.lasthome.solace.krynn/raistlin/site-configs.git; fi
     - if [ -d site-configs ]; then (cd site-configs && git pull -a); fi
-    - popd .
-    # this is the start of the utility functions embedded in all stages
+    - popd
+    # this is the start of the utility functions embedded in all stages (TBD)
     - source /builds/${GITLAB_USER_LOGIN}/virt-OSPD/gitlab/functions.sh
     # let's do the redis magic
     - mkdir -p ~/.ssh/
