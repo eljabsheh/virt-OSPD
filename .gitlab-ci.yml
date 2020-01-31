@@ -16,6 +16,9 @@
 #   'palanthas': only execute on HVM palanthas
 #   'ravenvale': only execute on HVM ravenvale
 #
+# SNAP variable:
+#   'yes': destroys undercloud
+#   'no': keep undercloud VM as-is
 ############################################ UTILITY ROUTINES ##########################################################
 
 .tag_restrict: &tag_restrict
