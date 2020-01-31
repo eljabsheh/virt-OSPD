@@ -394,7 +394,7 @@ run_ansible_playbook:
     - uname -a
 
 ######################################## STOP UNDERCLOUD ########################################
-perform_cleanup:
+stop_undercloud:
   stage: ci_cleanup
   <<: *tag_restrict
   # Make shutdown manual for now...
