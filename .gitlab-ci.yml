@@ -322,7 +322,8 @@ run_ansible_playbook:
   <<: *tag_restrict
   script:
     # KRYNN_SPECIFIC
-    - ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook -e ansible_python_interpreter=/usr/libexec/platform-python -i /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/inventories/virt-env-ospd/hosts /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_{HVM}.yml"
+    - ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook \\
+      -e ansible_python_interpreter=/usr/libexec/platform-python -i /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/inventories/virt-env-ospd/hosts /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_${HVM}.yml"
     - uname -a
 
 ######################################## STOP UNDERCLOUD ########################################
