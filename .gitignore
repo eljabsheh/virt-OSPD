@@ -1,7 +1,5 @@
 hosts
 floatings.txt
 ifcfg-bond2
-mitogen/.git/
-mitogen/.github/
-mitogen/.ci/
+mitogen/
 /site-configs/
