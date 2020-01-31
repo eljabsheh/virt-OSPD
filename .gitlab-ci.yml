@@ -388,8 +388,8 @@ run_ansible_playbook:
   script:
     # KRYNN_SPECIFIC
     - >
-      ssh ${ANSIBLE_USER}@${HVM} "cd /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD &&
-      ansible-playbook -e ansible_python_interpreter=/usr/libexec/platform-python
+      ssh -qt ${ANSIBLE_USER}@${HVM} "cd /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD &&
+      ANSIBLE_FORCE_COLOR=yes ansible-playbook -e ansible_python_interpreter=/usr/libexec/platform-python
       -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/ospd_${OSP}_${HVM}.yml"
     - uname -a
 
