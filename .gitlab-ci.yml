@@ -307,6 +307,8 @@ copy_playbook_n_tools:
     - ssh ${ANSIBLE_USER}@${HVM} 'uname -a'
     # Copy templates on Director under /home/stack/OSP
     - rsync -a --delete /builds/${GITLAB_USER_LOGIN}/virt-OSPD ${ANSIBLE_USER}@${HVM}:/tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/
+    # Make ansible happy
+    - ssh ${ANSIBLE_USER}@${HVM} "chmod -R a+Xr,og-w /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/"
 
 ######################################## START VBMC CONTAINER ########################################
 start_vbmc_container:
