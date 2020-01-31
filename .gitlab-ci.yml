@@ -52,8 +52,6 @@ default:
   #### image: docker.io/fedora:30
   image: krynn-gitlab-runner
   before_script:
-    - mkdir ~/.ssh/
-    - echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n" > ~/.ssh/config
     # Site configs
     - pushd .
     - cd /builds/${GITLAB_USER_LOGIN}
@@ -324,10 +322,11 @@ run_ansible_playbook:
   <<: *tag_restrict
   script:
     # KRYNN_SPECIFIC
-    - ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook \
-      -e ansible_python_interpreter=/usr/libexec/platform-python \
-      -i /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/inventories/virt-env-ospd/hosts \
+    - ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook
+      -e ansible_python_interpreter=/usr/libexec/platform-python
+      -i /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/inventories/virt-env-ospd/hosts
       /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_{HVM}.yml"
+    - uname -a
 
 ######################################## STOP UNDERCLOUD ########################################
 perform_cleanup:
