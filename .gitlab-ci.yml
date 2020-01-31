@@ -244,7 +244,7 @@ rhosp_16:
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "8"
   allow_failure: true
 
-######################################## SELECT RESTORE SNAPSHOT ########################################
+######################################## SELECT REBUILD UNDERCLOUD ########################################
 .select_rebuild:
   script:
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD" "${REBUILD}"
@@ -259,7 +259,7 @@ rebuild_undercloud_from_scratch:
   script:
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD" "yes"
 
-keep_undercloud:
+keep_undercloud_as_is:
   extends: .select_rebuild
   stage: select_rebuild
   when: manual
@@ -352,7 +352,7 @@ undercloud_destroy:
   script:
     - wait_system_online -t 360 -h ${HVM} -p 22
     - if [ "${REBUILD}" = "yes" ]; then
-        echo "Force ${INSTACK_GUEST} immediate shutdown";
+        echo "Will rebuild {INSTACK_GUEST}. Force undercloud immediate shutdown";
         virsh destroy ${INSTACK_GUEST} || /bin/true;
         virsh undefine ${INSTACK_GUEST} || /bin/true;
       else
