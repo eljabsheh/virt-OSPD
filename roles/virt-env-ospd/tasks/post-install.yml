@@ -41,6 +41,7 @@
   shell: |
     ssh-keygen -R localhost
     ssh-keyscan -t rsa localhost >> ~/.ssh/known_hosts
+  delegate_to: localhost
 
 - name: Take an initial snapshot of the undercloud VM
   shell: |
