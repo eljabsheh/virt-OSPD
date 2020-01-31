@@ -307,10 +307,9 @@ copy_playbook_n_tools:
   <<: *tag_restrict
   script:
     - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
-    - ssh stack@${INSTACK_DNS} 'uname -a'
-    - ssh stack@${INSTACK_DNS} 'sudo /bin/rm -fv /etc/profile.d/proxy.csh /etc/profile.d/proxy.sh /etc/yum.repos.d/krynn.repo'
+    - ssh ${ANSIBLE_USER}@${HVM} 'uname -a'
     # Copy templates on Director under /home/stack/OSP
-    - rsync -a --delete /builds/${GITLAB_USER_LOGIN}/OSP/ stack@${INSTACK_DNS}:/home/stack/OSP
+    - rsync -a --delete /builds/${GITLAB_USER_LOGIN}/virt-OSPD ${ANSIBLE_USER}@${HVM}:/tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/
 
 ######################################## START VBMC CONTAINER ########################################
 start_vbmc_container:
@@ -328,8 +327,8 @@ run_ansible_playbook:
     # KRYNN_SPECIFIC
     - ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook
       -e ansible_python_interpreter=/usr/libexec/platform-python \
-      -i /net/imladris/export/home/raistlin/World/Vincent/Code/GIT/virt-OSPD/inventories/virt-env-ospd/hosts \
-      /net/imladris/export/home/raistlin/World/Vincent/Code/GIT/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_{HVM}.yml"
+      -i /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/inventories/virt-env-ospd/hosts \
+      /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_{HVM}.yml"
 
 ######################################## STOP UNDERCLOUD ########################################
 perform_cleanup:
