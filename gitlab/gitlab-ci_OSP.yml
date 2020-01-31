@@ -22,11 +22,15 @@
 #   'medium': 3*ctrl, 2*cmpt, 3*ceph
 #   'large': 3*ctrl, 4*cmpt, 3*ceph
 #
+# SNAP variable:
+#   'yes': restores undercloud from its original snapshot before any action
+#   'no': keeps undercloud VM as-is
+#
 ############################################ UTILITY ROUTINES ##########################################################
 
 .tag_restrict: &tag_restrict
   only:
-    #- master
+    - master_disabled_20200129
     - web
     - refact
 

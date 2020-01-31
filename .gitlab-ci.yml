@@ -40,7 +40,7 @@ variables:
   REDIS_PORT: "6379"
   GIT_SSL_NO_VERIFY: "1"
   PYTHONUNBUFFERED: "true"
-  SSH_USER: "vmrun"
+  SSH_USER: "raistlin"
   VBMC_CONTAINER: "krynn-vbmc"
 
 
@@ -53,9 +53,12 @@ default:
   before_script:
     - mkdir ~/.ssh/
     - echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n" > ~/.ssh/config
+    # Site configs
+    - pushd .
     - cd /builds/${GITLAB_USER_LOGIN}
-    - if [ ! -d OSP ]; then git clone https://gitlab.lasthome.solace.krynn/raistlin/OSP.git; fi
-    - if [ -d OSP ]; then (cd OSP && git pull -a); fi
+    - if [ ! -d site-configs ]; then git clone https://gitlab.lasthome.solace.krynn/raistlin/site-configs.git; fi
+    - if [ -d site-configs ]; then (cd site-configs && git pull -a); fi
+    - popd .
     # this is the start of the utility functions embedded in all stages
     - source /builds/${GITLAB_USER_LOGIN}/virt-OSPD/gitlab/functions.sh
     # let's do the redis magic
@@ -110,8 +113,7 @@ default:
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
     - eval $(ssh-agent)
-    - chmod 600 /builds/${GITLAB_USER_LOGIN}/OSP/site-configs/${SSH_USER}_rsa
-    - ssh-add /builds/${GITLAB_USER_LOGIN}/OSP/site-configs/${SSH_USER}_rsa
+    - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
 
 ######################################## SELECT HYPERVISOR ########################################
 .select_hypervisor:
@@ -320,10 +322,11 @@ run_ansible_playbook:
   stage: run_playbook
   <<: *tag_restrict
   script:
-    - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
-    - ssh stack@${INSTACK_DNS} 'sudo subscription-manager clean'
     # KRYNN_SPECIFIC
-    - ssh stack@${INSTACK_DNS} "sudo /home/stack/OSP/tools/sat6/sub_osp${OSP}.sh"
+    - ssh ${SSH_USER}@${HVM} "ansible-playbook
+      -e ansible_python_interpreter=/usr/libexec/platform-python \
+      -i /net/imladris/export/home/raistlin/World/Vincent/Code/GIT/virt-OSPD/inventories/virt-env-ospd/hosts \
+      /net/imladris/export/home/raistlin/World/Vincent/Code/GIT/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_{HVM}.yml"
 
 ######################################## STOP UNDERCLOUD ########################################
 perform_cleanup:
