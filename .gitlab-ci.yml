@@ -16,9 +16,10 @@
 #   'palanthas': only execute on HVM palanthas
 #   'ravenvale': only execute on HVM ravenvale
 #
-# SNAP variable:
+# REBUILD variable:
 #   'yes': destroys undercloud
 #   'no': keep undercloud VM as-is
+#
 ############################################ UTILITY ROUTINES ##########################################################
 
 .tag_restrict: &tag_restrict
@@ -31,8 +32,10 @@
 stages:
   - select_hypervisor
   - select_rhosp
+  - select_rebuild
   - initiate_launch
   - launch_hypervisor
+  - rebuild_undercloud
   - inject_tools
   - run_playbook
   - ci_cleanup
@@ -86,6 +89,13 @@ default:
       else
         if [ ! -z "${OSP}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP "${OSP}" ; fi ;
       fi
+    # Restore snapshots ?
+    - REDIS_REBUILD_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD)"
+    - if [ ! -z "${REDIS_REBUILD_FAQ}" ]; then
+        export SNAP="${REDIS_REBUILD_FAQ}";
+      else
+        if [ ! -z "${REBUILD}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD "${REBUILD}" ; fi ;
+      fi
     # Instack VM guest
     - REDIS_INSTACK_GUEST_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST)"
     - if [ ! -z "${REDIS_INSTACK_GUEST_FAQ}" ]; then
@@ -108,9 +118,9 @@ default:
         if [ ! -z "${INSTACK_RHEL}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL "${INSTACK_RHEL}" ; fi ;
       fi
     # Summary
-    - if [ ! -z "${HVM}" -a ! -z "${OSP}" ]; then
+    - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${REBUILD}" ]; then
         echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( guest ${INSTACK_GUEST}, ";
-        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS} )" ;
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}, restore snapshot is ${REBUILD} )" ;
         export LIBVIRT_DEFAULT_URI=qemu+ssh://${SSH_USER}@${HVM}/system ;
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
@@ -234,6 +244,29 @@ rhosp_16:
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL" "8"
   allow_failure: true
 
+######################################## SELECT RESTORE SNAPSHOT ########################################
+.select_rebuild:
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD" "${REBUILD}"
+    - echo "Selected Hypervisor ${HVM}, RHOSP v${OSP}..."
+  <<: *tag_restrict
+
+select_rebuild:
+  extends: .select_rebuild
+  stage: select_rebuild
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD" "yes"
+
+keep_undercloud:
+  extends: .select_rebuild
+  stage: select_rebuild
+  when: manual
+  allow_failure: true
+  script:
+    - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD" "no"
+
 ######################################## DISCOVER HYPERVISOR (BLOCKING) ########################################
 config_injection:
   stage: initiate_launch
@@ -302,6 +335,22 @@ wait_libvirtd_online:
     - wait_libvirtd_active -t 240 -h ${HVM}
     - echo "Libvirtd on ${HVM} now reports 'active'"
 
+######################################## RESTORE SNAPSHOTS ########################################
+undercloud_destroy:
+  stage: rebuild_undercloud
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 360 -h ${HVM} -p 22
+    - if [ "${REBUILD}" = "yes" ]; then
+        echo "Force ${INSTACK_GUEST} immediate shutdown";
+        virsh destroy ${INSTACK_GUEST} || /bin/true;
+        virsh undefine ${INSTACK_GUEST} || /bin/true;
+      else
+        echo "NOT rebuilding Undercloud (Will keep current state)";
+      fi
+    - virsh list
+
+
 ######################################## COPY TEMPLATES ########################################
 copy_playbook_n_tools:
   stage: inject_tools
@@ -350,6 +399,7 @@ perform_cleanup:
     # Clean redis
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_HVM"
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP"
+    - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD"
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS"
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST"
     - ssh ${ANSIBLE_USER}@${HVM} "rm -rf /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/"
