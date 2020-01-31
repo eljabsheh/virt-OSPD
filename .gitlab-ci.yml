@@ -92,7 +92,7 @@ default:
     # Restore snapshots ?
     - REDIS_REBUILD_FAQ="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD)"
     - if [ ! -z "${REDIS_REBUILD_FAQ}" ]; then
-        export SNAP="${REDIS_REBUILD_FAQ}";
+        export REBUILD="${REDIS_REBUILD_FAQ}";
       else
         if [ ! -z "${REBUILD}" ]; then ${REDIS_CMD} set KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD "${REBUILD}" ; fi ;
       fi
