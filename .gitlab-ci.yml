@@ -323,10 +323,9 @@ run_ansible_playbook:
   script:
     # KRYNN_SPECIFIC
     - >
-      ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook
-      -e ansible_python_interpreter=/usr/libexec/platform-python
-      -i /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/inventories/virt-env-ospd/hosts
-      /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_${HVM}.yml"
+      ssh ${ANSIBLE_USER}@${HVM} "cd /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD &&
+      ansible-playbook -e ansible_python_interpreter=/usr/libexec/platform-python
+      -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/ospd_${OSP}_${HVM}.yml"
     - uname -a
 
 ######################################## STOP UNDERCLOUD ########################################
@@ -348,3 +347,4 @@ perform_cleanup:
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP"
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS"
     - ${REDIS_CMD} del "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST"
+    - ssh ${ANSIBLE_USER}@${HVM} "rm -rf /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/"
