@@ -354,7 +354,8 @@ undercloud_rebuild:
     - if [ "${REBUILD}" = "yes" ]; then
         echo "Will rebuild {INSTACK_GUEST}. Force undercloud immediate shutdown";
         virsh destroy ${INSTACK_GUEST} || /bin/true;
-        virsh undefine ${INSTACK_GUEST} || /bin/true;
+        virsh snapshot-delete --domain ${INSTACK_GUEST}  --current --metadata || /bin/true;
+        virsh undefine --remove-all-storage ${INSTACK_GUEST} || /bin/true;
       else
         echo "NOT rebuilding Undercloud (Will keep current state)";
       fi
