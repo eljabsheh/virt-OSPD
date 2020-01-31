@@ -40,7 +40,8 @@ variables:
   REDIS_PORT: "6379"
   GIT_SSL_NO_VERIFY: "1"
   PYTHONUNBUFFERED: "true"
-  SSH_USER: "raistlin"
+  SSH_USER: "vmrun"
+  ANSIBLE_USER: "raistlin"
   VBMC_CONTAINER: "krynn-vbmc"
 
 
@@ -113,8 +114,9 @@ default:
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
     - eval $(ssh-agent)
-    - chmod 600 /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
+    - chmod 600 /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
     - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
+    - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
 
 ######################################## SELECT HYPERVISOR ########################################
 .select_hypervisor:
@@ -324,7 +326,7 @@ run_ansible_playbook:
   <<: *tag_restrict
   script:
     # KRYNN_SPECIFIC
-    - ssh ${SSH_USER}@${HVM} "ansible-playbook
+    - ssh ${ANSIBLE_USER}@${HVM} "ansible-playbook
       -e ansible_python_interpreter=/usr/libexec/platform-python \
       -i /net/imladris/export/home/raistlin/World/Vincent/Code/GIT/virt-OSPD/inventories/virt-env-ospd/hosts \
       /net/imladris/export/home/raistlin/World/Vincent/Code/GIT/virt-OSPD/playbooks/virt-env-ospd/ospd_${OSP}_{HVM}.yml"
