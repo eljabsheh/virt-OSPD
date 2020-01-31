@@ -119,8 +119,8 @@ default:
       fi
     # Summary
     - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${REBUILD}" ]; then
-        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( guest ${INSTACK_GUEST}, ";
-        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}, restore snapshot is ${REBUILD} )" ;
+        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( rebuild guest ${INSTACK_GUEST} is ${REBUILD} ) ";
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}" ;
         export LIBVIRT_DEFAULT_URI=qemu+ssh://${SSH_USER}@${HVM}/system ;
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
@@ -251,7 +251,7 @@ rhosp_16:
     - echo "Selected Hypervisor ${HVM}, RHOSP v${OSP}..."
   <<: *tag_restrict
 
-select_rebuild:
+rebuild_undercloud_from_scratch:
   extends: .select_rebuild
   stage: select_rebuild
   when: manual
@@ -289,6 +289,16 @@ config_injection:
            echo "RHOSP Version not yet selected, sleeping (${TIMEOUT} attempts remaining)";
            sleep 1; TIMEOUT=$(( $TIMEOUT - 1 ));
         done;
+    # 3rd, Select to rebuild undercloud from scratch (yes/no):
+    - TIMEOUT=7200;
+      until test ! -z "$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD)" || [ $TIMEOUT -eq 0 ];
+        do
+           echo "Undercloud rebuild not yet selected, sleeping (${TIMEOUT} attempts remaining)";
+           sleep 1; TIMEOUT=$(( $TIMEOUT - 1 ));
+        done;
+    - export REBUILD="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_REBUILD)"
+    - echo "Requested action to rebuild undercloud VM is ${REBUILD}"
+    #
     - export OSP="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_OSP)"
     - export RHEL="$(${REDIS_CMD} get KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_RHEL)"
     - echo "Requested RHOSP version is ${OSP} on RHELv${RHEL}"
@@ -298,9 +308,9 @@ config_injection:
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_DNS" "${INSTACK_DNS}"
     - ${REDIS_CMD} set "KRYNN_${CI_PROJECT_ID}_${CI_PIPELINE_ID}_INSTACK_GUEST" "${INSTACK_GUEST}"
     # Final banner
-    - if [ ! -z "${HVM}" -a ! -z "${OSP}" ]; then
-        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( guest ${INSTACK_GUEST}, ";
-        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS} )" ;
+    - if [ ! -z "${HVM}" -a ! -z "${OSP}" -a ! -z "${REBUILD}" ]; then
+        echo -n "Will execute on HVM ${HVM}, RHOSP v.${OSP} ( rebuild guest ${INSTACK_GUEST} is ${REBUILD} ) ";
+        echo "RHELv${RHEL}, dns hostname is ${INSTACK_DNS}" ;
       else
         exit 127 ;
       fi
