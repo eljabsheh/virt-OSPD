@@ -17,7 +17,7 @@
 #   'ravenvale': only execute on HVM ravenvale
 #
 # REBUILD variable:
-#   'yes': destroys undercloud
+#   'yes': destroys and rebuilds undercloud
 #   'no': keep undercloud VM as-is
 #
 ############################################ UTILITY ROUTINES ##########################################################
@@ -346,7 +346,7 @@ wait_libvirtd_online:
     - echo "Libvirtd on ${HVM} now reports 'active'"
 
 ######################################## RESTORE SNAPSHOTS ########################################
-undercloud_destroy:
+undercloud_rebuild:
   stage: rebuild_undercloud
   <<: *tag_restrict
   script:
