@@ -113,6 +113,7 @@ default:
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
     - eval $(ssh-agent)
+    - chmod 600 /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
     - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
 
 ######################################## SELECT HYPERVISOR ########################################
