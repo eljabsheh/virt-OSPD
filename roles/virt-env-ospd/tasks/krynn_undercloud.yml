@@ -69,6 +69,6 @@
 - name: Execute network reconfiguration
   shell: |
     /net/imladris/export/shared/data/install/Krynn/{{ short_dns_hostname.stdout }}/install_from_nfs.sh
-    systemctl restart network
+    for i in bond0 bond1 bond1.2010; do /usr/sbin/ifup ${i}; done
   when:
     - network_reconfig.stat.exists == true
