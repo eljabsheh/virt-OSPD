@@ -126,8 +126,8 @@ default:
       fi
     - eval $(ssh-agent)
     - chmod 600 /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
-    - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
     - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
+    - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
 
 ######################################## SELECT HYPERVISOR ########################################
 .select_hypervisor:
@@ -388,7 +388,7 @@ run_ansible_playbook:
   script:
     # KRYNN_SPECIFIC
     - >
-      ssh -qt ${ANSIBLE_USER}@${HVM} "cd /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD &&
+      ssh -A -qt ${ANSIBLE_USER}@${HVM} "cd /tmp/virt-OSPD_${CI_PROJECT_ID}_${CI_PIPELINE_ID}/virt-OSPD &&
       ANSIBLE_FORCE_COLOR=yes ansible-playbook -e ansible_python_interpreter=/usr/libexec/platform-python
       -i inventories/virt-env-ospd/hosts playbooks/virt-env-ospd/ospd_${OSP}_${HVM}.yml"
     - uname -a
