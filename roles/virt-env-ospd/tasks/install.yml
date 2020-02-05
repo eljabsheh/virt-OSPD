@@ -28,8 +28,8 @@
     user: root
     state: present
     key: "{{ ironic_pub_key.stdout }}"
-  delegate_to: "{{ groups.hypervisor[0] }}"
-  #delegate_to: 192.168.122.1
+  #delegate_to: "{{ groups.hypervisor[0] }}"
+  delegate_to: 192.168.122.1
   become: true
   when: instackenv_pm_type in ['pxe_ssh']
 
