@@ -9,8 +9,8 @@
 
 - name: Set undercloud hostname
   hostname:
-    #name={{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
     name={{ virt_env_ospd_undercloud_hostname }}
+#name={{ virt_env_ospd_undercloud_hostname.split('.')[0] }}
 
 - fail: msg="instackenv_pm_type must be either 'pxe_ssh' or 'pxe_ipmitool' (OSP12)"
   when: instackenv_pm_type not in ['pxe_ssh','pxe_ipmitool']

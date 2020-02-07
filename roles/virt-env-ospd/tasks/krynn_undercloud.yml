@@ -12,6 +12,11 @@
   debug:
     msg: "virt_env_ospd_undercloud_hostname = {{ virt_env_ospd_undercloud_hostname  }}"
 
+#
+- name: Set undercloud hostname
+  hostname:
+    name={{ virt_env_ospd_undercloud_hostname }}
+
 # proxy config for krynn
 - name: Enforce Proxy config in /etc/yum.conf
   lineinfile: dest=/etc/yum.conf
