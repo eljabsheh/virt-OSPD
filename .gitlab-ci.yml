@@ -69,6 +69,7 @@ default:
     # let's do the redis magic
     - mkdir -p ~/.ssh/
     - echo -e "Host *\n  ForwardAgent yes\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n  ServerAliveInterval 120\n  ServerAliveCountMax 720\n  TCPKeepAlive no\n" > ~/.ssh/config
+    - cat ~/.ssh/config
     - chmod 0700 -R ~/.ssh
     - unset REDIS_HVM_FAQ REDIS_OSP_FAQ REDIS_INSTACK_GUEST_FAQ REDIS_INSTACK_DNS_FAQ REDIS_INSTACK_RHEL_FAQ
     - REDIS_CMD="redis-cli --no-auth-warning --raw -h ${REDIS_HOST} -p ${REDIS_PORT}"
@@ -128,6 +129,7 @@ default:
     - chmod 600 /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
     - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
     - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/virt-OSPD_rsa
+    - ssh-add -l
 
 ######################################## SELECT HYPERVISOR ########################################
 .select_hypervisor:

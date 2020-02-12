@@ -10,7 +10,7 @@ fi
 for vm in $(virsh list|grep -vw instack |awk '{ if ( $1 ~ /[0-9]/ ) { print $2 } }')
 do
 	case $vm in 
-		overcloud*)
+		overcloud-*)
 			virsh destroy $vm
 			;;
 		*)
@@ -20,7 +20,7 @@ done
 for vm in $(virsh list --all|grep -vw instack |awk '{ if ( $1 == "-" ) { print $2 } }')
 do
 	case $vm in 
-		overcloud*)
+		overcloud-*)
 			# Start by looking at disks listed in the domain config
 			for mydisk in $(virsh domblklist ${vm}| \
 				egrep  '[[:space:]]/')
@@ -36,9 +36,6 @@ do
 			do
 				/bin/rm -fv ${mydir}/${vm}-{boot,extra}*.qcow2
 			done
-
-			# Undefine domain
-			virsh undefine $vm
 			;;
 		*)
 	esac
