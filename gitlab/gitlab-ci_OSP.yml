@@ -2,6 +2,10 @@
 ### CI Variables ###
 ### Add those variables to a manual pipeline run to modify task execution
 ########################################################################################################################
+#
+# DEV variable:
+#   'KEEP': Does not release the environment after the pipeline, does not create new snapshot
+#
 # OSP variable:
 #   '8': Deploys RHOSP8
 #   '9': Deploys RHOSP9
@@ -48,6 +52,7 @@ stages:
   - rhel_sat_register
   - initial_patching
   - config_undercloud
+  - images_and_nodes
   - deploy_overcloud
   - create_test_tenant
   - delete_overcloud
@@ -72,9 +77,15 @@ default:
   before_script:
     # this is the start of the utility functions embedded in all stages
     - source /builds/${GITLAB_USER_LOGIN}/OSP/gitlab/functions.sh
-    # let's do the redis magic
+    # site-configs
+    - pushd .
+    - cd /builds/${GITLAB_USER_LOGIN}
+    - if [ ! -d site-configs ]; then git clone https://gitlab.lasthome.solace.krynn/raistlin/site-configs.git; fi
+    - if [ -d site-configs ]; then (cd site-configs && git pull -a); fi
+    - popd
+    # let's do the redis magic (TBD)
     - mkdir -p ~/.ssh/
-    - echo -e "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n  ServerAliveInterval 120\n  ServerAliveCountMax 720\n  TCPKeepAlive no\n" > ~/.ssh/config
+    - echo -e "Host *\n  ForwardAgent yes\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null\n  PreferredAuthentications=publickey\n  ServerAliveInterval 120\n  ServerAliveCountMax 720\n  TCPKeepAlive no\n" > ~/.ssh/config
     - chmod 0700 -R ~/.ssh
     - unset REDIS_HVM_FAQ REDIS_OSP_FAQ REDIS_SIZE_FAQ REDIS_SNAP_FAQ REDIS_INSTACK_GUEST_FAQ REDIS_INSTACK_DNS_FAQ REDIS_INSTACK_RHEL_FAQ
     - REDIS_CMD="redis-cli --no-auth-warning --raw -h ${REDIS_HOST} -p ${REDIS_PORT}"
@@ -138,8 +149,8 @@ default:
         echo "LIBVIRT_DEFAULT_URI set to ${LIBVIRT_DEFAULT_URI}";
       fi
     - eval $(ssh-agent)
-    - chmod 600 /builds/${GITLAB_USER_LOGIN}/OSP/site-configs/${SSH_USER}_rsa
-    - ssh-add /builds/${GITLAB_USER_LOGIN}/OSP/site-configs/${SSH_USER}_rsa
+    - chmod 600 /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
+    - ssh-add /builds/${GITLAB_USER_LOGIN}/site-configs/${SSH_USER}_rsa
 
 ######################################## SELECT HYPERVISOR ########################################
 .select_hypervisor:
@@ -415,6 +426,18 @@ undercloud_restore_process:
       fi
     - virsh list
 
+stop_other_underclouds:
+  stage: restore_snapshot
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 360 -h ${HVM} -p 22
+    - for i in 8 9 10 13 15 16 ;
+      do
+        if [[ "$i" != "$OSP" ]]; then
+          virsh destroy instack-${i} || /bin/true;
+        fi;
+      done;
+
 ######################################## LAUNCH VBMC ########################################
 launch_vbmc:
   stage: launch_undercloud
@@ -500,28 +523,34 @@ install_undercloud:
     - wait_system_online -t 240 -h ${INSTACK_DNS} -p 22
     # Install required packages
     - base_rpms="rhosp-director-images libguestfs-tools libguestfs-xfs libguestfs-devel crudini";
-         case ${OSP} in
-             8|9)
-                 export full_rpms="python-tripleoclient ${base_rpms}" ;;
-             10|13)
-                 export full_rpms="python-tripleoclient ceph-ansible ${base_rpms}" ;;
+      case ${OSP} in
+          8|9)
+              export full_rpms="python-tripleoclient ${base_rpms}" ;;
+          10|13)
+              export full_rpms="python-tripleoclient ceph-ansible ${base_rpms}" ;;
+          15|16)
+              export full_rpms="python3-tripleoclient ceph-ansible ${base_rpms}" ;;
+      esac
+    - case ${OSP} in
+         8|9|10|13)
+                 ssh stack@${INSTACK_DNS} "sudo yum install -y ${full_rpms}";;
              15|16)
-                 export full_rpms="python3-tripleoclient ceph-ansible ${base_rpms}" ;
-         esac
-    - ssh stack@${INSTACK_DNS} "sudo yum install -y --allowerasing ${full_rpms}"
+                 ssh stack@${INSTACK_DNS} "sudo yum install -y --allowerasing ${full_rpms}";;
+      esac
     # Build/Install certificates
     #### - ssh stack@${INSTACK_DNS} "cd /home/stack/OSP/osp${OSP}/certs ; ./build_overcloud_cert.sh"
     - ssh stack@${INSTACK_DNS} "cd /home/stack/OSP/osp${OSP}/site_krynn ; ./install_certs_to_topdir.sh"
+    # Refresh containers
+    - case ${OSP} in
+             15|16)
+                 ssh stack@${INSTACK_DNS} "rm -fv OSP/osp${OSP}/overcloud-images.yaml; openstack tripleo container image prepare --cleanup full -e OSP/osp${OSP}/containers-prepare-parameter.yaml --output-env-file OSP/osp${OSP}/overcloud-images.yaml";;
+      esac
     # Run undercloud install
     - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; openstack undercloud upgrade ; else openstack undercloud install ; fi ;"
     # Rebuild trust-anchor-hiera yaml with certs now that the undercloud is installed...
     - ssh stack@${INSTACK_DNS} "cd /home/stack/OSP/osp${OSP}/site_krynn ; ./rebuild_yamls_for_certs.sh"
     # Clean VMs in sat6 if undercloud is not already installed (only to be sure we are starting fresh)
     - ssh -q stack@${INSTACK_DNS} "test -f stackrc" || ssh stack@sat6.lasthome.solace.krynn "/export/home/stack/clean_osp_VMs.sh"
-    # Import images
-    - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; cd /home/stack/images ; /home/stack/OSP/images/update_overcloud_image_netifs.sh ; fi"
-    # if nodes do not get imported, run it again here..
-    #- ssh stack@${INSTACK_DNS} ". stackrc ; openstack overcloud node import ./instackenv.json"
     # Check if reboot is needed
     - RES=$(ssh -q stack@${INSTACK_DNS} '/usr/bin/needs-restarting -r > /dev/null 2>&1 && echo "SYSTEM_OK" || echo "NEED_REBOOT"')
     # Check if kernel was upgraded.. if yes, then rebuild initramfs for all kernels
@@ -539,15 +568,36 @@ install_undercloud:
     # We want to nuke the sector from orbit, it's the only way to be sure..
     - sleep 120
 
+######################################## IMAGES AND NODES ########################################
+import_nodes:
+  stage: images_and_nodes
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    # Import nodes
+    - ssh stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; for i in $(openstack baremetal node list -c UUID -f value); do openstack baremetal node provide $i; done || /bin/true'
+    # Print nodes before deployment
+    - ssh -qt stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; fi ; openstack baremetal node list"
+
+import_images:
+  stage: images_and_nodes
+  <<: *tag_restrict
+  script:
+    - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
+    # Import images
+    - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; cd /home/stack/images ; /home/stack/OSP/images/update_overcloud_image_netifs.sh ; fi"
+    # if nodes do not get imported, run it again here..
+    #- ssh stack@${INSTACK_DNS} ". stackrc ; openstack overcloud node import ./instackenv.json"
+    - ssh stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; for i in $(openstack baremetal node list -c UUID -f value); do openstack baremetal node provide $i; done || /bin/true'
+    # Print nodes before deployment
+    - ssh -qt stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; fi ; openstack baremetal node list"
+
 ######################################## DEPLOY OVERCLOUD ########################################
 deploy_overcloud:
   stage: deploy_overcloud
   <<: *tag_restrict
   script:
     - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
-    - ssh stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; for i in $(openstack baremetal node list -c UUID -f value); do openstack baremetal node provide $i; done || /bin/true'
-    # Print nodes before deployment
-    - ssh -qt stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; fi ; openstack baremetal node list"
     # Launch deploy script
     - ssh stack@${INSTACK_DNS} "if [ -f stackrc ]; then source stackrc ; fi ; /home/stack/OSP/osp${OSP}/bin/deploy20_${SIZE}.sh"
 
@@ -581,11 +631,14 @@ delete_overcloud:
   stage: delete_overcloud
   <<: *tag_restrict
   allow_failure: true
-  when: manual
+  when: always
+  except:
+    variables:
+    - $DEV
   script:
     - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
     # Run overcloud stack delete
-    - ssh -qt stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; export PYTHONUNBUFFERED=true ; openstack stack delete --yes --wait overcloud'
+    - ssh -qt stack@${INSTACK_DNS} 'if [ -f stackrc ]; then source stackrc ; fi ; export PYTHONUNBUFFERED=true ; openstack stack delete --yes --wait overcloud' || /bin/true
     # Clean OSP VMs in sat6 (if those didn't get deleted when the overcloud was..)
     - ssh -qt stack@sat6.lasthome.solace.krynn '/export/home/stack/clean_osp_VMs.sh'
 
@@ -594,11 +647,11 @@ stop_undercloud:
   stage: stop_undercloud
   <<: *tag_restrict
   # Make shutdown manual for now...
-  #when: delayed
-  #start_in: 5 minutes
+  #when: manual
+  except:
+    variables:
+    - $DEV
   allow_failure: true
-  when: manual
-  #when: always
   script:
     - wait_system_online -t 60 -h ${INSTACK_DNS} -p 22
     - virsh shutdown ${INSTACK_GUEST} || /bin/true
