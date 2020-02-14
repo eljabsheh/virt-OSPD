@@ -23,18 +23,18 @@ do
 		overcloud-*)
 			# Start by looking at disks listed in the domain config
 			for mydisk in $(virsh domblklist ${vm}| \
-				egrep  '[[:space:]]/')
+				egrep  '[[:space:]]/.*boot')
 			do
 				/bin/rm -fv ${mydisk}
 			done
 			# Just to be sure, make an extra clean pass
 			for mydir in $(virsh domblklist ${vm}| \
-				egrep  '[[:space:]]/'| \
+				egrep  '[[:space:]]/.*boot'| \
 				sed -e  's@^.*[[:space:]]/@\/@'| \
 				xargs -n1 dirname| \
 				sort -u)
 			do
-				/bin/rm -fv ${mydir}/${vm}-{boot,extra}*.qcow2
+				qemu-img create -f qcow2 ${mydir}/${vm}-boot.qcow2 128G
 			done
 			;;
 		*)
